@@ -16,7 +16,7 @@ const Hero = () => {
           {/* Left content */}
           <div className="space-y-8" data-aos="fade-right" data-aos-delay="100">
             <div className="inline-block">
-              <span className="px-4 py-2 bg-primary text-white font-mono rounded-full text-sm font-semibold">
+              <span className="text-2xl md:text-3xl text-primary border-b-4 border-violet-900">
                 Coach-First Mental Health Support
               </span>
             </div>
@@ -37,7 +37,7 @@ const Hero = () => {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <a href="#adapts">
-                <Button variant="default" size="lg" className="group font-mono">
+                <Button variant="default" size="lg" className="group w-full font-mono">
                   Get Started
                   <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </Button>

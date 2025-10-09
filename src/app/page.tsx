@@ -11,7 +11,7 @@ import HowItWorks from '@/components/views/how-it-works/HowItWorks';
 import CoachPreview from '@/components/views/coach-preview/CoachPreview';
 import CTA from '@/components/views/cta/CTA';
 import Footer from '@/components/layout/PageFooter';
-
+import AdaptsTypes from '@/components/views/adapts/AdaptsTypes';
 
 export default function Home() {
   useEffect(() => {
@@ -25,6 +25,7 @@ export default function Home() {
       <Hero />
       <Features />
       <AboutAdapts />
+      <AdaptsTypes />
       <HowItWorks />
       <CoachPreview />
       <CTA />

@@ -95,7 +95,7 @@ const HowItWorks = () => {
             })}
           </div>
           
-          <div className="text-center mt-16" data-aos="fade-up" data-aos-delay={800}>
+          <div className="text-center mt-16" data-aos="fade-up" data-aos-delay={500}>
             <Button variant="default" size="lg" className="group">
               Start Your Journey
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />

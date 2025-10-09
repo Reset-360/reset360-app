@@ -12,16 +12,16 @@ import { Card } from '@/components/ui/card';
 const features = [
   {
     icon: Brain,
-    title: 'ADAPTS Diagnostic Assessment',
+    title: 'ADAPTS Assessment',
     description:
-      'Catch early signs of stress and anxiety with our advanced assessment tool.',
+      'Catch early signs of stress and anxiety with our advanced assessment screening tool.',
     color: 'primary',
   },
   {
     icon: Sparkles,
     title: 'AI Match Making',
     description:
-      'ADAPTS results connect you to the perfect coach instantly—personalized for you.',
+      'ADAPTS results connect you to the perfect coach instantly personalized for you.',
     color: 'accent',
   },
   {
