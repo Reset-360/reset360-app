@@ -62,7 +62,7 @@ const AdaptsTypes = () => {
                 <p className="text-xl text-muted-foreground leading-relaxed">
                   {type.target}
                 </p>
-                <div className="rounded-sm overflow-hidden">
+                <div className="relative rounded-sm overflow-hidden">
                   <Image
                     src={type.image}
                     alt={type.title}
@@ -70,6 +70,7 @@ const AdaptsTypes = () => {
                     height={400}
                     className="object-contain"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
                 </div>
               </div>
             );

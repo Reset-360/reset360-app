@@ -1,5 +1,6 @@
 import React from 'react';
 import NavLinkItem from './NavLinkItem';
+import Link from 'next/link';
 
 const DesktopNavigation = () => {
   return (
@@ -9,10 +10,13 @@ const DesktopNavigation = () => {
       <NavLinkItem href="#how-it-works" title="How It Works" />
       <NavLinkItem href="#coaches" title="Our Coaches" />
       <NavLinkItem href="#start" title="Pricing" />
-      
-      <button className="rounded-full bg-primary hover:bg-primary/80 text-white px-5 py-1 cursor-pointer">
+
+      <Link
+        href={'/login'}
+        className="rounded-full bg-primary hover:bg-primary/80 text-white px-5 py-1 cursor-pointer"
+      >
         Sign In
-      </button>
+      </Link>
     </div>
   );
 };
