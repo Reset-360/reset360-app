@@ -59,7 +59,7 @@ const RegisterPage = () => {
       </nav>
 
       {/* Register Form */}
-      <div>
+      <div className='flex-1 flex flex-col justify-center'>
         <h2 className="text-2xl font-semibold mb-2">Create an Account</h2>
         <p className="text-md text-muted-foreground mb-6">
           Begin your reset: your journey to balance starts here.
@@ -71,7 +71,7 @@ const RegisterPage = () => {
             password: '',
             confirmPassword: '',
             gender: '',
-            birthDate: defaultDate,
+            birthDate: '',
             email: '',
             phone: '',
             countryCode: '+63',
@@ -242,7 +242,7 @@ const RegisterPage = () => {
                             ? new Date(values.birthDate)
                             : defaultDate
                         }
-                        onSelect={(date) => {
+                        onSelect={(date: any) => {
                           if (date) {
                             setFieldValue('birthDate', date);
                           } else {
