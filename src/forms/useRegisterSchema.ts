@@ -1,3 +1,4 @@
+import { EClientSegment, EGender } from '@/types/client';
 import * as yup from 'yup';
 
 const phoneRegExp = /^[0-9]{10}$/;
@@ -5,7 +6,19 @@ const phoneRegExp = /^[0-9]{10}$/;
 const minAgeDate = new Date();
 minAgeDate.setFullYear(minAgeDate.getFullYear() - 6);
 
-const schema = yup.object().shape({
+export const schema = yup.object().shape({
+  firstName: yup
+    .string()
+    .required('Please enter your first name')
+    .max(120)
+    .nullable(),
+
+  lastName: yup
+    .string()
+    .required('Please enter your last name')
+    .max(120)
+    .nullable(),
+
   username: yup
     .string()
     .required('Please enter your username')
@@ -45,7 +58,14 @@ const schema = yup.object().shape({
   password: yup
     .string()
     .required('Please enter your password')
-    .min(6, 'Password must be at least 6 characters long')
+    .min(8, 'Password must be at least 8 characters long')
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/\d/, "Password must contain at least one number")
+    .matches(
+      /[!@#$%^&*(),.?":{}|<>_\-+=\\[\]\\;/]/,
+      "Password must contain at least one special character"
+    )
     .max(100, 'Password must not exceed 100 characters'),
 
   confirmPassword: yup
@@ -54,4 +74,15 @@ const schema = yup.object().shape({
     .oneOf([yup.ref('password')], 'The passwords you entered must match'),
 });
 
-export { schema };
+export interface ClientRegisterSchema {
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  segment: EClientSegment;
+  birthDate: Date | string;
+  gender: EGender | string,
+  email?: string;
+  phone?: string;
+  countryCode?: string;
+}

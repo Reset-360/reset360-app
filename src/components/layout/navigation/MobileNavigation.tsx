@@ -47,9 +47,9 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           <NavLinkItem href="#coaches" onClick={() => setOpen(false)} title="Our Coaches" />
           <NavLinkItem href="#pricing" onClick={() => setOpen(false)} title="Pricing" />
 
-          <button className="rounded-full bg-primary hover:bg-primary/80 text-white px-5 py-1 cursor-pointer">
+          <Link href="/login" className="rounded-full bg-primary hover:bg-primary/80 text-white px-5 py-1 cursor-pointer">
             Sign In
-          </button>
+          </Link>
         </div>
       </div>
     </div>

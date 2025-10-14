@@ -7,11 +7,9 @@ import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Button } from '@/components/ui/button';
 import { schema } from '@/forms/useLoginSchema';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const ForgotPasswordPage = () => {
-  const router = useRouter();
   const [error, setError] = useState('');
 
   return (
@@ -49,6 +47,7 @@ const ForgotPasswordPage = () => {
               setError('');
               try {
                 console.log('Form data:', values);
+                console.log(error)
                 // Example: await api.post("/auth/login", values)
                 // router.push('/dashboard');
               } catch (err) {

@@ -59,6 +59,7 @@ const Hero = () => {
                 src={heroImage}
                 alt="Mental health coach supporting a client in a welcoming environment"
                 className="w-full h-auto"
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
             </div>

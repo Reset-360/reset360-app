@@ -3,17 +3,39 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Button } from '@/components/ui/button';
 import { schema } from '@/forms/useLoginSchema';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Checkbox } from '@/components/ui/checkbox';
+import { getUser, loginUser } from '@/services/authService';
+import { renderApiError } from '@/lib/utils';
+import { useRoleRedirect } from '@/hooks/useRoleRedirect';
 
 const LoginPage = () => {
-  const router = useRouter();
-  const [error, setError] = useState('');
+  const { redirectByRole } = useRoleRedirect();
+
+  const handleLoginSubmit = async (
+    values: any,
+    setSubmitting: (isSubmitting: boolean) => void,
+    setErrors: (errors: any ) => void
+  ) => {
+    try {
+      await loginUser(values);
+      const user = await getUser();
+      redirectByRole(user.role)
+    } catch (err: any) {
+      if (err.message == 'Invalid credentials') {
+        setErrors({ password: 'Username or password did not match.'})
+        return
+      }
+
+      renderApiError(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="w-full md:w-[80%] flex flex-col">
@@ -55,17 +77,8 @@ const LoginPage = () => {
           <Formik
             initialValues={{ username: '', password: '', rememberMe: false }}
             validationSchema={schema}
-            onSubmit={async (values, { setSubmitting }) => {
-              setError('');
-              try {
-                console.log('Form data:', values);
-                // Example: await api.post("/auth/login", values)
-                // router.push('/dashboard');
-              } catch (err) {
-                setError('Invalid credentials');
-              } finally {
-                setSubmitting(false);
-              }
+            onSubmit={(values, { setSubmitting, setErrors }) => {
+              handleLoginSubmit(values, setSubmitting, setErrors);
             }}
           >
             {({ values, setFieldValue, isSubmitting }) => (

@@ -6,9 +6,8 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { schema } from '@/forms/useRegisterSchema';
+import { ClientRegisterSchema, schema } from '@/forms/useRegisterSchema';
 import {
   Select,
   SelectContent,
@@ -24,7 +23,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
+import { cn, renderApiError } from '@/lib/utils';
+import { useRoleRedirect } from '@/hooks/useRoleRedirect';
+import { getUser, registerUser } from '@/services/authService';
+import { EClientSegment, EClientStatus, EGender } from '@/types/client';
+import { EUserRole } from '@/types/user';
+import { RegisterParams } from '@/types/auth';
+import moment from 'moment';
 
 // Helper: minimum age = 6 years old
 const minAgeDate = new Date();
@@ -33,9 +38,53 @@ minAgeDate.setFullYear(minAgeDate.getFullYear() - 6);
 const defaultDate = subYears(new Date(), 18);
 
 const RegisterPage = () => {
-  const router = useRouter();
+  const { redirectByRole } = useRoleRedirect();
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState('');
+
+  const handleLoginSubmit = async (
+    values: ClientRegisterSchema,
+    setSubmitting: (isSubmitting: boolean) => void,
+    setErrors: (errors: any ) => void
+  ) => {
+    try {
+      const params: RegisterParams = {
+        username: values.username,
+        password: values.password,
+        countryCode: values.countryCode,
+        role: EUserRole.CLIENT,
+        profile: {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          segment: values.segment,
+          birthDate: moment(values.birthDate, 'YYYY-MM-DD').toDate(),
+          gender: values.gender,
+          status: EClientStatus.ACTIVE
+        }
+      }
+
+      if (values.email) {
+        params.email = values.email;
+      }
+
+      if (values.phone) {
+        params.phone = values.phone;
+      }
+
+      await registerUser(params);
+
+      const user = await getUser();
+      redirectByRole(user.role)
+    } catch (err: any) {
+      if (err.username || err.email || err.phone || err.password) {
+        setErrors(err); 
+        return;
+      }
+
+      renderApiError(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="w-full md:w-[80%] flex flex-col mx-auto px-4 md:px-0 py-8">
@@ -59,7 +108,7 @@ const RegisterPage = () => {
       </nav>
 
       {/* Register Form */}
-      <div className='flex-1 flex flex-col justify-center'>
+      <div className="flex-1 flex flex-col justify-center">
         <h2 className="text-2xl font-semibold mb-2">Create an Account</h2>
         <p className="text-md text-muted-foreground mb-6">
           Begin your reset: your journey to balance starts here.
@@ -67,30 +116,25 @@ const RegisterPage = () => {
 
         <Formik
           initialValues={{
+            firstName: '',
+            lastName: '',
             username: '',
-            password: '',
-            confirmPassword: '',
+            password: '11111111',
+            confirmPassword: '11111111',
             gender: '',
             birthDate: '',
-            email: '',
+            email: '@erc.com',
             phone: '',
             countryCode: '+63',
+            segment: EClientSegment.STUDENT
           }}
           validationSchema={schema}
-          onSubmit={async (values, { setSubmitting }) => {
-            setError('');
-            try {
-              console.log('Form data:', values);
-              // router.push('/dashboard');
-            } catch {
-              setError('Something went wrong. Please try again.');
-            } finally {
-              setSubmitting(false);
-            }
+          onSubmit={(values, { setSubmitting, setErrors }) => {
+            handleLoginSubmit(values, setSubmitting, setErrors);
           }}
         >
           {({ values, setFieldValue, isSubmitting }) => (
-            <Form className="space-y-5">
+            <Form className="space-y-5" >
               {/* Fake fields to prevent autofill */}
               <input
                 type="text"
@@ -104,6 +148,37 @@ const RegisterPage = () => {
                 autoComplete="new-password"
                 className="hidden"
               />
+
+              {/* First Name + Last Name */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Field
+                    as={Input}
+                    name="firstName"
+                    placeholder="First Name"
+                  />
+                  <ErrorMessage
+                    name="firstName"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Field
+                    as={Input}
+                    name="lastName"
+                    placeholder="Last Name"
+                  />
+                  <ErrorMessage
+                    name="lastName"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+              </div>
 
               {/* Username */}
               <div>
@@ -276,8 +351,8 @@ const RegisterPage = () => {
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value={EGender.MALE}>Male</SelectItem>
+                      <SelectItem value={EGender.FEMALE}>Female</SelectItem>
                     </SelectContent>
                   </Select>
                   <ErrorMessage
@@ -286,6 +361,30 @@ const RegisterPage = () => {
                     className="text-red-500 text-sm mt-1"
                   />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="segment">I am a...</Label>
+                <Select
+                  value={values.segment}
+                  onValueChange={(val) => setFieldValue('segment', val)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={EClientSegment.STUDENT}>Student</SelectItem>
+                    <SelectItem value={EClientSegment.PARENT}>Parent</SelectItem>
+                    <SelectItem value={EClientSegment.TEACHER}>Teacher</SelectItem>
+                    <SelectItem value={EClientSegment.INDIVIDUAL}>College / Young Adult</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <ErrorMessage
+                  name="phone"
+                  component="div"
+                  className="text-red-500 text-sm mt-1"
+                />
               </div>
 
               {/* Submit */}
