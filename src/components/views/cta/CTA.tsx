@@ -14,7 +14,7 @@ const CTA = () => {
             <Heart className="w-8 h-8 fill-current animate-float" />
           </div>
           
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight font-main">
             Ready to Reset Your Mental Wellness?
           </h2>
           

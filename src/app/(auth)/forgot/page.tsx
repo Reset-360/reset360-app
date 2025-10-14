@@ -21,21 +21,18 @@ const ForgotPasswordPage = () => {
           className="flex items-center gap-1"
         >
           <Image
-            src="/logo/logo_32.png"
+            src="/logo/logo_full_250.png"
             alt="Reset 360 Logo"
-            width={28}
-            height={28}
+            width={150}
+            height={50}
           />
-          <span className="text-lg font-sans font-bold text-violet-500 ">
-            Reset 360
-          </span>
         </Link>
       </nav>
 
       <div className="flex-1 flex flex-col justify-center">
         <div className="">
-          <h2 className="text-2xl">Recover your account</h2>
-          <p className="text-md text-muted-foreground leading-none mb-5 max-w-[280px]">
+          <h2 className="text-2xl font-main">Recover your account</h2>
+          <p className="text-sm text-muted-foreground mb-5 max-w-[280px]">
             Forgot your password? Just enter your username and we’ll help you
             recover access.
           </p>
@@ -70,7 +67,7 @@ const ForgotPasswordPage = () => {
                   <ErrorMessage
                     name="username"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 font-label text-xs mt-1"
                   />
                 </div>
 

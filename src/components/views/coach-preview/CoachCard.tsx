@@ -20,7 +20,7 @@ const CoachCard: React.FC<CoachCardProps> = ({ coach }) => (
       </div>
 
       <div className="text-center mb-4">
-        <h3 className="text-xl font-semibold text-foreground mb-1">
+        <h3 className="text-xl font-main font-semibold text-foreground mb-1">
           {coach.name}
         </h3>
         <p className="text-sm text-muted-foreground mb-2">{coach.specialty}</p>

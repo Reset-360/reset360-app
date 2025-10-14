@@ -96,21 +96,18 @@ const RegisterPage = () => {
           className="flex items-center gap-2"
         >
           <Image
-            src="/logo/logo_32.png"
+            src="/logo/logo_full_250.png"
             alt="Reset 360 Logo"
-            width={28}
-            height={28}
+            width={150}
+            height={50}
           />
-          <span className="text-lg font-sans font-bold text-violet-500">
-            Reset 360
-          </span>
         </Link>
       </nav>
 
       {/* Register Form */}
       <div className="flex-1 flex flex-col justify-center">
-        <h2 className="text-2xl font-semibold mb-2">Create an Account</h2>
-        <p className="text-md text-muted-foreground mb-6">
+        <h2 className="text-2xl font-main font-bold">Create an Account</h2>
+        <p className="text-sm text-muted-foreground mb-6">
           Begin your reset: your journey to balance starts here.
         </p>
 
@@ -119,8 +116,8 @@ const RegisterPage = () => {
             firstName: '',
             lastName: '',
             username: '',
-            password: '11111111',
-            confirmPassword: '11111111',
+            password: 'P@ssword!1',
+            confirmPassword: 'P@ssword!1',
             gender: '',
             birthDate: '',
             email: '@erc.com',

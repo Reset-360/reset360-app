@@ -16,12 +16,12 @@ const Hero = () => {
           {/* Left content */}
           <div className="space-y-8" data-aos="fade-right" data-aos-delay="100">
             <div className="inline-block">
-              <span className="text-2xl md:text-3xl text-primary border-b-4 border-violet-900">
+              <span className="text-2xl md:text-3xl text-primary border-b-4 border-violet-900 font-main">
                 Coach-First Mental Health Support
               </span>
             </div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight font-main">
               <span className="">End the Stigma.</span>
               <br />
               <span className="text-primary">
@@ -37,14 +37,14 @@ const Hero = () => {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <a href="#adapts">
-                <Button variant="default" size="lg" className="group w-full font-mono">
+                <Button variant="default" size="lg" className="group w-full">
                   Get Started
                   <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </Button>
               </a>
 
               <a href="#pricing">
-                <Button variant="outline" size="lg" className="group w-full font-mono">
+                <Button variant="outline" size="lg" className="group w-full">
                   <MessageCircle />
                   Talk to a Coach Now
                 </Button>

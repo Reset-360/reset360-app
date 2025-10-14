@@ -64,7 +64,7 @@ const Features = () => {
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold font-main mb-6">
             The <span className="text-primary">Reset360</span> Difference
           </h2>
           <p className="text-xl text-muted-foreground">
@@ -99,7 +99,7 @@ const Features = () => {
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-foreground font-roboto mb-2">
+                  <h3 className="text-xl font-semibold text-foreground font-roboto mb-2 font-main">
                     {feature.title}
                   </h3>
                   <p className="text-muted-foreground leading-relaxed">

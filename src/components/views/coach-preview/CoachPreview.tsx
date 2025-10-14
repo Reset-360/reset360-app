@@ -92,7 +92,7 @@ const CoachPreview: React.FC = () => {
     <section id="coaches" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold font-main mb-6">
             Meet Your <span className="text-primary">Coaches</span>
           </h2>
           <p className="text-xl text-muted-foreground">

@@ -15,7 +15,7 @@ const DesktopNavigation = () => {
         href={'/login'}
         className="rounded-full bg-primary hover:bg-primary/80 text-white px-5 py-1 cursor-pointer"
       >
-        Sign In
+        Login
       </Link>
     </div>
   );

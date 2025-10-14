@@ -46,31 +46,28 @@ const LoginPage = () => {
           className="flex items-center gap-1"
         >
           <Image
-            src="/logo/logo_32.png"
+            src="/logo/logo_full_250.png"
             alt="Reset 360 Logo"
-            width={28}
-            height={28}
+            width={150}
+            height={50}
           />
-          <span className="text-lg font-sans font-bold text-violet-500 ">
-            Reset 360
-          </span>
         </Link>
       </nav>
 
       <div className="flex-1 flex flex-col justify-center">
         <div className="mb-10">
-          <h1 className="text-2xl font-semibold">
+          <h1 className="text-2xl font-semibold font-main">
             Hello, Welcome back to{' '}
             <span className="text-primary">Reset 360</span>
           </h1>
-          <p className="text-lg leading-none">
+          <p className="text-lg font-main">
             Your mental health coaching companion
           </p>
         </div>
 
         <div className="">
-          <h2 className="text-2xl">Login</h2>
-          <p className="text-md text-muted-foreground leading-none mb-5 max-w-[280px]">
+          <h2 className="text-2xl mb-2 font-main">Login</h2>
+          <p className="text-sm text-muted-foreground mb-5 max-w-[280px]">
             Sign in with your username and password to access your account.
           </p>
 
@@ -94,7 +91,7 @@ const LoginPage = () => {
                   <ErrorMessage
                     name="username"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 font-label text-xs mt-1"
                   />
                 </div>
 
@@ -110,7 +107,7 @@ const LoginPage = () => {
                   <ErrorMessage
                     name="password"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 font-label text-xs mt-1"
                   />
                 </div>
 
@@ -125,14 +122,14 @@ const LoginPage = () => {
                     />
                     <Label
                       htmlFor="rememberMe"
-                      className="text-sm text-muted-foreground"
+                      className="font-label text-xs text-muted-foreground"
                     >
                       Keep me signed in
                     </Label>
                   </div>
                   <Link
                     href="/forgot"
-                    className="text-primary hover:text-foreground font-medium mr-1"
+                    className="text-primary font-label text-xs hover:text-foreground mr-1"
                   >
                     Forgot password?
                   </Link>
@@ -150,7 +147,7 @@ const LoginPage = () => {
           </Formik>
 
           <hr className="my-6 border-t border-muted-foreground" />
-          <p className="text-center text-muted-foreground">
+          <p className="text-center text-muted-foreground font-label">
             Don&apos;t have an account?{' '}
             <Link href="/register" className="text-foreground">
               Register

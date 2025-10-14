@@ -15,7 +15,7 @@ export default function RootLayout({
         </div>
 
         {/* Right: Login Form */}
-        <div className="w-full md:w-[32rem] p-6 md:p-8 flex justify-center">
+        <div className="w-full md:w-[35rem] p-6 md:p-8 flex justify-center">
           {children}
         </div>
       </div>

@@ -9,7 +9,7 @@ const Pricing = () => {
       className="px-6 pt-10 pb-20 flex flex-col items-center justify-center text-white"
     >
       <div className="max-w-6xl text-center">
-        <h2 className="text-4xl font-bold mb-4">Choose Your Subscription Plan</h2>
+        <h2 className="text-4xl font-bold mb-4 font-main">Choose Your Subscription Plan</h2>
         <p className="max-w-2xl text-xl md:text-2xl mb-8 opacity-90 leading-tighternone mx-auto mb-10">
           Choose from a range of personalized coaching packages designed to
           support your growth journey.

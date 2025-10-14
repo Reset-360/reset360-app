@@ -34,7 +34,7 @@ const HowItWorks = () => {
     <section id='how-it-works' className="pb-16 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16 ">
-          <h2 className="text-3xl font-bold mb-2">
+          <h2 className="text-3xl font-bold font-main mb-2">
             How It Works
           </h2>
           <p className="text-xl text-muted-foreground">
@@ -83,7 +83,7 @@ const HowItWorks = () => {
                   </div>
                   
                   <div className="text-center">
-                    <h3 className="text-lg font-semibold mb-3 text-foreground">
+                    <h3 className="text-lg font-semibold mb-3 text-foreground font-main">
                       {step.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed">

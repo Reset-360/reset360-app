@@ -1,17 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Zain } from "next/font/google";
+import { Open_Sans, Newsreader, Funnel_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: 'Reset 360',
@@ -22,10 +12,22 @@ export const metadata: Metadata = {
   },
 };
 
-const zain = Zain({
-  variable: "--font-roboto",
+const newsReader = Newsreader({
+  variable: "--font-main",
   subsets: ["latin"],
-  weight: ["200", "300", "400"],
+  weight: ["400", "700"],
+});
+
+const openSans = Open_Sans({
+  variable: "--font-secondary",
+  subsets: ["latin"],
+  weight: ["300", "400"],
+});
+
+const funnel = Funnel_Display({
+  variable: "--font-label",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 export default function RootLayout({
@@ -36,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${zain.variable} antialiased`}
+        className={`${openSans.variable} ${newsReader.variable} ${funnel.variable} antialiased`}
       >
         {children}
         <Toaster position='top-right' richColors closeButton theme='light' />

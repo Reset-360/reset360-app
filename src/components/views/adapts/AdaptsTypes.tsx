@@ -37,7 +37,7 @@ const AdaptsTypes = () => {
     >
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-2xl font-bold mb-6">
+          <h2 className="text-2xl font-main font-bold mb-6">
             ADAPTS Assessments <br /> Understanding Emotional and Behavioral
             Patterns Across Ages
           </h2>

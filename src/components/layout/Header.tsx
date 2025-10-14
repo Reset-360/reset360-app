@@ -34,21 +34,18 @@ const Header = () => {
           : 'bg-transparent border-none shadow-none'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         <Link
           href="/"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="flex items-center gap-1"
         >
           <Image
-            src="/logo/logo_32.png"
+            src="/logo/logo_full_250.png"
             alt="Reset 360 Logo"
-            width={28}
-            height={28}
+            width={150}
+            height={50}
           />
-          <span className="text-lg font-sans font-bold text-violet-500 ">
-            Reset 360
-          </span>
         </Link>
 
         {/* Desktop Menu */}

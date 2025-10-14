@@ -9,13 +9,13 @@ const AboutAdapts = () => {
       data-aos-delay="0"
     >
       <div className="container mx-auto max-w-5xl">
-        <h2 className="text-4xl md:text-5xl font-bold">
+        <h2 className="text-4xl md:text-5xl font-bold font-main">
         The <span className="text-primary">ADAPTS</span> Model
       </h2>
-      <p className="text-2xl font-roboto">
+      <p className="text-2xl font-main">
         <span className="text-primary">A</span>nxiety <span className="text-primary">D</span>epression <span className="text-primary">A</span>ssessment
       </p>
-      <p className="text-2xl mb-6 font-roboto">
+      <p className="text-2xl mb-6 font-main">
         for <span className="text-primary">P</span>arents <span className="text-primary">T</span>eachers and <span className="text-primary">S</span>tudents
       </p>
       <p className="text-xl text-muted-foreground mb-6">
