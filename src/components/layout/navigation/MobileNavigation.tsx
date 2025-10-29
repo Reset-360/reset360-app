@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { Facebook, Instagram, Linkedin, X } from 'lucide-react';
 import Image from 'next/image';
 import NavLinkItem from './NavLinkItem';
+import AvatarMenu from './AvatarMenu';
+import { isAuthenticated } from '@/services/authService';
+import useAuthStore from '@/store/AuthState';
 import { Button } from '@/components/ui/button';
 
 type MobileNavigationProps = {
@@ -13,6 +16,21 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   open,
   setOpen,
 }) => {
+  const user = useAuthStore((s) => s.user);
+  const authLink = useMemo(() => {
+    if (user && isAuthenticated()) {
+      return <AvatarMenu mobile />;
+    } else {
+      return (
+        <Link href="/login">
+          <Button variant={'default'} className="w-full">
+            Login
+          </Button>
+        </Link>
+      );
+    }
+  }, [user]);
+
   return (
     <div
       className={`fixed inset-0 z-40 min-h-screen transform transition-transform duration-300 ease-in-out 
@@ -24,7 +42,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           <Image
             src="/logo/logo_full_250.png"
             alt="Reset 360 Logo"
-            width={150}
+            width={130}
             height={50}
           />
         </Link>
@@ -98,13 +116,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
           </div>
         </div>
 
-        <div className="">
-          <Link href="/login">
-            <Button variant={'default'} className="w-full">
-              Login
-            </Button>
-          </Link>
-        </div>
+        <div className="">{authLink}</div>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import AOS from 'aos';
 
-import Header from '@/components/layout/Header'
+import Header from '@/components/layout/Header';
 import Hero from '@/components/views/home/Hero';
 import Features from '@/components/views/features/Features';
 import AboutAdapts from '@/components/views/adapts/AboutAdapts';
@@ -32,5 +32,5 @@ export default function Home() {
 
       <Footer />
     </main>
-  )
+  );
 }

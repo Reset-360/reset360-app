@@ -27,3 +27,11 @@
 - Add auth pages for Login, Signup, Forgot password
 - Implement Formik with Yup validation
 - Add types of ADAPTS on landing page
+
+---
+
+# ✅ Completed Tasks — 2025-10-14
+
+- Wire auth api functions with auth pages
+- Update fonts and add full logo
+- add shell client dashboard

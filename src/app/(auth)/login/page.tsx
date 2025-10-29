@@ -12,9 +12,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { getUser, loginUser } from '@/services/authService';
 import { renderApiError } from '@/lib/utils';
 import { useRoleRedirect } from '@/hooks/useRoleRedirect';
+import { getClientProfile } from '@/services/clientService';
+import useAuthStore from '@/store/AuthState';
+import { EUserRole } from '@/types/user';
 
 const LoginPage = () => {
   const { redirectByRole } = useRoleRedirect();
+  const { setUser, setClientProfile, setToken } = useAuthStore(state => state)
 
   const handleLoginSubmit = async (
     values: any,
@@ -22,8 +26,18 @@ const LoginPage = () => {
     setErrors: (errors: any ) => void
   ) => {
     try {
-      await loginUser(values);
+      const response = await loginUser(values);
       const user = await getUser();
+      const profile = await getClientProfile(user._id);
+
+      // setup store data
+      setToken(response.accessToken);
+      setUser(user);
+
+      if (user.role == EUserRole.CLIENT) {
+        setClientProfile(profile);
+      }
+      
       redirectByRole(user.role)
     } catch (err: any) {
       if (err.message == 'Invalid credentials') {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Open_Sans, Newsreader, Funnel_Display } from "next/font/google";
-import "./globals.css";
+import './globals.css';
 import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body
         className={`${openSans.variable} ${newsReader.variable} ${funnel.variable} antialiased`}
       >

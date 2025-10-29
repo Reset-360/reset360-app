@@ -18,7 +18,7 @@ const NavLinkItem: React.FC<NavLinkItemProps> = ({
     <Link
       href={href as any}
       className={clsx(
-        'hover:text-violet-500 group relative text-lg font-medium',
+        'hover:text-violet-500 group relative text-sm font-medium',
         className
       )}
       {...props}

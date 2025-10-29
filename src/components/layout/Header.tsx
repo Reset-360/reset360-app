@@ -43,8 +43,10 @@ const Header = () => {
           <Image
             src="/logo/logo_full_250.png"
             alt="Reset 360 Logo"
-            width={150}
+            width={130}
             height={50}
+            className='w-[130px] h-auto'
+            priority
           />
         </Link>
 
