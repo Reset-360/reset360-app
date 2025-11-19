@@ -14,7 +14,7 @@ export const AdaptsCTA = () => {
   const router = useRouter();
 
   const onTakeAssessment = () => {
-    router.push('/assessment')
+    router.push('/adapts')
   }
 
   return (

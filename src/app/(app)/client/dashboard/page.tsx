@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { AdaptsCTA } from '@/components/client/assessment/AdaptsCTA';
+import { AdaptsCTA } from '@/components/client/adapts/AdaptsCTA';
 
 export default function ClientDashboardPage() {
   const profile = useAuthStore((state) => state.clientProfile);

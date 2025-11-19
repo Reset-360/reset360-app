@@ -42,7 +42,7 @@ export default function ClientRootLayout({
 
         {/* Main Content */}
         <main className="w-full p-5">
-          <SidebarTrigger />
+          <SidebarTrigger className='hover:bg-primary!' />
           {children}
         </main>
       </SidebarProvider>
