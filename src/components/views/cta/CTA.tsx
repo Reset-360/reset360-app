@@ -1,8 +1,15 @@
 import { ArrowRight, Heart } from "lucide-react";
 import Pricing from '../packages/Pricing';
 import { Button } from '../../ui/button';
+import { useRouter } from 'next/navigation';
 
 const CTA = () => {
+  const router = useRouter()
+
+  const handleTakeAdapts = () => {
+    router.push('/adapts')
+  }
+
   return (
     <section id='start' className="pt-24 relative overflow-hidden">
       {/* Gradient background */}
@@ -27,6 +34,7 @@ const CTA = () => {
               variant="accent" 
               size="lg" 
               className="group bg-violet-600 hover:bg-accent-light shadow-accent text-lg"
+              onClick={handleTakeAdapts}
             >
               Take ADAPTS Assessment Today
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />

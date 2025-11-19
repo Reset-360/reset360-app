@@ -3,8 +3,21 @@ import React from 'react';
 import heroImage from '@/assets/hero-coaching.jpg';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import useQuizStore from '@/store/QuizState';
 
 const Hero = () => {
+  const router = useRouter();
+  const resetQuiz = useQuizStore(s => s).resetQuiz;
+
+  const handleGetStarted = () => {
+    // Reset quiz state before routing
+    resetQuiz();
+
+    // Route to start page of adapts
+    router.push('/adapts');
+  }
+
   return (
     <section
       className="relative min-h-screen flex items-center overflow-hidden mb-16"
@@ -36,15 +49,13 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="#adapts">
-                <Button variant="default" size="lg" className="group w-full">
-                  Get Started
-                  <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </a>
+              <Button variant="default" size="lg" className="group" onClick={handleGetStarted}>
+                Get Started
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+              </Button>
 
               <a href="#pricing">
-                <Button variant="outline" size="lg" className="group w-full">
+                <Button variant="outline" size="lg" className="group">
                   <MessageCircle />
                   Talk to a Coach Now
                 </Button>

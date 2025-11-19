@@ -1,6 +1,7 @@
 
 import { ArrowRight, ClipboardCheck, Sparkles, MessageCircle, TrendingUp } from "lucide-react";
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const steps = [
   {
@@ -30,6 +31,12 @@ const steps = [
 ];
 
 const HowItWorks = () => {
+  const router = useRouter();
+
+  const handleStartJourney = () => {
+    router.push('/login')
+  }
+
   return (
     <section id='how-it-works' className="pb-16 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
@@ -96,7 +103,7 @@ const HowItWorks = () => {
           </div>
           
           <div className="text-center mt-16" data-aos="fade-up" data-aos-delay={500}>
-            <Button variant="default" size="lg" className="group">
+            <Button variant="default" size="lg" className="group" onClick={handleStartJourney}>
               Start Your Journey
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </Button>
