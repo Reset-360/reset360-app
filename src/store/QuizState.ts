@@ -13,6 +13,8 @@ interface QuizState {
   totalScore: Scores;  
   totalSubScaleScore: TotalSubScaleScore;
   completedAt?: Date;
+  hasHydrated: boolean;
+  setHasHydrated: (v: boolean) => void;
   setCurrentQuestion: (index: number) => void;
   setAnswer: (questionId: number, value: number) => void;
   setHasStarted: (hasStarted: boolean) => void;
@@ -27,6 +29,7 @@ const useQuizStore = create<QuizState>()(
   devtools(
     persist(
       (set) => ({
+        hasHydrated: false,
         currentQuestion: 0,
         answers: {},
         hasStarted: false,
@@ -66,7 +69,7 @@ const useQuizStore = create<QuizState>()(
               totalMDDScore: 0,
             },
             totalRating: 0,
-            completedAt: undefined
+            completedAt: undefined,
           }),
         setHasStarted: (hasStarted: boolean) => set({ hasStarted }),
         setHasCompleted: (hasCompleted: boolean) =>
@@ -74,9 +77,14 @@ const useQuizStore = create<QuizState>()(
             hasCompleted,
             completedAt: state.completedAt ?? new Date()
           })),
+        setHasHydrated: (v) => set({ hasHydrated: v }),
       }),
       {
         name: QUIZ_STORAGE,
+        onRehydrateStorage: () => (state) => {
+          // 🧊 Mark store as hydrated once persistence has loaded
+          state?.setHasHydrated(true);
+        },
       }
     )
   )

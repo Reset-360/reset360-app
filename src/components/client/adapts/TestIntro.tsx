@@ -170,7 +170,7 @@ const TestIntro = () => {
         </div>
       </Card>
 
-      <div className="text-center" data-aos="fade-up" data-aos-delay="900">
+      <div className="text-center" data-aos="fade-down" data-aos-delay="900">
         {/* ▶️ Start button */}
         <Button
           onClick={handleStart}
