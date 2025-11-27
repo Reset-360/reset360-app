@@ -28,7 +28,7 @@ export default function ClientDashboardPage() {
         Here’s a quick overview of your recent activity and progress.
       </p>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-6 hidden">
         <div className="bg-white shadow rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-violet-600 mb-2">
             ADAPTS Score

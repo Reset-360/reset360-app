@@ -28,10 +28,9 @@ const QuestionSlideComponent: React.FC<QuestionSlideProps> = ({
   onAnswerChange,
 }) => {
   return (
-    <div className="keen-slider__slide flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       <Card className="w-full p-8 md:p-12 bg-primary/10 shadow border-border/40">
         <div className="space-y-8">
-
           {/* 🔢 Question header */}
           <div className="flex gap-4">
             <span className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
@@ -68,7 +67,6 @@ const QuestionSlideComponent: React.FC<QuestionSlideProps> = ({
               );
             })}
           </RadioGroup>
-
         </div>
       </Card>
     </div>
