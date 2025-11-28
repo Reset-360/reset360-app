@@ -121,7 +121,7 @@ const ResumeAssessment: React.FC<ResumeAssessmentProps> = ({
           </Button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="">
           <Button
             onClick={onBackToHome}
             variant={'ghost'}

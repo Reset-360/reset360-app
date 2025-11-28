@@ -24,7 +24,7 @@ export function TScoreGauge({
   const position = score > 98 ? 98 : score;
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 w-full h-full">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
