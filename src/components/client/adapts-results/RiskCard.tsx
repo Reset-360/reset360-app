@@ -17,7 +17,7 @@ const RiskCard: React.FC<RiskCardProps> = ({ riskLevel, description, completedAt
   const riskClasses = getRiskAccentClasses(riskLevel);
 
   return (
-    <Card className={clsx('shadow-sm border', riskClasses)}>
+    <Card className={clsx('shadow-sm border', riskClasses, 'w-full h-full')}>
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div>
