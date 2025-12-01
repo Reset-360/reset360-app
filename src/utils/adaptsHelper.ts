@@ -7,7 +7,7 @@ import TeacherQuestions from '@/constants/adapts/TeacherQuestions';
 import YoungAdultQuestions from '@/constants/adapts/YoungAdultQuestions';
 
 import moment from 'moment';
-import { Factor, Question, SubScaleScores, tScoreResult } from '@/types/adapts';
+import { EAssessmentType, ERiskBand, ERiskLevel, Factor, Question, SubScaleScores, tScoreResult } from '@/types/adapts';
 
 /**
  * 🎂 Compute age from birthdate using Moment.js
@@ -64,6 +64,39 @@ export function getQuestionsForProfile(user: IUser, clientProfile: IClient) {
 }
 
 /**
+ * 🎯 Returns the appropriate assessment type based on user role and client segment.
+ *
+ * @param {Object} user - The current user object
+ * @param {Object} clientProfile - The client profile object
+ * @returns {string} assessmentType - The selected assessment type code
+ */
+export function getAssessmentType(user: IUser, clientProfile: IClient): EAssessmentType {
+  // 📝 Default to student assessment type
+  let assessmentType = EAssessmentType.ADAPTS_S;
+
+  // 👤 Check if user exists, has a profile, and role is CLIENT
+  if (user && clientProfile && user?.role === EUserRole.CLIENT) {
+    // 🔀 Switch based on client segment type
+    switch (clientProfile.segment) {
+      case EClientSegment.PARENT:
+        assessmentType = EAssessmentType.ADAPTS_P; // 👪 Parent-specific assessment
+        break;
+      case EClientSegment.TEACHER:
+        assessmentType = EAssessmentType.ADAPTS_T; // 📚 Teacher-specific assessment
+        break;
+      case EClientSegment.INDIVIDUAL:
+        assessmentType = EAssessmentType.ADAPTS_C; // 🧑 College/young adult-specific assessment
+        break;
+      default:
+        // ❓ Fallback remains ADAPTS-S
+        break;
+    }
+  }
+
+  return assessmentType;
+}
+
+/**
  * 📊 Estimate a T-score and provide a risk band with recommendations.
  *
  * @param totalRating - Raw total score from the assessment
@@ -91,16 +124,16 @@ export function estimateTscore(totalRating: number, clientProfile: IClient): tSc
   );
 
   // 🎨 Categorize into T-score ranges
-  let tScoreCategory = "";
-  let riskLevel = "";
-  let riskBand = "";
-  let description = "";
+  let tScoreCategory;
+  let riskLevel;
+  let riskBand;
+  let description;
   let recommendations: string[] = [];
 
   if (adjustedTScore >= 70) {
     tScoreCategory = "T > 70";
-    riskBand = "high";
-    riskLevel = "High Risk";
+    riskBand = ERiskBand.high;
+    riskLevel = ERiskLevel.high;
     description =
       "Your responses reflect significantly elevated emotional distress, which may impact daily functioning or relationships.";
     recommendations = [
@@ -112,8 +145,8 @@ export function estimateTscore(totalRating: number, clientProfile: IClient): tSc
     ];
   } else if (adjustedTScore >= 65) {
     tScoreCategory = "T = 65–69";
-    riskLevel = "Moderate Risk";
-    riskBand = "moderate";
+    riskLevel = ERiskLevel.moderate;
+    riskBand = ERiskBand.moderate;
     description =
       "Your emotional indicators are moderately elevated, suggesting recurring stress patterns or difficulty regulating certain emotional triggers.";
 
@@ -126,8 +159,8 @@ export function estimateTscore(totalRating: number, clientProfile: IClient): tSc
     ];
   } else {
     tScoreCategory = "T < 65";
-    riskLevel = "Low Risk";
-    riskBand = "low";
+    riskLevel = ERiskLevel.low;
+    riskBand = ERiskBand.low;
     description =
       "Your responses fall within typical emotional ranges. You appear to have a stable emotional baseline with manageable stress levels.";
 

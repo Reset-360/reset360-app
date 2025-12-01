@@ -23,6 +23,7 @@ export enum EMaritalStatus {
 }
 
 export interface IClient {
+  _id?: string;
   ref?: string;
   userId?: string;
   firstName: string;

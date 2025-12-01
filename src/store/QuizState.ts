@@ -12,13 +12,16 @@ interface QuizState {
   totalRating: number;
   totalScore: Scores;  
   totalSubScaleScore: TotalSubScaleScore;
-  completedAt?: Date;
+  completedAt?: string;
+  startedAt?: string;
   hasHydrated: boolean;
   setHasHydrated: (v: boolean) => void;
   setCurrentQuestion: (index: number) => void;
   setAnswer: (questionId: number, value: number) => void;
   setHasStarted: (hasStarted: boolean) => void;
   setHasCompleted: (hasCompleted: boolean) => void;
+  setStartedAt: (startedAt: string) => void;
+  setCompletedAt: (completedAt: string) => void;
   setTotalRating: (rating: number) => void;
   setTotalSubScaleScore: (totalSubScaleScore: TotalSubScaleScore) => void;
   setTotalScore: (totalSubScore: Scores) => void;
@@ -69,14 +72,13 @@ const useQuizStore = create<QuizState>()(
               totalMDDScore: 0,
             },
             totalRating: 0,
+            startedAt: undefined,
             completedAt: undefined,
           }),
         setHasStarted: (hasStarted: boolean) => set({ hasStarted }),
-        setHasCompleted: (hasCompleted: boolean) =>
-          set((state) => ({
-            hasCompleted,
-            completedAt: state.completedAt ?? new Date()
-          })),
+        setHasCompleted: (v) => set({ hasCompleted: v }),
+        setStartedAt: (v) => set({ startedAt: v }),
+        setCompletedAt: (v) => set({ completedAt: v }),
         setHasHydrated: (v) => set({ hasHydrated: v }),
       }),
       {

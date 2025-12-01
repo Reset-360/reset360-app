@@ -1,3 +1,22 @@
+export enum EAssessmentType {
+  ADAPTS_S = "ADAPTS-S",
+  ADAPTS_P = "ADAPTS-P",
+  ADAPTS_T = "ADAPTS-T",
+  ADAPTS_C = "ADAPTS-C",
+}
+
+export enum ERiskBand {
+  low = "low",
+  moderate = "moderate",
+  high = "high",
+}
+
+export enum ERiskLevel {
+  low = "Low Risk",
+  moderate = "Moderate Risk",
+  high = "High Risk",
+}
+
 // 🏷️ Define all possible factor values
 export type Factor =
   | "MDD"   // 🌧️ Major Depressive Disorder
@@ -33,11 +52,11 @@ export interface TotalSubScaleScore {
   MDD: number; // 🌧️ Major Depressive Disorder
 }
 
-export const defaultRiskProfile = {
+export const defaultRiskProfile: tScoreResult = {
   adjustedTScore: 0,
   tScoreCategory: "T < 65", // 📊 Default T-score band
-  riskLevel: "Low Risk",    // ✅ Overall risk level
-  riskBand: "low",          // 🟢 Risk band identifier
+  riskLevel: ERiskLevel.low,    // ✅ Overall risk level
+  riskBand: ERiskBand.low,          // 🟢 Risk band identifier
   description:
     "Your responses fall within typical emotional ranges. You appear to have a stable emotional baseline with manageable stress levels.",
 
@@ -53,8 +72,23 @@ export const defaultRiskProfile = {
 export type tScoreResult = {
   adjustedTScore: number,
   tScoreCategory: string;
-  riskLevel: string;
-  riskBand: string;
+  riskLevel: ERiskLevel;
+  riskBand: ERiskBand;
   description: string;
   recommendations: string[];
 };
+
+export interface AssessmentData {
+  userId: string; // assuming MongoDB ObjectId stored as string
+  type: EAssessmentType; // type of assessment
+  totalRating: number; // overall rating score
+  tScore: number; // adjusted T-score
+  tScoreSummary: tScoreResult;
+  riskBand: ERiskBand; // risk band classification
+  riskLevel: ERiskLevel; // risk level classification
+  answers: Record<number, number>; // replace `any` with a more specific type if known
+  subScales: SubScaleScores; // replace `any` with a more specific type if known
+  totalSubScalesScore: Scores; // total score from subscales
+  startedAt: string; // depending on how you store dates
+  submittedAt: string; // formatted date string
+}

@@ -15,14 +15,18 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import {
   calculateTotalScores,
   estimateTscore,
+  getAssessmentType,
   getQuestionsForProfile,
 } from '@/utils/adaptsHelper';
 
-import { Factor, Scores } from '@/types/adapts';
+import { AssessmentData, Factor, Scores } from '@/types/adapts';
 import { QuestionSlide } from '@/components/client/adapts/QuestionSlide';
 import ResumeAssessment from '@/components/client/adapts/ResumeAssessment';
 import moment from 'moment';
 import { QuestionStepper } from '@/components/client/adapts/QuestionStepper';
+import { saveAssessmentResult } from '@/services/adaptsService';
+
+const dbDateFormat = 'YYYY-MM-DD HH:mm';
 
 const AssessmentPage: React.FC = () => {
   const router = useRouter();
@@ -36,11 +40,13 @@ const AssessmentPage: React.FC = () => {
   const answers = useQuizStore((s) => s.answers);
   const hasHydrated = useQuizStore((s) => s.hasHydrated);
   const hasStarted = useQuizStore((s) => s.hasStarted);
+  const startedAt = useQuizStore((s) => s.startedAt);
   const hasCompleted = useQuizStore((s) => s.hasCompleted);
 
   // 🔧 Quiz store: setters
   const setHasStarted = useQuizStore((s) => s.setHasStarted);
   const setHasCompleted = useQuizStore((s) => s.setHasCompleted);
+  const setCompletedAt = useQuizStore((s) => s.setCompletedAt);
   const setCurrentQuestion = useQuizStore((s) => s.setCurrentQuestion);
   const setAnswer = useQuizStore((s) => s.setAnswer);
   const setTotalScore = useQuizStore((s) => s.setTotalScore);
@@ -137,7 +143,9 @@ const AssessmentPage: React.FC = () => {
   }, [currentQuestion, setCurrentQuestion]);
 
   // ▶️ Next / Submit
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback( async () => {
+    if (!user) return
+    
     // 👉 Move to next question
     if (!isLast) {
       setDirection(1);
@@ -151,20 +159,35 @@ const AssessmentPage: React.FC = () => {
       const totalRating = Object.values(answers).reduce((a, b) => a + b, 0);
       const totalScore: Scores = calculateTotalScores(subScales);
       const tScore = estimateTscore(totalRating, clientProfile);
+      const type = getAssessmentType(user, clientProfile)
 
       // 💾 Persist computed scores to store
       setTotalRating(totalRating);
       setTotalScore(totalScore);
       setTotalSubScaleScore(subScales);
-      setHasCompleted(true);
+      setCompletedAt(moment().format(dbDateFormat))
 
-      console.log('🧩 Answers:', answers);
-      console.log('📊 Subscales:', subScales);
-      console.log('🏁 Total Rating:', totalRating);
-      console.log('🏁 Total Scores:', totalScore);
-      console.log('🧮 T Score:', tScore);
+      const assessmentData: AssessmentData = {
+        userId: user._id,
+        type,
+        totalRating,
+        tScore: tScore.adjustedTScore,
+        tScoreSummary: tScore,
+        riskBand: tScore.riskBand,
+        riskLevel: tScore.riskLevel,
+        answers,
+        subScales,
+        totalSubScalesScore: totalScore,
+        startedAt: startedAt ?? '',
+        submittedAt: moment().format(dbDateFormat)
+      }
 
-      router.replace('/adapts/result');
+      const data = await saveAssessmentResult(assessmentData);
+
+      if (data) {
+        setHasCompleted(true)
+        router.replace('/adapts/result');
+      }
     }
   }, [
     isLast,
@@ -186,6 +209,7 @@ const AssessmentPage: React.FC = () => {
 
       if (!hasStarted) {
         setHasStarted(true);
+        setStartedAt(moment().format(dbDateFormat))
       }
     },
     [setAnswer, hasStarted, setHasStarted]
