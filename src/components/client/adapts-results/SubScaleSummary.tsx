@@ -53,7 +53,7 @@ export const SubscaleSummary: React.FC<SubscaleSummaryProps> = ({
                 key={key}
                 className="bg-white rounded-md border border-border/60 p-3 space-y-2"
               >
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2 md:flex-wrap">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">{meta.label}</span>
                     <span className="text-[11px] uppercase tracking-wide text-muted-foreground">

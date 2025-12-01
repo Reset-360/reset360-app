@@ -14,12 +14,14 @@ import {
 import useQuizStore from '@/store/QuizState';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import moment from 'moment';
 
 const TestIntro = () => {
   const router = useRouter();
 
   // 🧑‍💻 quiz state
   const setHasStarted = useQuizStore((s) => s.setHasStarted);
+  const setStartedAt = useQuizStore((s) => s.setStartedAt);
 
   // 🚀 Initialize AOS animation library
   useEffect(() => {
@@ -29,6 +31,8 @@ const TestIntro = () => {
   // ▶️ Start the assessment
   const handleStart = useCallback(() => {
     setHasStarted(true);
+    setStartedAt(moment().format('YYYY-MM-DD HH:mm'))
+
   }, [setHasStarted]);
 
   // ↩️ Go back (dashboard or root)

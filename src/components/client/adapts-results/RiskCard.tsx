@@ -11,7 +11,7 @@ import RiskIcon from './RiskIcon';
 type RiskCardProps = {
   riskLevel: string;
   description: string;
-  completedAt?: Date;
+  completedAt?: string;
 };
 const RiskCard: React.FC<RiskCardProps> = ({ riskLevel, description, completedAt }) => {
   const riskClasses = getRiskAccentClasses(riskLevel);
