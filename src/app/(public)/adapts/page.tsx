@@ -25,8 +25,7 @@ import ResumeAssessment from '@/components/client/adapts/ResumeAssessment';
 import moment from 'moment';
 import { QuestionStepper } from '@/components/client/adapts/QuestionStepper';
 import { saveAssessmentResult } from '@/services/adaptsService';
-
-const dbDateFormat = 'YYYY-MM-DD HH:mm';
+import { dbDateFormat } from '@/constants/common';
 
 const AssessmentPage: React.FC = () => {
   const router = useRouter();
@@ -209,7 +208,6 @@ const AssessmentPage: React.FC = () => {
 
       if (!hasStarted) {
         setHasStarted(true);
-        setStartedAt(moment().format(dbDateFormat))
       }
     },
     [setAnswer, hasStarted, setHasStarted]

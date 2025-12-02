@@ -79,6 +79,7 @@ export type tScoreResult = {
 };
 
 export interface AssessmentData {
+  _id?: string;
   userId: string; // assuming MongoDB ObjectId stored as string
   type: EAssessmentType; // type of assessment
   totalRating: number; // overall rating score

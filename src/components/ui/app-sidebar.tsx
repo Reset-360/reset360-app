@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { logoutUser } from '@/services/authService';
 import useAuthStore from '@/store/AuthState';
+import useQuizStore from '@/store/QuizState';
 import {
   Calendar,
   Home,
@@ -56,6 +57,7 @@ const items = [
 export function AppSidebar() {
   const router = useRouter();
   const clearUser = useAuthStore((state) => state.clearUser);
+  const resetQuiz = useQuizStore(state => state.resetQuiz);
 
   // 🔒 Logging out user and redirecting to login, regardless of outcome
   const logout = async () => {
@@ -66,6 +68,7 @@ export function AppSidebar() {
     }
 
     clearUser(); // 🧹 Clear user data from local state
+    resetQuiz(); // 🧹 Clear quiz state
     router.replace('/login'); // 🚪 Redirect to login page
   };
 

@@ -1,0 +1,1 @@
+export const dbDateFormat = 'YYYY-MM-DD HH:mm';

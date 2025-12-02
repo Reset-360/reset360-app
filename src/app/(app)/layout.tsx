@@ -18,14 +18,15 @@ export default function ClientRootLayout({
   const user = useAuthStore(state => state.user);
   const { redirectByRole } = useRoleRedirect();
 
+  const isAuth = isAuthenticated();
+
   useEffect(() => {
-    console.log('isauth', isAuthenticated());
-    if (isAuthenticated()) {
+    if (isAuth) {
       redirectByRole(user?.role);
     } else {
       router.replace('/login');
     }
-  }, [router, redirectByRole, user?.role]);
+  }, [router, redirectByRole, user?.role, isAuth]);
 
   if (!user) {
     return (

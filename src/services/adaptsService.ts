@@ -18,3 +18,21 @@ export const saveAssessmentResult = async (request: AssessmentData) => {
     throw error.response?.data || { message: 'Save failed' };
   }
 }
+
+
+/**
+ * Fetch completed ADAPTS assessment by user id
+ *
+ * @param {string} userId
+ * @return {*} 
+ */
+export const getAssessmentByUserId = async (userId: string) => {
+  try {
+    const { data } = await api.get(`/assessments/by-userid/${userId}`);
+
+    return data;
+  } catch (error: any) {
+    console.log(error)
+    throw error.response?.data || { message: 'Save failed' };
+  }
+}
