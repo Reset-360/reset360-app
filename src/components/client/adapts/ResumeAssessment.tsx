@@ -121,11 +121,11 @@ const ResumeAssessment: React.FC<ResumeAssessmentProps> = ({
           </Button>
         </div>
 
-        <div className="">
+        <div className="flex flex-col">
           <Button
             onClick={onBackToHome}
-            variant={'ghost'}
-            className="flex-1 h-12"
+            variant={'link'}
+            className="flex-1 h-12 text-slate-900"
           >
             <Home className="w-5 h-5 mr-2" />
             Back to Dashboard

@@ -23,4 +23,22 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Handle invalid/expired token responses
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear token from storage
+      localStorage.removeItem(ACCESS_TOKEN);
+
+      // Redirect to login page
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default api;
