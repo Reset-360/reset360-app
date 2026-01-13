@@ -7,7 +7,7 @@ import useQuizStore from '@/store/QuizState';
 import useAuthStore from '@/store/AuthState';
 
 import { estimateTscore, getQuestionsForProfile } from '@/utils/adaptsHelper';
-import { defaultRiskProfile, tScoreResult } from '@/types/adapts';
+import { defaultRiskProfile, Scores, TotalSubScaleScore, tScoreResult } from '@/types/adapts';
 
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
@@ -24,11 +24,14 @@ const DashboardResult = () => {
   const user = useAuthStore((s) => s.user);
   const clientProfile = useAuthStore((s) => s.clientProfile);
 
-  const hasCompleted = useQuizStore((s) => s.hasCompleted);
-  const completedAt = useQuizStore((s) => s.completedAt);
-  const totalRating = useQuizStore((s) => s.totalRating);
-  const totalSubScaleScore = useQuizStore((s) => s.totalSubScaleScore);
-console.log('totalRating', totalRating)
+  const assessment = useQuizStore((s) => s.assessment)
+
+  const hasCompleted = assessment?.submittedAt ? true : false;
+  const completedAt = assessment?.submittedAt
+  const totalRating = assessment?.totalRating || 0
+  const totalSubScaleScore = assessment?.totalSubScalesScore as Scores
+  const subScaleScore = assessment?.subScales as TotalSubScaleScore
+
   // 📝 Load questions based on profile
   const questions = useMemo(() => {
     return user && clientProfile
@@ -95,14 +98,14 @@ console.log('totalRating', totalRating)
           </div>
 
           <MentalHealthRadialProfile
-            totalSubScaleScore={totalSubScaleScore}
+            totalSubScaleScore={subScaleScore}
             questions={questions}
           />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
           <SubscaleSummary
-            totalSubScaleScore={totalSubScaleScore}
+            totalSubScaleScore={subScaleScore}
             questions={questions}
           />
 

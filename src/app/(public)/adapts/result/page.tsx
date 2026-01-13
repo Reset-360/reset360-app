@@ -7,7 +7,7 @@ import useQuizStore from '@/store/QuizState';
 import useAuthStore from '@/store/AuthState';
 
 import { estimateTscore, getQuestionsForProfile } from '@/utils/adaptsHelper';
-import { defaultRiskProfile, tScoreResult } from '@/types/adapts';
+import { defaultRiskProfile, Scores, TotalSubScaleScore, tScoreResult } from '@/types/adapts';
 
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
@@ -19,6 +19,7 @@ import { RecommendationsList } from '@/components/client/adapts-results/Recommen
 import MentalHealthRadialProfile from '@/components/client/adapts-results/MentalHealthRadialProfile';
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
+import useEntitlementStore from '@/store/EntitlementState';
 
 const ResultsPage = () => {
   const router = useRouter();
@@ -26,10 +27,13 @@ const ResultsPage = () => {
   const user = useAuthStore((s) => s.user);
   const clientProfile = useAuthStore((s) => s.clientProfile);
 
-  const hasCompleted = useQuizStore((s) => s.hasCompleted);
-  const completedAt = useQuizStore((s) => s.completedAt);
-  const totalRating = useQuizStore((s) => s.totalRating);
-  const totalSubScaleScore = useQuizStore((s) => s.totalSubScaleScore);
+  const assessment = useQuizStore((s) => s.assessment)
+
+  const hasCompleted = assessment?.submittedAt ? true : false;
+  const completedAt = assessment?.submittedAt
+  const totalRating = assessment?.totalRating || 0
+  const totalSubScaleScore = assessment?.totalSubScalesScore as Scores
+  const subScaleScore = assessment?.subScales as TotalSubScaleScore
 
   // 📝 Load questions based on profile
   const questions = useMemo(() => {
@@ -99,9 +103,9 @@ const ResultsPage = () => {
           />
         </div>
 
-        <MentalHealthRadialProfile totalSubScaleScore={totalSubScaleScore} questions={questions} />
+        <MentalHealthRadialProfile totalSubScaleScore={subScaleScore} questions={questions} />
 
-        <SubscaleSummary totalSubScaleScore={totalSubScaleScore} questions={questions} />
+        <SubscaleSummary totalSubScaleScore={subScaleScore} questions={questions} />
 
         <RecommendationsList
           recommendations={estimatedTScore.recommendations}

@@ -1,4 +1,4 @@
-import { Factor, Question } from '@/types/adapts';
+import { Factor, Question, Scores, TotalSubScaleScore } from '@/types/adapts';
 import React, { useMemo } from 'react';
 
 import { Card } from '@/components/ui/card';
@@ -20,7 +20,7 @@ import {
 } from 'recharts';
 
 type MentalHealthRadialProfileProps = {
-  totalSubScaleScore: Record<Factor, number>;
+  totalSubScaleScore: TotalSubScaleScore;
   questions: Question[];
 };
 
