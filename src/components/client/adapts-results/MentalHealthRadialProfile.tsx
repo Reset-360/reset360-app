@@ -35,6 +35,7 @@ const MentalHealthRadialProfile: React.FC<MentalHealthRadialProfileProps> = ({
   totalSubScaleScore,
   questions,
 }) => {
+  console.log(totalSubScaleScore)
   /**
    * 📊 Count how many items belong to each factor
    *    e.g. { MDD: 10, GAD: 8, ... }

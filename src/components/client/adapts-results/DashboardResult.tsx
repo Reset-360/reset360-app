@@ -1,31 +1,22 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-import useQuizStore from '@/store/QuizState';
+import React, { useEffect, useState } from 'react';
 import useAuthStore from '@/store/AuthState';
 
-import { estimateTscore, getQuestionsForProfile } from '@/utils/adaptsHelper';
-import { defaultRiskProfile, Scores, TotalSubScaleScore, tScoreResult } from '@/types/adapts';
+import { estimateTscore, getQuestionsByType } from '@/utils/adaptsHelper';
+import { defaultRiskProfile, IAssessment, Scores, TotalSubScaleScore, tScoreResult } from '@/types/adapts';
 
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 import { TScoreGauge } from '@/components/client/adapts-results/TScoreGauge';
 import RiskCard from '@/components/client/adapts-results/RiskCard';
-import { EmotionalProfileHeader } from '@/components/client/adapts-results/EmotionalProfileHeader';
 import { SubscaleSummary } from '@/components/client/adapts-results/SubScaleSummary';
 import { RecommendationsList } from '@/components/client/adapts-results/RecommendationsList';
 import MentalHealthRadialProfile from '@/components/client/adapts-results/MentalHealthRadialProfile';
 
-const DashboardResult = () => {
-  const router = useRouter();
-
-  const user = useAuthStore((s) => s.user);
+const DashboardResult = ({ assessment } : { assessment : IAssessment }) => {
   const clientProfile = useAuthStore((s) => s.clientProfile);
-
-  const assessment = useQuizStore((s) => s.assessment)
-
+  
   const hasCompleted = assessment?.submittedAt ? true : false;
   const completedAt = assessment?.submittedAt
   const totalRating = assessment?.totalRating || 0
@@ -33,33 +24,15 @@ const DashboardResult = () => {
   const subScaleScore = assessment?.subScales as TotalSubScaleScore
 
   // 📝 Load questions based on profile
-  const questions = useMemo(() => {
-    return user && clientProfile
-      ? getQuestionsForProfile(user, clientProfile)
-      : [];
-  }, [user, clientProfile]);
+  const questions = getQuestionsByType(assessment.type)
 
   // 🟢 Track whether component mounted (hydration finished)
   const [mounted, setMounted] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
 
   const [estimatedTScore, setEstimatedTScore] =
     useState<tScoreResult>(defaultRiskProfile);
 
   useEffect(() => setMounted(true), []);
-
-  // 🔐 Redirect if not logged in or has not attempted/completed assessment
-  useEffect(() => {
-    if (mounted && (!user || !hasCompleted)) {
-      setRedirecting(true);
-
-      if (!user) {
-        router.replace('/login');
-      } else {
-        router.replace('/adapts');
-      }
-    }
-  }, [mounted, user, hasCompleted, router]);
 
   useEffect(() => {
     if (mounted && clientProfile) {
@@ -68,7 +41,7 @@ const DashboardResult = () => {
     }
   }, [mounted, clientProfile]);
 
-  if (!mounted || redirecting) {
+  if (!mounted) {
     return (
       <div className="flex items-center justify-center h-screen">
         <LoadingSpinner />

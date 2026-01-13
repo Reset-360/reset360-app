@@ -77,7 +77,7 @@ export const submitAssessmentResult = async (id: string, request: SubmitAssessme
 
 
 /**
- * Fetch completed ADAPTS assessment(s) by user id
+ * Fetch all ADAPTS assessment(s) by user id
  *
  * @param {string} userId
  * @return {*} 
@@ -94,7 +94,7 @@ export const getAssessmentByUserId = async (userId: string) => {
 }
 
 /**
- * Fetch completed ADAPTS assessment by user id
+ * Fetch active ADAPTS assessment by user id
  *
  * @param {string} userId
  * @return {*} 
@@ -102,6 +102,23 @@ export const getAssessmentByUserId = async (userId: string) => {
 export const getActiveAssessmentByUserId = async (userId: string) => {
   try {
     const { data } = await api.get(`/assessments/user/${userId}/active`);
+
+    return data;
+  } catch (error: any) {
+    console.log(error)
+    throw error.response?.data || { message: 'Fetch failed' };
+  }
+}
+
+/**
+ * Fetch latest completed ADAPTS assessment by user id
+ *
+ * @param {string} userId
+ * @return {*} 
+ */
+export const getLatestAssessment = async (userId: string) => {
+  try {
+    const { data } = await api.get(`/assessments/user/${userId}/latest`);
 
     return data;
   } catch (error: any) {

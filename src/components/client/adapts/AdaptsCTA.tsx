@@ -17,7 +17,7 @@ import { ArrowRight, ClipboardList, Sparkles, Ticket } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export const AdaptsCTA = () => {
+export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
   const router = useRouter();
 
   const user = useAuthStore((s) => s.user);
@@ -31,7 +31,7 @@ export const AdaptsCTA = () => {
   const hasAvailableRedeemedCode = useEntitlementState(
     (s) => s.hasAvailableRedeemedCode
   );
-  
+
   const setHasAvailableRedeemedCode = useEntitlementState(
     (s) => s.setHasAvailableRedeemedCode
   );
@@ -77,8 +77,6 @@ export const AdaptsCTA = () => {
     }
   };
 
-  
-
   const onTakeAssessment = () => {
     if (
       currentEntitlement?.status == EEntitlementStatus.AVAILABLE ||
@@ -91,15 +89,17 @@ export const AdaptsCTA = () => {
   };
 
   return (
-    <Card className="backdrop-blur-sm bg-gradient-to-br from-card/90 to-primary/5 border-primary/20 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-card)] transition-all duration-300">
-      <CardHeader>
+    <Card className="backdrop-blur-sm bg-gradient-to-br from-card/90 to-primary/5 border-primary/20 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-card)] transition-all duration-300 mb-6 xl:w-1/2">
+      <CardHeader className="">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-2xl mb-2 flex items-center gap-2">
+            <CardTitle className="text-2xl flex items-center gap-2">
               <ClipboardList className="w-6 h-6 text-primary" />
               Take Your ADAPTS Assessment
             </CardTitle>
-            <CardDescription className="text-base">
+            <CardDescription
+              className={clsx('text-base', !showDetails && 'hiddenl')}
+            >
               Anxiety Depression Assessment for Parents Teachers and Students
             </CardDescription>
           </div>
@@ -108,7 +108,8 @@ export const AdaptsCTA = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+
+      <CardContent className={clsx('space-y-4', !showDetails && 'hidden')}>
         <p className="text-muted-foreground">
           ADAPTS is a 50-item self-report questionnaire that measures the
           presence and frequency of depression and anxiety symptoms in children,
