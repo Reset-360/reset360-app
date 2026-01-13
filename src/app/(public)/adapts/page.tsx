@@ -16,16 +16,17 @@ import {
   calculateTotalScores,
   estimateTscore,
   getAssessmentType,
-  getQuestionsForProfile,
+  getQuestionsByType
 } from '@/utils/adaptsHelper';
 
-import { AssessmentData, Factor, Scores } from '@/types/adapts';
+import { IAssessment, Factor, Scores, SubmitAssessmentData } from '@/types/adapts';
 import { QuestionSlide } from '@/components/client/adapts/QuestionSlide';
 import ResumeAssessment from '@/components/client/adapts/ResumeAssessment';
 import moment from 'moment';
 import { QuestionStepper } from '@/components/client/adapts/QuestionStepper';
-import { saveAssessmentResult } from '@/services/adaptsService';
+import { saveAssessmentResult, submitAssessmentResult } from '@/services/adaptsService';
 import { dbDateFormat } from '@/constants/common';
+import useEntitlementState from '@/store/EntitlementState';
 
 const AssessmentPage: React.FC = () => {
   const router = useRouter();
@@ -34,23 +35,21 @@ const AssessmentPage: React.FC = () => {
   const user = useAuthStore((s) => s.user);
   const clientProfile = useAuthStore((s) => s.clientProfile);
 
+  // Entitlement : Get type of question based on Entitlement
+  const currentEntitlement = useEntitlementState((s) => s.currentEntitlement)
+
   // 🧠 Quiz store: core state
-  const currentQuestion = useQuizStore((s) => s.currentQuestion);
-  const answers = useQuizStore((s) => s.answers);
+  const assessment = useQuizStore((s) => s.assessment);
+  const assessmentId = useQuizStore((s) => s.assessmentId);
+  const currentQuestion = useQuizStore((s) => s.currentQuestionIndex);
+  const answers = useQuizStore((s) => s.answersDraft)
   const hasHydrated = useQuizStore((s) => s.hasHydrated);
   const hasStarted = useQuizStore((s) => s.hasStarted);
-  const startedAt = useQuizStore((s) => s.startedAt);
-  const hasCompleted = useQuizStore((s) => s.hasCompleted);
 
   // 🔧 Quiz store: setters
-  const setHasStarted = useQuizStore((s) => s.setHasStarted);
-  const setHasCompleted = useQuizStore((s) => s.setHasCompleted);
-  const setCompletedAt = useQuizStore((s) => s.setCompletedAt);
-  const setCurrentQuestion = useQuizStore((s) => s.setCurrentQuestion);
   const setAnswer = useQuizStore((s) => s.setAnswer);
-  const setTotalScore = useQuizStore((s) => s.setTotalScore);
-  const setTotalRating = useQuizStore((s) => s.setTotalRating);
-  const setTotalSubScaleScore = useQuizStore((s) => s.setTotalSubScaleScore);
+  const setCurrentQuestion = useQuizStore((s) => s.setCurrentQuestionIndex)
+
   const resetQuiz = useQuizStore((s) => s.resetQuiz);
 
   // 🚦 Local UI state
@@ -63,14 +62,14 @@ const AssessmentPage: React.FC = () => {
 
   // 📝 Load questions based on profile
   const questions = useMemo(() => {
-    return user && clientProfile
-      ? getQuestionsForProfile(user, clientProfile)
+    return currentEntitlement && clientProfile
+      ? getQuestionsByType(currentEntitlement.type)
       : [];
-  }, [user, clientProfile]);
+  }, [currentEntitlement, clientProfile]);
 
   // 📊 Derived quiz metadata
   const totalQuestions = questions.length;
-  const answeredCount = Object.keys(answers).length;
+  const answeredCount = Object.keys(answers || {}).length;
   const isComplete = totalQuestions > 0 && answeredCount === totalQuestions;
   const isLast = totalQuestions > 0 && currentQuestion === totalQuestions - 1;
 
@@ -87,11 +86,11 @@ const AssessmentPage: React.FC = () => {
       return;
     }
 
-    if (hasHydrated && hasCompleted) {
+    if (hasHydrated && assessment?.submittedAt) {
       setRedirecting(true);
       router.replace('/adapts/result');
     }
-  }, [user, hasCompleted, router, hasHydrated]);
+  }, [user, assessment?.submittedAt, router, hasHydrated]);
 
   // 💾 Detect if we should show resume prompt on load
   useEffect(() => {
@@ -99,13 +98,13 @@ const AssessmentPage: React.FC = () => {
 
     // If there are saved answers and the test is not completed,
     // this looks like a returning session ➜ allow resume prompt.
-    if (hasStarted && answeredCount > 0 && !hasCompleted) {
+    if (hasStarted && answeredCount > 0 && !assessment?.submittedAt) {
       setCanPromptResume(true);
     } else {
       // Fresh session: treat as already "resumed" so we never show the prompt.
       setIsResumed(true);
     }
-  }, [hasHydrated, hasCompleted, hasStarted]); // ⬅️ deliberately NOT depending on answeredCount
+  }, [hasHydrated, hasStarted, assessment?.submittedAt]); // ⬅️ deliberately NOT depending on answeredCount
 
   // 🧮 Compute all subscale totals
   const calculateSubscales = useCallback(() => {
@@ -119,7 +118,7 @@ const AssessmentPage: React.FC = () => {
     };
 
     questions.forEach((q) => {
-      const val = answers[q.id];
+      const val = answers?.[q.id];
       if (typeof val === 'number') {
         base[q.factor] += val;
       }
@@ -142,9 +141,9 @@ const AssessmentPage: React.FC = () => {
   }, [currentQuestion, setCurrentQuestion]);
 
   // ▶️ Next / Submit
-  const handleNext = useCallback( async () => {
-    if (!user) return
-    
+  const handleNext = useCallback(async () => {
+    if (!user || !assessmentId) return
+
     // 👉 Move to next question
     if (!isLast) {
       setDirection(1);
@@ -153,38 +152,27 @@ const AssessmentPage: React.FC = () => {
     }
 
     // ✅ Submit when complete
-    if (isComplete && clientProfile) {
+    if (isComplete && clientProfile && assessmentId) {
       const subScales = calculateSubscales();
-      const totalRating = Object.values(answers).reduce((a, b) => a + b, 0);
+      const totalRating = Object.values(answers || {}).reduce((a, b) => a + b, 0);
       const totalScore: Scores = calculateTotalScores(subScales);
       const tScore = estimateTscore(totalRating, clientProfile);
-      const type = getAssessmentType(user, clientProfile)
 
-      // 💾 Persist computed scores to store
-      setTotalRating(totalRating);
-      setTotalScore(totalScore);
-      setTotalSubScaleScore(subScales);
-      setCompletedAt(moment().format(dbDateFormat))
-
-      const assessmentData: AssessmentData = {
-        userId: user._id,
-        type,
+      const assessmentResult: SubmitAssessmentData = {
         totalRating,
         tScore: tScore.adjustedTScore,
         tScoreSummary: tScore,
         riskBand: tScore.riskBand,
         riskLevel: tScore.riskLevel,
-        answers,
+        answers: answers || {},
         subScales,
         totalSubScalesScore: totalScore,
-        startedAt: startedAt ?? '',
-        submittedAt: moment().format(dbDateFormat)
+        submittedAt: moment().format(dbDateFormat),
       }
 
-      const data = await saveAssessmentResult(assessmentData);
-
+      const data = await submitAssessmentResult(assessmentId, assessmentResult);
+      
       if (data) {
-        setHasCompleted(true)
         router.replace('/adapts/result');
       }
     }
@@ -194,23 +182,15 @@ const AssessmentPage: React.FC = () => {
     answers,
     calculateSubscales,
     clientProfile,
-    router,
-    setTotalRating,
-    setTotalScore,
-    setTotalSubScaleScore,
-    setHasCompleted,
+    router
   ]);
 
   // ✍️ Save answer handler
   const handleAnswerChange = useCallback(
     (questionId: number, value: string) => {
       setAnswer(questionId, Number(value));
-
-      if (!hasStarted) {
-        setHasStarted(true);
-      }
     },
-    [setAnswer, hasStarted, setHasStarted]
+    [setAnswer]
   );
 
   // ⏳ Loading / redirecting state
@@ -249,7 +229,7 @@ const AssessmentPage: React.FC = () => {
 
   const currentQuestionObj = questions[currentQuestion];
   const isCurrentAnswered =
-    currentQuestionObj && answers[currentQuestionObj.id] != null;
+    currentQuestionObj && answers?.[currentQuestionObj.id] != null;
 
   // 🧭 Main assessment UI
   return (
@@ -282,7 +262,7 @@ const AssessmentPage: React.FC = () => {
               <QuestionSlide
                 key={q.id}
                 question={q}
-                answer={answers[q.id]}
+                answer={answers?.[q.id]}
                 isComplete={isComplete}
                 onAnswerChange={handleAnswerChange}
               />

@@ -6,15 +6,25 @@ import { AdaptsCTA } from '@/components/client/adapts/AdaptsCTA';
 import useQuizStore from '@/store/QuizState';
 import DashboardResult from '@/components/client/adapts-results/DashboardResult';
 import { useEffect, useState } from 'react';
-import { getAssessmentByUserId } from '@/services/adaptsService';
+import {
+  getActiveAssessmentByUserId,
+  getAdaptsEntitlementByUserId,
+  getAssessmentByUserId,
+} from '@/services/adaptsService';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { first } from 'lodash';
-import { AssessmentData } from '@/types/adapts';
+import { IAssessment } from '@/types/adapts';
 import { dbDateFormat } from '@/constants/common';
 import moment from 'moment';
+import useEntitlementState from '@/store/EntitlementState';
+import {
+  EEntitlementStatus,
+  IAssessmentEntitlement,
+} from '@/types/entitlement';
 
 /**
  * 1. Fetch user assessments
+ * 1.1 Check if user has entitlements, to allow the test to be taken
  * 2. if theres a completed assessment result, mark state as hasCompleted
  * 3. Show the latest assessment result
  *
@@ -23,47 +33,68 @@ import moment from 'moment';
 export default function ClientDashboardPage() {
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((state) => state.clientProfile);
-  
-  const hasCompleted = useQuizStore((s) => s.hasCompleted);
 
-  // 🔧 Quiz store: setters
-  const setHasStarted = useQuizStore((s) => s.setHasStarted);
-  const setHasCompleted = useQuizStore((s) => s.setHasCompleted);
-  const setStartedAt = useQuizStore((s) => s.setStartedAt);
-  const setCompletedAt = useQuizStore((s) => s.setCompletedAt);
-  const setCurrentQuestion = useQuizStore((s) => s.setCurrentQuestion);
-  const setAnswer = useQuizStore((s) => s.setAnswer);
-  const setTotalScore = useQuizStore((s) => s.setTotalScore);
-  const setTotalRating = useQuizStore((s) => s.setTotalRating);
-  const setTotalSubScaleScore = useQuizStore((s) => s.setTotalSubScaleScore);
-  const resetQuiz = useQuizStore((s) => s.resetQuiz);
-  
+  // 🔧 Quiz store: setters + getters
+  const assessment = useQuizStore((s) => s.assessment);
+  const hydrateFromAssessment = useQuizStore((s) => s.hydrateFromAssessment);
+
+  // Entitlement store
+  const setEntitlements = useEntitlementState((s) => s.setEntitlements);
+  const setCurrentEntitlement = useEntitlementState(
+    (s) => s.setCurrentEntitlement
+  );
+  const setHasAvailableRedeemedCode = useEntitlementState(
+    (s) => s.setHasAvailableRedeemedCode
+  );
+
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAssessment = async () => {
+    const fetchEntitlement = async () => {
       if (!user?._id) return;
 
       try {
-        const data = await getAssessmentByUserId(user._id);
+        const entitlements = await getAdaptsEntitlementByUserId(user._id);
 
-        if (data.length ) {
-          const result = first(data) as AssessmentData;
-          console.log(result)
+        const match = entitlements.find(
+          (e: IAssessmentEntitlement) =>
+            (e.attemptsUsed < e.maxAttempts &&
+              e.source === 'ORG_BULK_CODE' &&
+              e.status === EEntitlementStatus.AVAILABLE) ||
+            EEntitlementStatus.IN_USE
+        );
 
-          setHasCompleted(true)
-          setCompletedAt(moment(result.submittedAt).format(dbDateFormat));
-          setStartedAt(moment(result.startedAt).format(dbDateFormat));
-          setTotalRating(result.totalRating)
+        if (match) {
+          setCurrentEntitlement(match);
+          setHasAvailableRedeemedCode(true);
         }
+
+        setEntitlements(entitlements);
       } catch (error) {
-        console.error('Failed to fetch assessment:', error);
+        console.error('Failed to fetch entitlement:', error);
       } finally {
         setLoading(false);
       }
     };
+    
+    const fetchActiveAssessment = async () => {
+      if (!user?._id) return;
 
-    fetchAssessment();
+      try {
+        const data = await getActiveAssessmentByUserId(user._id);
+        
+        if (data) {
+          hydrateFromAssessment(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch assessment:', error);
+      } finally {
+        setLoading(false)
+      }
+    };
+    
+    fetchEntitlement();
+    fetchActiveAssessment();
   }, [user?._id]);
 
   if (isLoading) {
@@ -86,7 +117,7 @@ export default function ClientDashboardPage() {
         Here’s a quick overview of your recent activity and progress.
       </p>
 
-      {hasCompleted ? <DashboardResult /> : <AdaptsCTA />}
+      {assessment?.submittedAt ? <DashboardResult /> : <AdaptsCTA />}
     </div>
   );
 }

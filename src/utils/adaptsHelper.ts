@@ -7,7 +7,15 @@ import TeacherQuestions from '@/constants/adapts/TeacherQuestions';
 import YoungAdultQuestions from '@/constants/adapts/YoungAdultQuestions';
 
 import moment from 'moment';
-import { EAssessmentType, ERiskBand, ERiskLevel, Factor, Question, SubScaleScores, tScoreResult } from '@/types/adapts';
+import {
+  EAssessmentType,
+  ERiskBand,
+  ERiskLevel,
+  Factor,
+  Question,
+  SubScaleScores,
+  tScoreResult,
+} from '@/types/adapts';
 
 /**
  * 🎂 Compute age from birthdate using Moment.js
@@ -46,10 +54,10 @@ export function getQuestionsForProfile(user: IUser, clientProfile: IClient) {
     // 🔀 Switch based on client segment type
     switch (clientProfile.segment) {
       case EClientSegment.PARENT:
-        questions = ParentQuestions;   // 👪 Parent-specific questions
+        questions = ParentQuestions; // 👪 Parent-specific questions
         break;
       case EClientSegment.TEACHER:
-        questions = TeacherQuestions;  // 📚 Teacher-specific questions
+        questions = TeacherQuestions; // 📚 Teacher-specific questions
         break;
       case EClientSegment.INDIVIDUAL:
         questions = YoungAdultQuestions; // 🧑 Young adult-specific questions
@@ -64,13 +72,45 @@ export function getQuestionsForProfile(user: IUser, clientProfile: IClient) {
 }
 
 /**
+ * 🎯 Returns the appropriate set of questions based type
+ *
+ * @param {Object} type - EAssessment type
+ * @returns {Array} questions - The selected set of questions
+ */
+export function getQuestionsByType(type: EAssessmentType) {
+  // 📝 Default to student questions
+  let questions = StudentQuestions;
+
+  // 🔀 Switch based on client segment type
+  switch (type) {
+    case EAssessmentType.ADAPTS_P:
+      questions = ParentQuestions; // 👪 Parent-specific questions
+      break;
+    case EAssessmentType.ADAPTS_T:
+      questions = TeacherQuestions; // 📚 Teacher-specific questions
+      break;
+    case EAssessmentType.ADAPTS_C:
+      questions = YoungAdultQuestions; // 🧑 Young adult-specific questions
+      break;
+    default:
+      // ❓ Fallback remains StudentQuestions
+      break;
+  }
+
+  return questions;
+}
+
+/**
  * 🎯 Returns the appropriate assessment type based on user role and client segment.
  *
  * @param {Object} user - The current user object
  * @param {Object} clientProfile - The client profile object
  * @returns {string} assessmentType - The selected assessment type code
  */
-export function getAssessmentType(user: IUser, clientProfile: IClient): EAssessmentType {
+export function getAssessmentType(
+  user: IUser,
+  clientProfile: IClient
+): EAssessmentType {
   // 📝 Default to student assessment type
   let assessmentType = EAssessmentType.ADAPTS_S;
 
@@ -103,7 +143,10 @@ export function getAssessmentType(user: IUser, clientProfile: IClient): EAssessm
  * @param clientProfile - User info for age/sex adjustments
  * @returns {tScoreResult} - { tScoreCategory,  riskBand, riskLevel, description, recommendations }
  */
-export function estimateTscore(totalRating: number, clientProfile: IClient): tScoreResult {
+export function estimateTscore(
+  totalRating: number,
+  clientProfile: IClient
+): tScoreResult {
   // 📊 Normative constants (replace with real data in production)
   const mean = 100;
   const standardDeviation = 15;
@@ -112,16 +155,16 @@ export function estimateTscore(totalRating: number, clientProfile: IClient): tSc
   const baseTScore = 50 + 10 * ((totalRating - mean) / standardDeviation);
 
   // 👶 Age adjustment (binary cutoff at 18 for now)
-  const age = computeAge(clientProfile.birthDate)
+  const age = computeAge(clientProfile.birthDate);
   const ageAdjustment = age >= 18 ? 10 : 5;
 
   // 🚻 Sex adjustment (applies if Male/Female, else 0)
-  const sexAdjustment = ["Female", "Male"].includes(clientProfile.gender) ? 5 : 0;
+  const sexAdjustment = ['Female', 'Male'].includes(clientProfile.gender)
+    ? 5
+    : 0;
 
   // 🎯 Final adjusted T-score
-  const adjustedTScore = Math.round(
-    baseTScore + ageAdjustment + sexAdjustment
-  );
+  const adjustedTScore = Math.round(baseTScore + ageAdjustment + sexAdjustment);
 
   // 🎨 Categorize into T-score ranges
   let tScoreCategory;
@@ -131,45 +174,45 @@ export function estimateTscore(totalRating: number, clientProfile: IClient): tSc
   let recommendations: string[] = [];
 
   if (adjustedTScore >= 70) {
-    tScoreCategory = "T > 70";
+    tScoreCategory = 'T > 70';
     riskBand = ERiskBand.high;
     riskLevel = ERiskLevel.high;
     description =
-      "Your responses reflect significantly elevated emotional distress, which may impact daily functioning or relationships.";
+      'Your responses reflect significantly elevated emotional distress, which may impact daily functioning or relationships.';
     recommendations = [
-      "Book a **1:1 Mental Health Coaching Session** for guided support and personalized strategies.",
-      "Schedule an **ADAPTS Debrief Session** with a certified coach to interpret your results and identify root causes.",
-      "Consider enrolling in a **4- or 8-week Coaching Package** to build long-term emotional regulation skills.",
-      "Start practicing the **Reset360 grounding and self-regulation tools** daily to stabilize your emotional baseline.",
-      "If you feel overwhelmed, reach out to trusted support people or seek urgent professional help if necessary.",
+      'Book a **1:1 Mental Health Coaching Session** for guided support and personalized strategies.',
+      'Schedule an **ADAPTS Debrief Session** with a certified coach to interpret your results and identify root causes.',
+      'Consider enrolling in a **4- or 8-week Coaching Package** to build long-term emotional regulation skills.',
+      'Start practicing the **Reset360 grounding and self-regulation tools** daily to stabilize your emotional baseline.',
+      'If you feel overwhelmed, reach out to trusted support people or seek urgent professional help if necessary.',
     ];
   } else if (adjustedTScore >= 65) {
-    tScoreCategory = "T = 65–69";
+    tScoreCategory = 'T = 65–69';
     riskLevel = ERiskLevel.moderate;
     riskBand = ERiskBand.moderate;
     description =
-      "Your emotional indicators are moderately elevated, suggesting recurring stress patterns or difficulty regulating certain emotional triggers.";
+      'Your emotional indicators are moderately elevated, suggesting recurring stress patterns or difficulty regulating certain emotional triggers.';
 
     recommendations = [
-      "Book an **ADAPTS Debrief Session** to explore your emotional patterns and learn targeted coping tools.",
-      "Try a **1:1 Coaching Session** to work on stress management, grounding, and emotional regulation.",
-      "Use the **Reset360 micro-regulation tools** (breathing, grounding, reframing) when symptoms arise.",
-      "Track your emotional patterns to see what triggers spikes or dips.",
-      "Join a coaching package if your symptoms persist or begin affecting day-to-day functioning.",
+      'Book an **ADAPTS Debrief Session** to explore your emotional patterns and learn targeted coping tools.',
+      'Try a **1:1 Coaching Session** to work on stress management, grounding, and emotional regulation.',
+      'Use the **Reset360 micro-regulation tools** (breathing, grounding, reframing) when symptoms arise.',
+      'Track your emotional patterns to see what triggers spikes or dips.',
+      'Join a coaching package if your symptoms persist or begin affecting day-to-day functioning.',
     ];
   } else {
-    tScoreCategory = "T < 65";
+    tScoreCategory = 'T < 65';
     riskLevel = ERiskLevel.low;
     riskBand = ERiskBand.low;
     description =
-      "Your responses fall within typical emotional ranges. You appear to have a stable emotional baseline with manageable stress levels.";
+      'Your responses fall within typical emotional ranges. You appear to have a stable emotional baseline with manageable stress levels.';
 
     recommendations = [
-      "Maintain your routine and continue using healthy coping habits.",
-      "Use **Reset360’s self-regulation tools** to stay grounded during stressful or emotionally triggering moments.",
-      "Consider a **Growth-Focused Coaching Session** to enhance resilience, self-awareness, and proactive emotional skills.",
-      "Re-take the ADAPTS assessment every 4–6 weeks to monitor changes in emotional well-being.",
-      "If you experience shifts or spikes, book a **quick-check coaching session** for guidance.",
+      'Maintain your routine and continue using healthy coping habits.',
+      'Use **Reset360’s self-regulation tools** to stay grounded during stressful or emotionally triggering moments.',
+      'Consider a **Growth-Focused Coaching Session** to enhance resilience, self-awareness, and proactive emotional skills.',
+      'Re-take the ADAPTS assessment every 4–6 weeks to monitor changes in emotional well-being.',
+      'If you experience shifts or spikes, book a **quick-check coaching session** for guidance.',
     ];
   }
 
@@ -202,7 +245,7 @@ export function calculateTotalScores(subScaleScores: SubScaleScores) {
   // 🔍 Safely extract each factor score, defaulting to 0 if missing
   const {
     SoA = 0, // 🗣️ Social Anxiety
-    PD = 0,  // 💓 Panic Disorder
+    PD = 0, // 💓 Panic Disorder
     SeA = 0, // 😰 Separation Anxiety
     GAD = 0, // 🤯 Generalized Anxiety
     OCD = 0, // 🔄 Obsessive-Compulsive
@@ -225,13 +268,16 @@ export function calculateTotalScores(subScaleScores: SubScaleScores) {
  * @param {Array} questions - List of question objects with factors
  * @param questionId - 🆔 Unique identifier of the question
  */
-export function getQuestionFactorById(questions: Question[], questionId: number) {
+export function getQuestionFactorById(
+  questions: Question[],
+  questionId: number
+) {
   // 🔍 Find the question object that matches the given ID
   const question = questions.find((q) => q.id === questionId);
 
   // 📝 Return its factor if found, otherwise undefined
   return question?.factor;
-};
+}
 
 /**
  * 🧮 Count how many items belong to each factor.
@@ -239,7 +285,9 @@ export function getQuestionFactorById(questions: Question[], questionId: number)
  * @returns Record<FactorKey, number>
  *   e.g. { MDD: 14, SoA: 11, ... }
  */
-export function getFactorItemCounts(questions: Question[]): Record<Factor, number> {
+export function getFactorItemCounts(
+  questions: Question[]
+): Record<Factor, number> {
   const counts: Record<Factor, number> = {
     SoA: 0,
     PD: 0,

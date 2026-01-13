@@ -116,11 +116,11 @@ const RegisterPage = () => {
             firstName: '',
             lastName: '',
             username: '',
-            password: 'P@ssword1!',
-            confirmPassword: 'P@ssword1!',
+            password: '', // Prev defaults: P@ssword1!
+            confirmPassword: '',
             gender: '',
             birthDate: '',
-            email: '@erc.com',
+            email: '',
             phone: '',
             countryCode: '+63',
             segment: EClientSegment.STUDENT

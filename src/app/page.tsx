@@ -1,6 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { isAuthenticated, logoutUser } from '@/services/authService';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import useAuthStore from '@/store/AuthState';
+import { useRoleRedirect } from '@/hooks/useRoleRedirect';
+
 import AOS from 'aos';
 
 import Header from '@/components/layout/Header';
@@ -12,8 +18,12 @@ import CoachPreview from '@/components/views/coach-preview/CoachPreview';
 import CTA from '@/components/views/cta/CTA';
 import Footer from '@/components/layout/PageFooter';
 import AdaptsTypes from '@/components/views/adapts/AdaptsTypes';
+import { EUserRole } from '@/types/user';
 
 export default function Home() {
+
+  const user = useAuthStore(state => state.user);
+
   useEffect(() => {
     AOS.init({ duration: 800 });
   }, []);

@@ -84,10 +84,10 @@ export function RecommendationsList({
           <Calendar className="w-4 h-4" />
           Book a Session
         </Button>
-        <Button variant="outline" className="flex-1 gap-2" onClick={handleRetake}>
+        {/* <Button variant="outline" className="flex-1 gap-2" onClick={handleRetake}>
           Retake ADAPTS
           <ArrowRight className="w-4 h-4" />
-        </Button>
+        </Button> */}
       </div>
     </Card>
   );

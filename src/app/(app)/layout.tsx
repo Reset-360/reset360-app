@@ -14,7 +14,7 @@ export default function ClientRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-   const router = useRouter();
+  const router = useRouter();
   const user = useAuthStore(state => state.user);
   const { redirectByRole } = useRoleRedirect();
 

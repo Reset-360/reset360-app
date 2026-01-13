@@ -27,6 +27,13 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const originalRequest = error.config;
+
+    // If it's a login request, don't redirect
+    if (originalRequest?.url?.includes('/login')) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401) {
       // Clear token from storage
       localStorage.removeItem(ACCESS_TOKEN);

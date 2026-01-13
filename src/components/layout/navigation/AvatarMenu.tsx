@@ -24,6 +24,8 @@ import useAuthStore from '@/store/AuthState';
 import { logoutUser } from '@/services/authService';
 import { EUserRole } from '@/types/user';
 import clsx from 'clsx';
+import useQuizStore from '@/store/QuizState';
+import useEntitlementState from '@/store/EntitlementState';
 
 export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
   const router = useRouter();
@@ -33,6 +35,10 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
   const clientProfile = useAuthStore((s) => s.clientProfile);
   const coachProfile = useAuthStore((s) => s.coachProfile);
   const clearUser = useAuthStore((s) => s.clearUser);
+
+  // reset Adapts
+  const resetQuiz = useQuizStore((s) => s.resetQuiz);
+  const resetEntitlement = useEntitlementState((s) => s.resetEntitlement);
 
   // prefer clientProfile, then coachProfile, then minimal user
   const profile = clientProfile ?? coachProfile ?? undefined;
@@ -63,6 +69,9 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
     } finally {
       // ensure user lands on landing page
       clearUser();
+      resetEntitlement();
+      resetQuiz();
+
       router.refresh(); // 🔄 Soft refresh current page
       router.replace('/');
     }
