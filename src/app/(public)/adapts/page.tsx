@@ -45,6 +45,7 @@ const AssessmentPage: React.FC = () => {
   const answers = useQuizStore((s) => s.answersDraft)
   const hasHydrated = useQuizStore((s) => s.hasHydrated);
   const hasStarted = useQuizStore((s) => s.hasStarted);
+  const hydrateFromAssessment = useQuizStore((s) => s.hydrateFromAssessment);
 
   // 🔧 Quiz store: setters
   const setAnswer = useQuizStore((s) => s.setAnswer);
@@ -171,6 +172,9 @@ const AssessmentPage: React.FC = () => {
       }
 
       const data = await submitAssessmentResult(assessmentId, assessmentResult);
+
+      // update assessment record for results
+      hydrateFromAssessment(data)
       
       if (data) {
         router.replace('/adapts/result');

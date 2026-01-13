@@ -10,6 +10,7 @@ import {
   getActiveAssessmentByUserId,
   getAdaptsEntitlementByUserId,
   getAssessmentByUserId,
+  getLatestAssessment,
 } from '@/services/adaptsService';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { first } from 'lodash';
@@ -48,6 +49,9 @@ export default function ClientDashboardPage() {
   );
 
   const [isLoading, setLoading] = useState(true);
+  const [latestAssessment, setLatestAssessment] = useState<
+    IAssessment | undefined
+  >();
 
   useEffect(() => {
     const fetchEntitlement = async () => {
@@ -61,7 +65,7 @@ export default function ClientDashboardPage() {
             (e.attemptsUsed < e.maxAttempts &&
               e.source === 'ORG_BULK_CODE' &&
               e.status === EEntitlementStatus.AVAILABLE) ||
-            EEntitlementStatus.IN_USE
+            e.status === EEntitlementStatus.IN_USE
         );
 
         if (match) {
@@ -76,25 +80,42 @@ export default function ClientDashboardPage() {
         setLoading(false);
       }
     };
-    
+
     const fetchActiveAssessment = async () => {
       if (!user?._id) return;
 
       try {
         const data = await getActiveAssessmentByUserId(user._id);
-        
+
         if (data) {
           hydrateFromAssessment(data);
         }
       } catch (error) {
         console.error('Failed to fetch assessment:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
-    
+
+    const fetchLatestAssessment = async () => {
+      if (!user?._id) return;
+
+      try {
+        const data = await getLatestAssessment(user._id);
+
+        if (data) {
+          setLatestAssessment(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch assessment:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchEntitlement();
     fetchActiveAssessment();
+    fetchLatestAssessment();
   }, [user?._id]);
 
   if (isLoading) {
@@ -117,7 +138,14 @@ export default function ClientDashboardPage() {
         Here’s a quick overview of your recent activity and progress.
       </p>
 
-      {assessment?.submittedAt ? <DashboardResult /> : <AdaptsCTA />}
+      {latestAssessment && (
+        <>
+          <DashboardResult assessment={latestAssessment} />
+          <hr className="border-t border-purple-200 my-6" />
+        </>
+      )}
+
+      <AdaptsCTA showDetails={latestAssessment ? false : true} />
     </div>
   );
 }

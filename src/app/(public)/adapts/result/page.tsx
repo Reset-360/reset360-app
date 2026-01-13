@@ -28,6 +28,8 @@ const ResultsPage = () => {
   const clientProfile = useAuthStore((s) => s.clientProfile);
 
   const assessment = useQuizStore((s) => s.assessment)
+  const resetQuiz = useQuizStore((s) => s.resetQuiz);
+  const resetEntitlement = useEntitlementStore((s) => s.resetEntitlement);
 
   const hasCompleted = assessment?.submittedAt ? true : false;
   const completedAt = assessment?.submittedAt
@@ -53,16 +55,18 @@ const ResultsPage = () => {
 
   // 🔐 Redirect if not logged in or has not attempted/completed assessment
   useEffect(() => {
-    if (mounted && (!user || !hasCompleted)) {
+    if (mounted && (!user || !hasCompleted || !assessment)) {
       setRedirecting(true);
 
       if (!user) {
         router.replace('/login');
+      } else if (!assessment) {
+        router.replace('/client/dashboard');
       } else {
         router.replace('/adapts');
       }
     }
-  }, [mounted, user, hasCompleted, router]);
+  }, [mounted, user, hasCompleted, assessment, router]);
 
   useEffect(() => {
     if (mounted && clientProfile) {
@@ -73,6 +77,11 @@ const ResultsPage = () => {
 
   
   const onBackToHome = () => {
+    // reset quiz state
+    // reset entitlement state
+    resetQuiz();
+    resetEntitlement();
+
     router.replace('/client/dashboard')
   }
 
@@ -103,9 +112,12 @@ const ResultsPage = () => {
           />
         </div>
 
-        <MentalHealthRadialProfile totalSubScaleScore={subScaleScore} questions={questions} />
-
-        <SubscaleSummary totalSubScaleScore={subScaleScore} questions={questions} />
+        {assessment && (
+          <>
+            <MentalHealthRadialProfile totalSubScaleScore={subScaleScore} questions={questions} />
+            <SubscaleSummary totalSubScaleScore={subScaleScore} questions={questions} />
+          </>
+        )}
 
         <RecommendationsList
           recommendations={estimatedTScore.recommendations}
