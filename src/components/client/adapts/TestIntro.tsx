@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AOS from 'aos';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,13 +15,23 @@ import useQuizStore from '@/store/QuizState';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import moment from 'moment';
+import { startAssessment } from '@/services/adaptsService';
+import useAuthStore from '@/store/AuthState';
+import useEntitlementState from '@/store/EntitlementState';
+import { toast } from 'sonner';
 
 const TestIntro = () => {
   const router = useRouter();
 
+  const user = useAuthStore((s) => s.user)
+  const currentEntitlement = useEntitlementState((s) => s.currentEntitlement)
+
+  const [error, setError] = useState('')
+
   // 🧑‍💻 quiz state
+  const assessment = useQuizStore((s) => s.assessment);
+  const hydrateFromAssessment = useQuizStore((s) => s.hydrateFromAssessment);
   const setHasStarted = useQuizStore((s) => s.setHasStarted);
-  const setStartedAt = useQuizStore((s) => s.setStartedAt);
 
   // 🚀 Initialize AOS animation library
   useEffect(() => {
@@ -29,11 +39,28 @@ const TestIntro = () => {
   }, []);
 
   // ▶️ Start the assessment
-  const handleStart = useCallback(() => {
-    setHasStarted(true);
-    setStartedAt(moment().format('YYYY-MM-DD HH:mm'))
+  // Save assessment on API
+  const handleStart = useCallback(async () => {
+    if (!user?._id) return
 
-  }, [setHasStarted]);
+    if (!currentEntitlement) {
+      setError('This test requires a seat code. You can purchase one or redeem an existing code, and then you’ll be ready to continue.')
+      return
+    }
+
+    const startAssessmentParams = {
+      userId: user._id,
+      type: currentEntitlement.type,
+      assessmentId: currentEntitlement.assessmentId
+    }
+
+    const assessment = await startAssessment(startAssessmentParams)
+
+    if (assessment) {
+      hydrateFromAssessment(assessment)
+      setHasStarted(true)
+    }
+  }, [assessment, currentEntitlement]);
 
   // ↩️ Go back (dashboard or root)
   const handleBack = useCallback(() => {
@@ -183,6 +210,10 @@ const TestIntro = () => {
         >
           Start Assessment
         </Button>
+
+        { error && (
+          <p className="text-xs py-5 text-red-500">{error}</p>
+        )}
 
         {/* 🔙 Back button with left arrow icon */}
         <Button variant="link" onClick={handleBack} className="flex mx-auto">

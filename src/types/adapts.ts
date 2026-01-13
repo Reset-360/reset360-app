@@ -78,9 +78,10 @@ export type tScoreResult = {
   recommendations: string[];
 };
 
-export interface AssessmentData {
-  _id?: string;
-  userId: string; // assuming MongoDB ObjectId stored as string
+export interface IAssessment {
+  _id: string;
+  userId?: string; // assuming MongoDB ObjectId stored as string
+  entitlementId?: string;
   type: EAssessmentType; // type of assessment
   totalRating: number; // overall rating score
   tScore: number; // adjusted T-score
@@ -90,6 +91,25 @@ export interface AssessmentData {
   answers: Record<number, number>; // replace `any` with a more specific type if known
   subScales: SubScaleScores; // replace `any` with a more specific type if known
   totalSubScalesScore: Scores; // total score from subscales
-  startedAt: string; // depending on how you store dates
-  submittedAt: string; // formatted date string
+  startedAt?: string; // depending on how you store dates
+  submittedAt?: string; // formatted date string
+  lastActivityAt?: string; // formatted date string
+}
+
+export interface StartAssessmentData {
+  userId: string;
+  type: EAssessmentType
+  assessmentId?: string;
+}
+
+export interface SubmitAssessmentData {  
+  totalRating: number; // overall rating score
+  tScore: number; // adjusted T-score
+  tScoreSummary: tScoreResult;
+  riskBand: ERiskBand; // risk band classification
+  riskLevel: ERiskLevel; // risk level classification
+  answers: Record<number, number>; // replace `any` with a more specific type if known
+  subScales: SubScaleScores; // replace `any` with a more specific type if known
+  totalSubScalesScore: Scores; // total score from subscales
+  submittedAt?: string; // formatted date string
 }

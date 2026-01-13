@@ -16,6 +16,7 @@ export function useRoleRedirect() {
     const routeMap: Partial<Record<EUserRole, string>> = {
       [EUserRole.CLIENT]: '/client/dashboard',
       [EUserRole.COACH]: '/coach/dashboard',
+      [EUserRole.ADMIN]: '/',
     }
 
     const target = routeMap[role]

@@ -28,7 +28,7 @@ const DashboardResult = () => {
   const completedAt = useQuizStore((s) => s.completedAt);
   const totalRating = useQuizStore((s) => s.totalRating);
   const totalSubScaleScore = useQuizStore((s) => s.totalSubScaleScore);
-
+console.log('totalRating', totalRating)
   // 📝 Load questions based on profile
   const questions = useMemo(() => {
     return user && clientProfile

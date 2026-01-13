@@ -111,14 +111,14 @@ const ResumeAssessment: React.FC<ResumeAssessmentProps> = ({
             Resume Assessment
           </Button>
 
-          <Button
+          {/* <Button
             onClick={onRestart}
             variant="outline"
             className="flex-1 sm:flex-initial h-12 text-base  border-2 border-primary/30 hover:bg-primary/5 hover:border-primary/50 transition-all duration-300"
           >
             <RotateCcw className="w-5 h-5 mr-2" />
             Start Over
-          </Button>
+          </Button> */}
         </div>
 
         <div className="flex flex-col">

@@ -1,84 +1,150 @@
 import { QUIZ_STORAGE } from '@/constants/storage-keys';
-import { Scores, TotalSubScaleScore } from '@/types/adapts';
+import { patchAssessmentProgress } from '@/services/adaptsService';
+import { IAssessment } from '@/types/adapts';
 import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 
-import { persist, devtools } from 'zustand/middleware';
-
-interface QuizState {
-  currentQuestion: number;
-  answers: Record<number, number>;
-  hasStarted: boolean;
-  hasCompleted: boolean;
-  totalRating: number;
-  totalScore: Scores;  
-  totalSubScaleScore: TotalSubScaleScore;
-  completedAt?: string;
-  startedAt?: string;
+type QuizState = {
   hasHydrated: boolean;
+  hasStarted: boolean;
+
+  assessment?: IAssessment;
+  assessmentId?: string;
+
+  answersDraft?: Record<number, number>;
+  currentQuestionIndex: number;
+  timeSpentSec: number;
+
+  isDirty: boolean;
+  isSaving: boolean;
+  lastSavedAt: number | null;
+
+  _saveTimer: any;
+
+  hydrateFromAssessment: (assessment: any) => void;
+  setHasStarted: (v: boolean) => void;
   setHasHydrated: (v: boolean) => void;
-  setCurrentQuestion: (index: number) => void;
-  setAnswer: (questionId: number, value: number) => void;
-  setHasStarted: (hasStarted: boolean) => void;
-  setHasCompleted: (hasCompleted: boolean) => void;
-  setStartedAt: (startedAt: string) => void;
-  setCompletedAt: (completedAt: string) => void;
-  setTotalRating: (rating: number) => void;
-  setTotalSubScaleScore: (totalSubScaleScore: TotalSubScaleScore) => void;
-  setTotalScore: (totalSubScore: Scores) => void;
+
+  setAnswer: (path: number, value: any) => void;
+  setCurrentQuestionIndex: (n: number) => void;
+
+  scheduleAutosave: () => void;
+  flushAutosave: () => Promise<void>;
+  clearAutosaveTimer: () => void;
+
   resetQuiz: () => void;
-}
+};
 
 const useQuizStore = create<QuizState>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         hasHydrated: false,
-        currentQuestion: 0,
-        answers: {},
         hasStarted: false,
-        hasCompleted: false,
-        totalScore: {
-          totalAnxietyScore: 0,
-          totalMDDScore: 0,
+
+        answersDraft: [],
+
+        currentQuestionIndex: 0,
+        timeSpentSec: 0,
+
+        isDirty: false,
+        isSaving: false,
+        lastSavedAt: null,
+
+        _saveTimer: null as NodeJS.Timeout | null,
+
+        setHasStarted: (v) => set({ hasStarted: v }),
+
+        hydrateFromAssessment: (assessment) => {
+          set({
+            assessment: assessment,
+            assessmentId: assessment._id,
+
+            answersDraft: assessment.answersDraft?.[0] || {},
+            currentQuestionIndex: assessment.currentQuestionIndex || 0,
+            timeSpentSec: assessment.timeSpentSec || 0,
+
+            hasStarted: Object.keys(assessment.answersDraft?.[0] || {}).length > 0 ? true : false,
+
+            isDirty: false,
+            isSaving: false,
+            lastSavedAt: Date.now(),
+          });
         },
-        totalRating: 0,
-        totalSubScaleScore: {
-          SoA: 0, // 🗣️ Social Anxiety
-          PD: 0, // 💓 Panic Disorder
-          SeA: 0, // 😰 Separation Anxiety
-          GAD: 0, // 🤯 Generalized Anxiety Disorder
-          OCD: 0, // 🔄 Obsessive-Compulsive Disorder
-          MDD: 0, // 🌧️ Major Depressive Disorder
+
+        setAnswer: (path: number, value: number) => {
+          const state = get();
+          const next = { ...(state.answersDraft || {}) };
+          next[path] = value;
+
+          set({ answersDraft: next, isDirty: true });
+          get().scheduleAutosave();
         },
-        setCurrentQuestion: (index) => set({ currentQuestion: index }),
-        setAnswer: (questionId, value) =>
-          set((state) => ({
-            answers: {
-              ...state.answers,
-              [questionId]: value,
-            },
-          })),
-        setTotalSubScaleScore: (totalSubScaleScore: TotalSubScaleScore) => set({ totalSubScaleScore }),
-        setTotalScore: (totalScore: Scores) => set({ totalScore }),
-        setTotalRating: (totalRating: number) => set({ totalRating }),
+
+        setCurrentQuestionIndex: (n: number) => {
+          set({ currentQuestionIndex: n, isDirty: true });
+          get().scheduleAutosave();
+        },
+
+        clearAutosaveTimer: () => {
+          const t = get()._saveTimer;
+          if (t) clearTimeout(t);
+          set({ _saveTimer: null });
+        },
+
+        scheduleAutosave: () => {
+          const { assessment } = get();
+          if (!assessment) return;
+
+          get().clearAutosaveTimer();
+
+          // Debounce: save 800ms after last change
+          const timer = setTimeout(() => {
+            get().flushAutosave();
+          }, 800);
+
+          set({ _saveTimer: timer });
+        },
+
+        flushAutosave: async () => {
+          const {
+            assessmentId,
+            answersDraft,
+            currentQuestionIndex,
+            timeSpentSec,
+            isDirty,
+            isSaving,
+          } = get();
+
+          if (!assessmentId) return;
+          if (!isDirty) return;
+          if (isSaving) return;
+
+          set({ isSaving: true });
+
+          try {
+            await patchAssessmentProgress(assessmentId!, {
+              answersDraft,
+              currentQuestionIndex,
+              timeSpentSec,
+            });
+
+            set({
+              isDirty: false,
+              lastSavedAt: Date.now(),
+            });
+          } finally {
+            set({ isSaving: false });
+          }
+        },
+
         resetQuiz: () =>
           set({
-            currentQuestion: 0,
-            answers: {},
+            currentQuestionIndex: 0,
+            assessment: undefined,
             hasStarted: false,
-            hasCompleted: false,
-            totalScore: {
-              totalAnxietyScore: 0,
-              totalMDDScore: 0,
-            },
-            totalRating: 0,
-            startedAt: undefined,
-            completedAt: undefined,
           }),
-        setHasStarted: (hasStarted: boolean) => set({ hasStarted }),
-        setHasCompleted: (v) => set({ hasCompleted: v }),
-        setStartedAt: (v) => set({ startedAt: v }),
-        setCompletedAt: (v) => set({ completedAt: v }),
+
         setHasHydrated: (v) => set({ hasHydrated: v }),
       }),
       {
