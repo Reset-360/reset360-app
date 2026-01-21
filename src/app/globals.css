@@ -110,6 +110,10 @@
   --gradient-accent: linear-gradient(135deg, hsl(25 95% 55%) 0%, hsl(25 90% 65%) 100%);
   --gradient-hero: linear-gradient(135deg, hsl(270 70% 45%) 0%, hsl(25 95% 55%) 100%);
   --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(270 30% 98%) 100%);
+
+  --bg-card: hsl(0 0% 100%);
+  --shadow-soft: 0 4px 20px -2px hsl(263 70% 60% / 0.1);
+  --shadow-card: 0 2px 12px -2px hsl(263 50% 50% / 0.08);
 }
 
 @layer base {
@@ -124,6 +128,11 @@
 @layer utilities {
   .gradient-primary {
     background: var(--gradient-primary);
+  }
+
+  .bg-card {
+    background: var(--bg-card);
+    box-shadow: var(--shadow-card);
   }
   
   .gradient-accent {
