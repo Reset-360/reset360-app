@@ -14,19 +14,7 @@ export default function ClientRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const router = useRouter();
   const user = useAuthStore(state => state.user);
-  const { redirectByRole } = useRoleRedirect();
-
-  const isAuth = isAuthenticated();
-
-  useEffect(() => {
-    if (isAuth) {
-      redirectByRole(user?.role);
-    } else {
-      router.replace('/login');
-    }
-  }, [router, redirectByRole, user?.role, isAuth]);
 
   if (!user) {
     return (

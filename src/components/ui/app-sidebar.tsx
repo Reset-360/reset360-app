@@ -17,12 +17,9 @@ import useAuthStore from '@/store/AuthState';
 import useEntitlementStore from '@/store/EntitlementState';
 import useQuizStore from '@/store/QuizState';
 import {
-  Calendar,
+  ClipboardClock,
   Home,
-  Inbox,
   LogOutIcon,
-  Search,
-  Settings,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -30,28 +27,13 @@ import { useRouter } from 'next/navigation';
 const items = [
   {
     title: 'Home',
-    url: '#',
+    url: '/client/dashboard',
     icon: Home,
   },
   {
-    title: 'Inbox',
-    url: '#',
-    icon: Inbox,
-  },
-  {
-    title: 'Calendar',
-    url: '#',
-    icon: Calendar,
-  },
-  {
-    title: 'Search',
-    url: '#',
-    icon: Search,
-  },
-  {
-    title: 'Settings',
-    url: '#',
-    icon: Settings,
+    title: 'History',
+    url: '/client/history',
+    icon: ClipboardClock,
   },
 ];
 
@@ -72,8 +54,8 @@ export function AppSidebar() {
     clearUser(); // 🧹 Clear user data from local state
     resetQuiz(); // 🧹 Clear quiz state
     resetEntitlement(); // 🧹 Clear entitlement state
-console.log('logged out')
-    router.replace('/login'); // 🚪 Redirect to login page
+
+    router.replace('/'); // 🚪 Redirect to main page
   };
 
   return (

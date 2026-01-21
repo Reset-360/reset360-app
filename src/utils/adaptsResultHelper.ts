@@ -11,7 +11,8 @@ export function getRiskTextColor(
 ) {
   if (riskLevel.includes('High')) return 'text-red-500';
   if (riskLevel.includes('Moderate')) return 'text-amber-500';
-  return 'text-emerald-500';
+  if (riskLevel.includes('low')) return 'text-emerald-500';
+  return '';
 }
 
 export function getRiskAccentClasses(riskLevel: string): string {
