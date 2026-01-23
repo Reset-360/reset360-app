@@ -16,17 +16,27 @@ import {
   calculateTotalScores,
   estimateTscore,
   getAssessmentType,
-  getQuestionsByType
+  getQuestionsByType,
 } from '@/utils/adaptsHelper';
 
-import { IAssessment, Factor, Scores, SubmitAssessmentData } from '@/types/adapts';
+import {
+  IAssessment,
+  Factor,
+  Scores,
+  SubmitAssessmentData,
+} from '@/types/adapts';
 import { QuestionSlide } from '@/components/client/adapts/QuestionSlide';
 import ResumeAssessment from '@/components/client/adapts/ResumeAssessment';
 import moment from 'moment';
 import { QuestionStepper } from '@/components/client/adapts/QuestionStepper';
-import { saveAssessmentResult, submitAssessmentResult } from '@/services/adaptsService';
+import {
+  saveAssessmentResult,
+  submitAssessmentResult,
+} from '@/services/adaptsService';
 import { dbDateFormat } from '@/constants/common';
 import useEntitlementState from '@/store/EntitlementState';
+import AnswersSummary from '@/components/client/adapts/AnswersSummary';
+import Image from 'next/image';
 
 const AssessmentPage: React.FC = () => {
   const router = useRouter();
@@ -36,20 +46,20 @@ const AssessmentPage: React.FC = () => {
   const clientProfile = useAuthStore((s) => s.clientProfile);
 
   // Entitlement : Get type of question based on Entitlement
-  const currentEntitlement = useEntitlementState((s) => s.currentEntitlement)
+  const currentEntitlement = useEntitlementState((s) => s.currentEntitlement);
 
   // 🧠 Quiz store: core state
   const assessment = useQuizStore((s) => s.assessment);
   const assessmentId = useQuizStore((s) => s.assessmentId);
   const currentQuestion = useQuizStore((s) => s.currentQuestionIndex);
-  const answers = useQuizStore((s) => s.answersDraft)
+  const answers = useQuizStore((s) => s.answersDraft);
   const hasHydrated = useQuizStore((s) => s.hasHydrated);
   const hasStarted = useQuizStore((s) => s.hasStarted);
   const hydrateFromAssessment = useQuizStore((s) => s.hydrateFromAssessment);
 
   // 🔧 Quiz store: setters
   const setAnswer = useQuizStore((s) => s.setAnswer);
-  const setCurrentQuestion = useQuizStore((s) => s.setCurrentQuestionIndex)
+  const setCurrentQuestion = useQuizStore((s) => s.setCurrentQuestionIndex);
 
   const resetQuiz = useQuizStore((s) => s.resetQuiz);
 
@@ -57,6 +67,7 @@ const AssessmentPage: React.FC = () => {
   const [redirecting, setRedirecting] = useState(false);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isResumed, setIsResumed] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   // 👇 NEW: only true if we detect existing progress on mount
   const [canPromptResume, setCanPromptResume] = useState(false);
@@ -141,9 +152,9 @@ const AssessmentPage: React.FC = () => {
     setCurrentQuestion(Math.max(currentQuestion - 1, 0));
   }, [currentQuestion, setCurrentQuestion]);
 
-  // ▶️ Next / Submit
+  // ▶️ Next / Review Answers
   const handleNext = useCallback(async () => {
-    if (!user || !assessmentId) return
+    if (!user || !assessmentId) return;
 
     // 👉 Move to next question
     if (!isLast) {
@@ -154,8 +165,21 @@ const AssessmentPage: React.FC = () => {
 
     // ✅ Submit when complete
     if (isComplete && clientProfile && assessmentId) {
+      setShowSummary(true);
+    }
+  }, [user, assessmentId, answers, isLast, isComplete, clientProfile, router]);
+
+  // ▶️ Next / Submit
+  const handleSubmit = useCallback(async () => {
+    if (!user || !assessmentId) return;
+
+    // ✅ Submit when complete
+    if (isComplete && clientProfile && assessmentId) {
       const subScales = calculateSubscales();
-      const totalRating = Object.values(answers || {}).reduce((a, b) => a + b, 0);
+      const totalRating = Object.values(answers || {}).reduce(
+        (a, b) => a + b,
+        0
+      );
       const totalScore: Scores = calculateTotalScores(subScales);
       const tScore = estimateTscore(totalRating, clientProfile);
 
@@ -169,24 +193,26 @@ const AssessmentPage: React.FC = () => {
         subScales,
         totalSubScalesScore: totalScore,
         submittedAt: moment().format(dbDateFormat),
-      }
+      };
 
       const data = await submitAssessmentResult(assessmentId, assessmentResult);
 
       // update assessment record for results
-      hydrateFromAssessment(data)
-      
+      hydrateFromAssessment(data);
+
       if (data) {
         router.replace('/adapts/result');
       }
     }
   }, [
+    user,
+    assessmentId,
     isLast,
     isComplete,
     answers,
     calculateSubscales,
     clientProfile,
-    router
+    router,
   ]);
 
   // ✍️ Save answer handler
@@ -231,6 +257,10 @@ const AssessmentPage: React.FC = () => {
     );
   }
 
+  if (showSummary) {
+    return <AnswersSummary questions={questions} onSubmit={handleSubmit} />;
+  }
+
   const currentQuestionObj = questions[currentQuestion];
   const isCurrentAnswered =
     currentQuestionObj && answers?.[currentQuestionObj.id] != null;
@@ -238,9 +268,30 @@ const AssessmentPage: React.FC = () => {
   // 🧭 Main assessment UI
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <header className="p-6 border-b bg-card/50 backdrop-blur-sm">
+        <div className="max-w-4xl mx-auto">
+          <button
+            onClick={() => router.push('/client/dashboard')}
+            className="flex items-center gap-2 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </button>
+        </div>
+      </header>
+
       {/* Header */}
-      <div className="w-full px-4 py-6 space-y-4">
-        <div className="text-center space-y-2">
+      <div className="w-full px-4 pt-10 pb-6 space-y-4">
+        <div className="text-center space-y-2 flex flex-col items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/50 to-accent/5 flex items-center justify-center">
+                      <Image
+                        src={'/logo/logo_250.png'}
+                        width={32}
+                        height={32}
+                        alt="Reset 360 Logo"
+                      />
+                    </div>
+
           <h1 className="text-3xl md:text-4xl font-bold text-primary">
             ADAPTS Assessment
           </h1>
@@ -299,7 +350,7 @@ const AssessmentPage: React.FC = () => {
               variant={isComplete ? 'accent' : 'default'}
               className="w-100 flex items-center gap-2"
             >
-              {isLast && isComplete ? 'Submit Assessment' : 'Next'}
+              {isLast && isComplete ? 'Review Answers' : 'Next'}
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>

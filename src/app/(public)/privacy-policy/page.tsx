@@ -316,7 +316,7 @@ const PrivacyPolicy = () => {
             </p>
             <div className="bg-accent/50 rounded-lg p-4">
               <p className="font-semibold">ERC Data Protection Officer</p>
-              <p>Email: [Insert Privacy Contact Email]</p>
+              <p>Email: reggie@emotionalresetcenter.com</p>
             </div>
             <p className="mt-3">
               You may also contact the National Privacy Commission of the
