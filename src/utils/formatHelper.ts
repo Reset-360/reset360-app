@@ -1,3 +1,4 @@
+import moment from 'moment';
 import numeral from "numeral";
 
 /**
@@ -26,8 +27,21 @@ export function formatCents(cents: number, format: string = "0,0.00"): string {
   return numeral(fromCents(cents)).format(format);
 }
 
+/**
+ * Format Name in Capital case
+ * @param name 
+ * @returns 
+ */
 export const  formatName = (name: string) => {
   const lower = name.toLowerCase();
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
+/**
+ * Format human readable date
+ * @param date 
+ * @returns 
+ */
+export const formatDate = (date: any): string => {
+  return moment(date).format('MMM DD, YYYY hh:mm A')
+}

@@ -8,3 +8,13 @@ export const getClientProfile = async (userId: string) => {
     throw error.response?.data || { message: 'Something went wrong' };
   }
 };
+
+export const getClientPurchases = async () => {
+  try {
+    const { data } = await api.get(`/me/purchases`);
+    
+    return data;
+  } catch (error: any) {
+    throw error.response?.data || { message: 'Something went wrong' };
+  }
+}

@@ -35,3 +35,9 @@
 - Wire auth api functions with auth pages
 - Update fonts and add full logo
 - add shell client dashboard
+
+---
+
+# ✅ Completed Tasks — 2026-02-05
+
+- Add Order History page

@@ -30,6 +30,7 @@ import {
   getRiskTextColor,
 } from '@/utils/adaptsResultHelper';
 import ResultDetailsDialog from '@/components/client/history/ResultDetailsDialog';
+import { formatDate } from '@/utils/formatHelper';
 
 const HistoryPage = () => {
   const router = useRouter();
@@ -181,7 +182,7 @@ const HistoryPage = () => {
             <TableBody>
               {assessments.map((assessment) => {
                 const submittedAt = assessment?.submittedAt
-                  ? moment(assessment.submittedAt)
+                  ? formatDate(assessment.submittedAt)
                   : null;
 
                 const isLatest = assessment._id === latest._id;
@@ -195,7 +196,7 @@ const HistoryPage = () => {
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-muted-foreground" />
                         {submittedAt
-                          ? submittedAt.format('MMMM DD, yyyy')
+                          ? submittedAt
                           : '-'}
                         {isLatest && (
                           <Badge
