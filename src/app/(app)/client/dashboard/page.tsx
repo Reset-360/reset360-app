@@ -63,7 +63,7 @@ export default function ClientDashboardPage() {
         const match = entitlements.find(
           (e: IAssessmentEntitlement) =>
             (e.attemptsUsed < e.maxAttempts &&
-              e.source === 'ORG_BULK_CODE' &&
+              // e.source === 'ORG_BULK_CODE' &&
               e.status === EEntitlementStatus.AVAILABLE) ||
             e.status === EEntitlementStatus.IN_USE
         );
