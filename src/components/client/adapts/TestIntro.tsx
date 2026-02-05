@@ -71,7 +71,7 @@ const TestIntro = () => {
 
   // ↩️ Go back (dashboard or root)
   const handleBack = useCallback(() => {
-    router.back();
+    router.push(user ? '/client/dashboard' : '/');
   }, [router]);
 
   const handlePrivacyPage = useCallback(() => {
