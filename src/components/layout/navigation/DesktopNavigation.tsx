@@ -3,8 +3,11 @@ import NavLinkItem from './NavLinkItem';
 import Link from 'next/link';
 import { isAuthenticated } from '@/services/authService';
 import AvatarMenu from './AvatarMenu';
+import useAuthStore from '@/store/AuthState';
 
 const DesktopNavigation = () => {
+  const user = useAuthStore(s => s.user)
+  
   const authLink = useMemo(() => {
     if (isAuthenticated()) {
       return (
@@ -20,7 +23,7 @@ const DesktopNavigation = () => {
         </Link>
       );
     }
-  }, []);
+  }, [user]);
 
   return (
     <div className="hidden md:flex space-x-8 text-gray-700 font-medium items-center">

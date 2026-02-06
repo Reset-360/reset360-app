@@ -29,17 +29,21 @@ api.interceptors.response.use(
   (error) => {
     const originalRequest = error.config;
 
-    // If it's a login request, don't redirect
-    if (originalRequest?.url?.includes('/login')) {
-      return Promise.reject(error);
-    }
-
     if (error.response?.status === 401) {
+      // Skip redirect for login or home requests
+      const currentPath = window.location.pathname;
+
+      // Skip redirect if user is already on login or home
+      if (currentPath === '/login' || currentPath === '/') {
+        return Promise.reject(error);
+      }
+
       // Clear token from storage
       localStorage.removeItem(ACCESS_TOKEN);
 
       // Redirect to login page
       if (typeof window !== 'undefined') {
+        console.log('redirected from interceptor');
         window.location.href = '/login';
       }
     }

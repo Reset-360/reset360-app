@@ -40,4 +40,16 @@
 
 # ✅ Completed Tasks — 2026-02-05
 
+- Wire Paymongo API for Hosted checkout page when clicking on proceed to payment
+- Add Payment Status page, a success page when payment is successful
+
+---
+
+# ✅ Completed Tasks — 2026-02-05
+
 - Add Order History page
+
+# ✅ Completed Tasks — 2026-02-05
+
+- Fix redirects when user has no valid token
+- Fix redirect on user registration

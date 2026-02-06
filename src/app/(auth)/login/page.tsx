@@ -40,7 +40,7 @@ const LoginPage = () => {
       
       redirectByRole(user.role)
     } catch (err: any) {
-      if (err.message == 'Invalid credentials') {
+      if (err.message == 'Invalid credentials' || err.id == 'Profile not found') {
         setErrors({ password: 'Username or password did not match.'})
         return
       }

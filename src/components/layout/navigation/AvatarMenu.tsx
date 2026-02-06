@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -17,28 +16,20 @@ import {
   LogOut,
   Settings,
   ChevronDown,
-  Calendar,
   Users,
 } from 'lucide-react';
 import useAuthStore from '@/store/AuthState';
-import { logoutUser } from '@/services/authService';
 import { EUserRole } from '@/types/user';
 import clsx from 'clsx';
-import useQuizStore from '@/store/QuizState';
-import useEntitlementState from '@/store/EntitlementState';
+import { useLogout } from '@/hooks/useLogout';
 
 export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
-  const router = useRouter();
+  const logout = useLogout()
 
   // read directly from the store
   const user = useAuthStore((s) => s.user);
   const clientProfile = useAuthStore((s) => s.clientProfile);
   const coachProfile = useAuthStore((s) => s.coachProfile);
-  const clearUser = useAuthStore((s) => s.clearUser);
-
-  // reset Adapts
-  const resetQuiz = useQuizStore((s) => s.resetQuiz);
-  const resetEntitlement = useEntitlementState((s) => s.resetEntitlement);
 
   // prefer clientProfile, then coachProfile, then minimal user
   const profile = clientProfile ?? coachProfile ?? undefined;
@@ -60,22 +51,6 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
   const avatarUrl = profile?.imageUrl ?? profile?.imageUrl ?? '';
 
   const role = user?.role ?? 'guest';
-
-  const handleLogout = useCallback(async () => {
-    try {
-      await logoutUser();
-    } catch (err) {
-      console.error('Logout error', err);
-    } finally {
-      // ensure user lands on landing page
-      clearUser();
-      resetEntitlement();
-      resetQuiz();
-
-      router.refresh(); // 🔄 Soft refresh current page
-      router.replace('/');
-    }
-  }, [clearUser, router]);
 
   return (
     <DropdownMenu>
@@ -142,20 +117,6 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
                 Dashboard
               </Link>
             </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
-              <Link href="/client/bookings" className="flex items-center gap-2">
-                <Calendar size={16} />
-                My Bookings
-              </Link>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
-              <Link href="/client/settings" className="flex items-center gap-2">
-                <Settings size={16} />
-                Settings
-              </Link>
-            </DropdownMenuItem>
           </>
         )}
 
@@ -187,7 +148,7 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={handleLogout}
+          onClick={() => logout('/') }
           className="flex items-center gap-2 text-accent"
         >
           <LogOut size={16} />

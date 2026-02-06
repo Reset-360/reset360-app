@@ -30,6 +30,8 @@ import { EClientSegment, EClientStatus, EGender } from '@/types/client';
 import { EUserRole } from '@/types/user';
 import { RegisterParams } from '@/types/auth';
 import moment from 'moment';
+import { getClientProfile } from '@/services/clientService';
+import useAuthStore from '@/store/AuthState';
 
 // Helper: minimum age = 6 years old
 const minAgeDate = new Date();
@@ -38,6 +40,8 @@ minAgeDate.setFullYear(minAgeDate.getFullYear() - 6);
 const defaultDate = subYears(new Date(), 18);
 
 const RegisterPage = () => {
+  const { setUser, setClientProfile, setToken } = useAuthStore(state => state)
+
   const { redirectByRole } = useRoleRedirect();
   const [open, setOpen] = useState(false);
 
@@ -70,9 +74,21 @@ const RegisterPage = () => {
         params.phone = values.phone;
       }
 
-      await registerUser(params);
-
+      const regResponse = await registerUser(params);
       const user = await getUser();
+
+      if (user.role == EUserRole.CLIENT) {
+        const profile = await getClientProfile(user._id);
+        
+        // setup store data
+        setToken(regResponse.accessToken);
+        setUser(user);
+  
+        if (user.role == EUserRole.CLIENT) {
+          setClientProfile(profile);
+        }
+      }
+
       redirectByRole(user.role)
     } catch (err: any) {
       if (err.username || err.email || err.phone || err.password) {
