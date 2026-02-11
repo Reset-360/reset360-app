@@ -10,7 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { createIndividualPurchase, createPaymongoCheckout, createPaymongoIntent } from '@/services/paymentService';
+import { getActivePurchase } from '@/services/clientService';
+import {
+  createIndividualPurchase,
+  createPaymongoCheckout,
+  createPaymongoIntent,
+} from '@/services/paymentService';
 import { getIndividualPricing } from '@/services/settingService';
 import useAuthStore from '@/store/AuthState';
 import usePaymentStore from '@/store/PaymentState';
@@ -22,20 +27,27 @@ import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 const Payment = () => {
-  const user = useAuthStore(s => s.user)
+  const user = useAuthStore((s) => s.user);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
   const [setting, setSetting] = useState<IAdaptsPriceTier>();
 
-  const setPurchaseId = usePaymentStore(s => s.setPurchaseId)
-  const setPaymentId = usePaymentStore(s => s.setPaymentId)
+  const purchaseId = usePaymentStore((s) => s.purchaseId);
+  const setPurchaseId = usePaymentStore((s) => s.setPurchaseId);
+  const setPaymentId = usePaymentStore((s) => s.setPaymentId);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const [setting] = await Promise.all([getIndividualPricing()]);
+        const [setting, currentPurchase] = await Promise.all([getIndividualPricing(), getActivePurchase()]);
         setSetting(setting);
+
+        if (currentPurchase) {
+          console.log('has current purchase')
+          setPurchaseId(currentPurchase._id)
+        }
+        
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       } finally {
@@ -48,34 +60,52 @@ const Payment = () => {
 
   const router = useRouter();
 
+  const createCheckoutUrl = async (purchaseId: string) => {
+    try {
+      const paymongoCheckout = await createPaymongoCheckout(purchaseId);
+      if (!paymongoCheckout) {
+        toast.error('An error occurred when creating a payment intent');
+        return;
+      }
+
+      const checkoutUrl = paymongoCheckout.checkoutUrl;
+      setPaymentId(paymongoCheckout.paymentId);
+
+      router.replace(checkoutUrl);
+    } catch (error) {
+      console.log(error);
+      toast.error('An error occurred when creating a payment intent');
+    }
+  };
+
   /**
    * 1. Create Purchase record
    * 2. Create paymongo intent
    */
   const handlePayment = async () => {
     try {
-      if (!user?._id) return 
+      if (!user?._id) return;
 
-      setProcessing(true)
-      const purchase = await createIndividualPurchase(user._id);
-      
-      if (!purchase) {
-        toast.error('An error occurred when creating a purchase')
-        return
+      setProcessing(true);
+
+      if (!purchaseId) {
+        const purchase = await createIndividualPurchase(user._id);
+        if (!purchase) {
+          toast.error('An error occurred when creating a purchase');
+          return;
+        }
+
+        // Save purchaseId for case of retry in store
+        setPurchaseId(purchase._id);
+        createCheckoutUrl(purchase._id)
+      } else {
+        createCheckoutUrl(purchaseId)
       }
-
-      const paymongoCheckout = await createPaymongoCheckout(purchase._id)
-      const checkoutUrl = paymongoCheckout.checkoutUrl
-
-      setPurchaseId(purchase._id)
-      setPaymentId(paymongoCheckout.paymentId)
-      
-      router.replace(checkoutUrl)
     } catch (error) {
-      console.log(error)
-      toast.error('Something went wrong')
+      console.log(error);
+      toast.error('Something went wrong');
     } finally {
-      setProcessing(false)
+      setProcessing(false);
     }
   };
 
@@ -105,7 +135,9 @@ const Payment = () => {
 
           <CardContent className="space-y-6">
             <div className="text-center">
-              <span className="text-4xl font-bold text-foreground">₱{formatCents(setting?.unitAmount ?? 0)}</span>
+              <span className="text-4xl font-bold text-foreground">
+                ₱{formatCents(setting?.unitAmount ?? 0)}
+              </span>
               <span className="text-muted-foreground ml-1">one-time</span>
             </div>
 
@@ -129,7 +161,10 @@ const Payment = () => {
 
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
               <Shield className="w-4 h-4" />
-              <span>You will be redirected to PayMongo secure checkout to complete your payment.`</span>
+              <span>
+                You will be redirected to PayMongo secure checkout to complete
+                your payment.`
+              </span>
             </div>
           </CardContent>
 

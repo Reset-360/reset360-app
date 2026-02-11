@@ -18,3 +18,21 @@ export const getClientPurchases = async () => {
     throw error.response?.data || { message: 'Something went wrong' };
   }
 }
+
+
+/**
+ * Get current active purchase
+ *
+ * @export getActivePurchase
+ * @return {*}
+ */
+export async function getActivePurchase() {
+  try {
+    const { data } = await api.get(`/me/purchases/active`);
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    throw error.response?.data || { message: 'Something went wrong' };
+  }
+}

@@ -21,7 +21,7 @@ const usePaymentStore = create<PaymentState>()(
     setPaymentId: (paymentId: string) => set({ paymentId }),
     setPaymentIntentId: (paymentIntentId: string) => set({ paymentIntentId }),
     setClientKey: (clientKey: string) => set({ clientKey }),
-    clearUser: () =>
+    resetPayment: () =>
       set({
         purchaseId: undefined,
         paymentId: undefined,

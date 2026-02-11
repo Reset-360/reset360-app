@@ -11,6 +11,9 @@ import {
   Eye,
   Package,
   Receipt,
+  RefreshCw,
+  RotateCcw,
+  RotateCw,
   User,
 } from 'lucide-react';
 
@@ -38,10 +41,13 @@ import {
   getRiskTextColor,
 } from '@/utils/adaptsResultHelper';
 import ResultDetailsDialog from '@/components/client/history/ResultDetailsDialog';
-import { IPurchase } from '@/types/payment';
+import { EPurchaseStatus, IPurchase } from '@/types/payment';
 import { getClientPurchases } from '@/services/clientService';
 import { formatCents, formatDate } from '@/utils/formatHelper';
 import { ReceiptPreview } from '@/components/client/orders/ReceiptPreview';
+import { createPaymongoCheckout } from '@/services/paymentService';
+import { toast } from 'sonner';
+import usePaymentStore from '@/store/PaymentState';
 
 const getStatusBadgeVariant = (status: string) => {
   switch (status) {
@@ -76,6 +82,8 @@ const HistoryPage = () => {
   );
   const [receiptOpen, setReceiptOpen] = useState(false);
 
+  const setPaymentId = usePaymentStore((s) => s.setPaymentId)
+
   const userId = user?._id;
 
   useEffect(() => {
@@ -95,6 +103,25 @@ const HistoryPage = () => {
 
     fetchAll();
   }, [userId]);
+
+  const createCheckoutUrl = async (purchaseId: string) => {
+    try {
+      console.log(purchaseId)
+      const paymongoCheckout = await createPaymongoCheckout(purchaseId);
+      if (!paymongoCheckout) {
+        toast.error('An error occurred when creating a payment intent');
+        return;
+      }
+
+      const checkoutUrl = paymongoCheckout.checkoutUrl;
+      setPaymentId(paymongoCheckout.paymentId);
+
+      router.replace(checkoutUrl);
+    } catch (error) {
+      console.log(error);
+      toast.error('An error occurred when creating a payment intent');
+    }
+  };
 
   // Calculate stats
   const totalOrders = purchases.length;
@@ -259,6 +286,18 @@ const HistoryPage = () => {
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
+                    {purchase.status === EPurchaseStatus.Pending && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => {
+                          createCheckoutUrl(purchase._id);
+                        }}
+                      >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

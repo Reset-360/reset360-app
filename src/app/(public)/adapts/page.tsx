@@ -219,6 +219,9 @@ const AssessmentPage: React.FC = () => {
   const handleAnswerChange = useCallback(
     (questionId: number, value: string) => {
       setAnswer(questionId, Number(value));
+
+      // For testing only
+      if (questionId < questions.length) setCurrentQuestion(questionId)
     },
     [setAnswer]
   );
@@ -329,7 +332,7 @@ const AssessmentPage: React.FC = () => {
       {/* Navigation */}
       <div className="w-full px-4 pb-8">
         <div className="max-w-4xl mx-auto flex justify-center items-center gap-4">
-          {/* <div className="text-center">
+          <div className="text-center">
             <Button
               onClick={handlePrev}
               // disabled={currentQuestion !== 0}
@@ -340,7 +343,7 @@ const AssessmentPage: React.FC = () => {
               <ArrowLeft className="w-4 h-4" />
               Previous
             </Button>
-          </div> */}
+          </div>
 
           <div className="text-center">
             <Button
