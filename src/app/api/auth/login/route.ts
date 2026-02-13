@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
   const response = NextResponse.json({ success: true });
 
-  // 🔥 This fixes your staging issue
+  // 🔥 This fixes staging issue
   response.cookies.set('accessToken', data.accessToken, {
     httpOnly: true,
     secure: true,

@@ -2,8 +2,6 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request, { params }: any) {
-  console.log('call from /me')
-
   const cookie = await cookies();
   const token = cookie.get('accessToken')?.value;
 
@@ -22,5 +20,16 @@ export async function GET(req: Request, { params }: any) {
 
   const data = await apiRes.json();
 
-  return NextResponse.json(data, { status: apiRes.status });
+  const response = NextResponse.json(data);
+
+  // 🔥 This fixes staging issue
+  response.cookies.set('role', data.role, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60,
+  });
+
+  return response;
 }

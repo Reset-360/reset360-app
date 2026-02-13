@@ -4,23 +4,16 @@ import { decodeJwt } from 'jose'; // Lightweight and Edge-compatible
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get('accessToken')?.value;
+  const role = req.cookies.get('role')?.value;
   const url = req.nextUrl.clone();
 
-  if (!token) {
+  if (!token || !role) {
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
   try {
-    // 1. Decode the token
-    const payload = decodeJwt(token);
-
-    console.log(payload)
-
-    // 2. Extract the role (ensure your backend includes 'role' in the JWT payload)
-    const role = payload.role as 'CLIENT' | 'COACH' | 'ADMIN' | undefined;
-
-    // 3. Role-based protection logic
+    // 1. Role-based protection logic
     if (role === 'CLIENT' && !url.pathname.startsWith('/client')) {
       url.pathname = '/client/dashboard'; // Redirect to their actual home
       return NextResponse.redirect(url);

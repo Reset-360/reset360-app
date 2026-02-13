@@ -35,7 +35,7 @@ export const registerUser = async (request: RegisterParams) => {
 // 🙋‍♂️ Fetch current authenticated user
 export const getUser = async () => {
   try {
-    const { data } = await api.get('/auth/me'); // 🔍 Get user info
+    const { data } = await axios.get('/api/auth/me'); // 🔍 Get user info
     return data; // 📦 Return user data
   } catch (error: any) {
     throw error.response?.data || { message: 'Something went wrong' }; // ❌ Handle fetch error
@@ -45,9 +45,7 @@ export const getUser = async () => {
 // 🚪 Logout user and clear token
 export const logoutUser = async () => {
   try {
-    await api.post('/auth/logout'); // 📤 Send logout request
-
-    localStorage.removeItem(ACCESS_TOKEN); // 🧹 Remove token from localStorage
+    await axios.post('/api/auth/logout'); // 📤 Send logout request
   } catch (error: any) {
     throw error.response?.data || { message: 'Logout failed' }; // ❌ Handle logout error
   }
@@ -57,5 +55,5 @@ export const logoutUser = async () => {
 export const isAuthenticated = () => {
   if (typeof window === 'undefined') return false; // 🖥️ Ensure running in browser
   const user = useAuthStore.getState().user; // 👤 Get user from store
-  return !!user && !!localStorage.getItem(ACCESS_TOKEN); // 🔍 Check presence of user and token
+  return !!user; // 🔍 Check presence of user and token
 };

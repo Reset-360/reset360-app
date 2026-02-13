@@ -55,4 +55,8 @@
 - Fix redirect on user registration
 
 # ✅ Completed Tasks — 2026-02-10
+
 - Get previous unpaid purchase, and retry for payment
+- Add Individual pricing
+- Add Tier pricing
+- Add next routes (proxy) to use accessTokens for redirects
