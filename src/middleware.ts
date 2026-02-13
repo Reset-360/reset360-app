@@ -5,8 +5,7 @@ import { decodeJwt } from 'jose'; // Lightweight and Edge-compatible
 export function middleware(req: NextRequest) {
   const token = req.cookies.get('accessToken')?.value;
   const url = req.nextUrl.clone();
-  console.log(req.cookies)
-  console.log('token', token)
+
   if (!token) {
     url.pathname = '/login';
     return NextResponse.redirect(url);

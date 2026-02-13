@@ -1,12 +1,13 @@
 import { LoginParams, RegisterParams } from '@/types/auth';
 import api from '@/lib/axios';
+import axios from 'axios';
 import { ACCESS_TOKEN } from '@/constants/storage-keys';
 import useAuthStore from '@/store/AuthState';
 
 // 🔐 Login user and store access token
 export const loginUser = async (request: LoginParams) => {
   try {
-    const { data } = await api.post('/auth/login', request); // 📤 Send login request
+    const { data } = await axios.post('/api/auth/login', request); // 📤 Send login request
 
     const newAccessToken = data?.accessToken; // 🧾 Extract access token
     localStorage.setItem(ACCESS_TOKEN, newAccessToken); // 💾 Save token to localStorage

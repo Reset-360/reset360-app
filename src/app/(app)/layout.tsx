@@ -15,7 +15,6 @@ export default function ClientRootLayout({
   children: React.ReactNode;
 }>) {
   const user = useAuthStore(state => state.user);
-  console.log('user from client', user)
 
   if (!user) {
     return (
