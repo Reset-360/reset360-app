@@ -21,7 +21,7 @@ export const loginUser = async (request: LoginParams) => {
 // 📝 Register user and store access token
 export const registerUser = async (request: RegisterParams) => {
   try {
-    const { data } = await api.post('/auth/register', request); // 📤 Send registration request
+    const { data } = await axios.post('/api/proxy/auth/register', request); // 📤 Send registration request
 
     const newAccessToken = data?.accessToken; // 🧾 Extract access token
     localStorage.setItem(ACCESS_TOKEN, newAccessToken); // 💾 Save token to localStorage
@@ -35,7 +35,7 @@ export const registerUser = async (request: RegisterParams) => {
 // 🙋‍♂️ Fetch current authenticated user
 export const getUser = async () => {
   try {
-    const { data } = await axios.get('/api/auth/me'); // 🔍 Get user info
+    const { data } = await axios.get('/api/proxy/auth/me'); // 🔍 Get user info
     return data; // 📦 Return user data
   } catch (error: any) {
     throw error.response?.data || { message: 'Something went wrong' }; // ❌ Handle fetch error
@@ -45,7 +45,7 @@ export const getUser = async () => {
 // 🚪 Logout user and clear token
 export const logoutUser = async () => {
   try {
-    await api.post('/auth/logout'); // 📤 Send logout request
+    await axios.post('/api/proxy/auth/logout'); // 📤 Send logout request
 
     localStorage.removeItem(ACCESS_TOKEN); // 🧹 Remove token from localStorage
   } catch (error: any) {
