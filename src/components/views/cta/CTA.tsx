@@ -2,16 +2,17 @@ import { ArrowRight, Heart } from "lucide-react";
 import Pricing from '../packages/Pricing';
 import { Button } from '../../ui/button';
 import { useRouter } from 'next/navigation';
+import OrganizationHowItWorks from '../how-it-works/OrganizationHowItWorks';
 
 const CTA = () => {
   const router = useRouter()
 
-  const handleTakeAdapts = () => {
-    router.push('/adapts')
+  const handleStartOrganization = () => {
+    router.push('/organizations')
   }
 
   return (
-    <section id='start' className="pt-24 relative overflow-hidden">
+    <section id='organization' className="pt-24 relative overflow-hidden">
       {/* Gradient background */}
       <div className="absolute inset-0 gradient-hero opacity-95" />
       
@@ -22,11 +23,13 @@ const CTA = () => {
           </div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight font-main">
-            Ready to Reset Your Mental Wellness?
+            Want ADAPTS for Your School or Organization?
           </h2>
           
           <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
-            Join thousands who have found stigma-free support with Reset360. 
+            Empower your community with stigma-free mental wellness assessments. 
+            Purchase seat codes in bulk, distribute them effortlessly, and 
+            track progress — all from one dashboard. 
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -34,19 +37,16 @@ const CTA = () => {
               variant="accent" 
               size="lg" 
               className="group bg-violet-600 hover:bg-accent-light shadow-accent text-lg"
-              onClick={handleTakeAdapts}
+              onClick={handleStartOrganization}
             >
-              Take ADAPTS Assessment Today
+              Get Started For Your Organization
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
-
-          <p className="text-xl md:text-2xl opacity-90 leading-relaxed">
-            OR
-          </p>
         </div>
       </div>
 
+      <OrganizationHowItWorks />
       <Pricing />
     </section>
   );

@@ -15,3 +15,19 @@ export const getIndividualPricing = async () => {
     throw error.response?.data || { message: 'Fetch failed' };
   }
 }
+
+/**
+ * Fetch Individual Adapts Setting
+ *
+ * @return {*} 
+ */
+export const getTierPricing = async () => {
+  try {
+    const { data } = await api.get(`/settings/adapts/organization/pricing`);
+
+    return data?.tiers ?? [];
+  } catch (error: any) {
+    console.log(error)
+    throw error.response?.data || { message: 'Fetch failed' };
+  }
+}

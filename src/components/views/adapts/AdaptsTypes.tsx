@@ -59,7 +59,7 @@ const AdaptsTypes = () => {
                 <h3 className="text-2xl font-semibold text-primary font-robot leading-none">
                   {type.title}
                 </h3>
-                <p className="text-xl text-muted-foreground leading-relaxed">
+                <p className="text-md text-muted-foreground leading-relaxed">
                   {type.target}
                 </p>
                 <div className="relative rounded-sm overflow-hidden">

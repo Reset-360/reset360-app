@@ -19,6 +19,7 @@ import CTA from '@/components/views/cta/CTA';
 import Footer from '@/components/layout/PageFooter';
 import AdaptsTypes from '@/components/views/adapts/AdaptsTypes';
 import { useLogout } from '@/hooks/useLogout';
+import OrganizationCTA from '@/components/views/cta/OrganizationCTA';
 
 export default function Home() {
   const logout = useLogout()
@@ -72,7 +73,7 @@ export default function Home() {
       <AboutAdapts />
       <AdaptsTypes />
       <HowItWorks />
-      <CoachPreview />
+      {/* <CoachPreview /> */}
       <CTA />
 
       <Footer />

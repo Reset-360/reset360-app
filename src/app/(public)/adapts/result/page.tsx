@@ -69,11 +69,11 @@ const ResultsPage = () => {
   }, [mounted, user, hasCompleted, assessment, router]);
 
   useEffect(() => {
-    if (mounted && clientProfile) {
+    if (mounted && clientProfile && totalRating) {
       const tScore = estimateTscore(totalRating, clientProfile!);
       setEstimatedTScore(tScore);
     }
-  }, [mounted, clientProfile]);
+  }, [mounted, clientProfile, totalRating]);
 
   
   const onBackToHome = () => {

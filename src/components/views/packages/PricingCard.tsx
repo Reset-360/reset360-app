@@ -1,69 +1,94 @@
+import { Card, CardContent } from '@/components/ui/card';
 import clsx from 'clsx';
-import numeral from 'numeral';
 import React, { useState } from 'react';
+import { IAdaptsPriceTier } from '@/types/settings';
+import { Badge } from '@/components/ui/badge';
+import { Check } from 'lucide-react';
+import { formatCents } from '@/utils/formatHelper';
+import { Button } from '@/components/ui/button';
 
 type PricingCardProps = {
-  title: string;
-  description: string;
-  price: string;
-  onClick?: () => void;
+  tier: IAdaptsPriceTier;
   active?: boolean;
+  discount: number;
+  index: number
 };
 
 const PricingCard: React.FC<PricingCardProps> = ({
-  title,
-  description,
-  price = 0,
-  onClick,
+  tier,
   active,
+  discount,
+  index
 }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div
+    <Card
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={clsx(
-        'rounded-sm shadow hover:shadow-lg transition',
-        active || hovered ? 'bg-violet-600' : 'bg-white text-foreground'
-      )}
+      className={clsx('rounded-sm shadow hover:shadow-lg transition')}
+      data-aos="fade-up"
+      data-aos-delay={100 * index}
     >
-      <div className="text-left border-b border-violet-300 p-6 pb-1 h-45 flex flex-col justify-between">
-        <div className="">
-          <span
-            className={clsx(
-              'rounded-sm px-5 py-2',
-              active ? 'bg-white text-violet-600' : 'bg-violet-500 text-white',
-              'group-hover:bg-white group-hover:text-violet-600'
-            )}
-          >
-            {title}
-          </span>
-          <p className="leading-none my-4">{description}</p>
+      <CardContent className="relative text-left flex flex-col justify-between h-full">
+        <div className="relative z-10">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-semibold text-card-foreground">
+              {tier.name}
+            </h3>
+            {active && <Badge variant="default">Most Popular</Badge>}
+          </div>
+          <div className="flex items-center gap-3 mb-1"></div>
+
+          <p className="text-muted-foreground text-xs mb-5">
+            {tier.description}
+          </p>
+
+          <div className="mb-5">
+            <div className="flex items-baseline gap-1">
+              <span className="text-muted-foreground text-lg">₱</span>
+              <span className="text-4xl font-bold text-gradient">
+                {formatCents(tier.unitAmount)}
+              </span>
+              <span className="text-muted-foreground text-sm">/seat</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <p className="text-muted-foreground text-xs mt-1">
+                {tier.minQty} - {tier.maxQty} seats
+              </p>
+              {discount > 0 ? (
+                <span className="text-xs text-accent">
+                  Save ₱{formatCents(discount)}/seat
+                </span>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
+
+          <ul className="space-y-2.5 mb-6">
+            {tier.features.map((f, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-2 text-sm text-muted-foreground"
+              >
+                <Check className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <p className="text-3xl font-semibold transition">
-          ₱{numeral(price).divide(100).format('0,0.00')}{' '}
-          <span className={clsx('text-sm font-normal font-roboto text-white')}>
-            /month
-          </span>
-        </p>
-      </div>
-
-      <div className="px-6 py-4 flex items-end justify-end">
-        <button
-          onClick={onClick}
-          className={clsx(
-            'py-1 px-5 rounded-sm cursor-pointer',
-            active || hovered
-              ? 'bg-white text-violet-600'
-              : 'border border-violet-600'
-          )}
+        <Button
+          variant={active || hovered ? 'default' : 'outline'}
+          size="lg"
+          className="w-full"
         >
-          Select
-        </button>
-      </div>
-    </div>
+          Register
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 
