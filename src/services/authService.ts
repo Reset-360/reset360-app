@@ -35,7 +35,7 @@ export const registerUser = async (request: RegisterParams) => {
 // 🙋‍♂️ Fetch current authenticated user
 export const getUser = async () => {
   try {
-    const { data } = await api.get('/auth/me'); // 🔍 Get user info
+    const { data } = await axios.get('/api/auth/me'); // 🔍 Get user info
     return data; // 📦 Return user data
   } catch (error: any) {
     throw error.response?.data || { message: 'Something went wrong' }; // ❌ Handle fetch error

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  console.log('calling from next route: /login')
   const body = await req.json();
 
   const apiRes = await fetch(
