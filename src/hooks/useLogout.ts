@@ -1,8 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import api from '@/lib/axios'
-import { ACCESS_TOKEN } from '@/constants/storage-keys'
 import useAuthStore from '@/store/AuthState'
 import useEntitlementStore from '@/store/EntitlementState'
 import useQuizStore from '@/store/QuizState'

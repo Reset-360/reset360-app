@@ -54,9 +54,15 @@
 - Fix redirects when user has no valid token
 - Fix redirect on user registration
 
-# ✅ Completed Tasks — 2026-02-10
+# ✅ Completed Tasks — 2026-02-12
 
 - Get previous unpaid purchase, and retry for payment
 - Add Individual pricing
 - Add Tier pricing
+
+# ✅ Completed Tasks — 2026-02-13
+
 - Add next routes (proxy) to use accessTokens for redirects
+- Fix auth routes, make sure post logout is successful
+- Fix registaraion flow
+- Update tier pricing cards

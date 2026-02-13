@@ -1,36 +1,45 @@
-import axios from 'axios';
-import { cookies } from 'next/headers';
+// src/app/api/auth/logout/route.ts
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
-export async function POST(req: Request, { params }: any) {
-  const cookie = await cookies();
-  const token = cookie.get('accessToken')?.value;
+export async function POST(req: Request) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('accessToken')?.value;
 
   if (!token) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
-    {
+  try {
+    // Call backend logout endpoint with fetch
+    const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-    }
-  );
+      credentials: 'include',
+    });
 
-    // Build response
+    if (!apiRes.ok) {
+      throw new Error(`Logout failed: ${apiRes.status}`);
+    }
+  } catch (err) {
+    console.error('Backend logout failed', err);
+  }
+
   const response = NextResponse.json({ message: 'Logged out successfully' });
 
   const isProd = process.env.NODE_ENV === 'production';
 
-  // Clear cookies by setting them with maxAge=0
+  // Clear cookies
   response.cookies.set('accessToken', '', {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
     path: '/',
     maxAge: 0,
+    expires: new Date(0),
   });
 
   response.cookies.set('role', '', {
@@ -39,6 +48,7 @@ export async function POST(req: Request, { params }: any) {
     sameSite: isProd ? 'none' : 'lax',
     path: '/',
     maxAge: 0,
+    expires: new Date(0),
   });
 
   return response;

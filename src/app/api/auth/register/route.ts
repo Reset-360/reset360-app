@@ -5,9 +5,9 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Call backend login endpoint
+    // Call backend register endpoint
     const apiRes = await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
       body,
       { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
     );
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const data = apiRes.data;
 
     // Build response
-    const response = NextResponse.json({ message: 'Login successfully', user: data.user });
+    const response = NextResponse.json({ message: 'Registered successfully', user: data.user });
 
     const isProd = process.env.NODE_ENV === 'production';
 
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error('Register failed', err.response?.data || err.message);
     return NextResponse.json(
-      { error: err.response?.data?.message || 'Login failed' },
+      { error: err.response?.data?.message || 'Registration failed' },
       { status: err.response?.status || 500 }
     );
   }

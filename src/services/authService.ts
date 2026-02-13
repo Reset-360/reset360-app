@@ -1,17 +1,11 @@
 import { LoginParams, RegisterParams } from '@/types/auth';
-import api from '@/lib/axios';
 import axios from 'axios';
-import { ACCESS_TOKEN } from '@/constants/storage-keys';
 import useAuthStore from '@/store/AuthState';
 
 // 🔐 Login user and store access token
 export const loginUser = async (request: LoginParams) => {
   try {
     const { data } = await axios.post('/api/auth/login', request); // 📤 Send login request
-
-    const newAccessToken = data?.accessToken; // 🧾 Extract access token
-    localStorage.setItem(ACCESS_TOKEN, newAccessToken); // 💾 Save token to localStorage
-
     return data; // 📦 Return user data
   } catch (error: any) {
     throw error.response?.data || { message: 'Login failed' }; // ❌ Handle login error
@@ -21,14 +15,10 @@ export const loginUser = async (request: LoginParams) => {
 // 📝 Register user and store access token
 export const registerUser = async (request: RegisterParams) => {
   try {
-    const { data } = await api.post('/auth/register', request); // 📤 Send registration request
-
-    const newAccessToken = data?.accessToken; // 🧾 Extract access token
-    localStorage.setItem(ACCESS_TOKEN, newAccessToken); // 💾 Save token to localStorage
-
+    const { data } = await axios.post('/api/auth/register', request); // 📤 Send registration request
     return data; // 📦 Return user data
   } catch (error: any) {
-    throw error.response?.data || { message: 'Login failed' }; // ❌ Handle registration error
+    throw error.response?.data || { message: 'Register failed' }; // ❌ Handle registration error
   }
 };
 
