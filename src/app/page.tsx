@@ -19,7 +19,6 @@ import CTA from '@/components/views/cta/CTA';
 import Footer from '@/components/layout/PageFooter';
 import AdaptsTypes from '@/components/views/adapts/AdaptsTypes';
 import { useLogout } from '@/hooks/useLogout';
-import OrganizationCTA from '@/components/views/cta/OrganizationCTA';
 
 export default function Home() {
   const logout = useLogout()
@@ -41,6 +40,8 @@ export default function Home() {
           logout('/')
         }
       } catch (err) {
+        console.log('Logged from main page')
+        console.log(err)
         // If error, also clear user
         await logoutUser();
       } finally {

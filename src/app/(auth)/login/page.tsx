@@ -29,7 +29,7 @@ const LoginPage = () => {
       const response = await loginUser(values);
       const user = await getUser();
       const profile = await getClientProfile(user._id);
-
+      
       // setup store data
       setToken(response.accessToken);
       setUser(user);
