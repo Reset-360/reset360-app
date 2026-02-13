@@ -23,6 +23,7 @@ export function useRoleRedirect() {
 
     if (target) {
       router.push(target);
+      console.log('redirect to ', target)
     } else {
       toast.error('Unauthorized access.');
     }

@@ -46,6 +46,7 @@ const LoginPage = () => {
       }
 
       renderApiError(err);
+      console.log(err)
     } finally {
       setSubmitting(false);
     }
