@@ -38,22 +38,29 @@ const Payment = () => {
   const setPaymentId = usePaymentStore((s) => s.setPaymentId);
 
   useEffect(() => {
+    const fetchActivePurchase = async () => {
+      const currentPurchase = await getActivePurchase();
+
+      if (currentPurchase) {
+        console.log('has current purchase');
+        setPurchaseId(currentPurchase._id);
+      }
+    };
+
     const fetchSettings = async () => {
       try {
-        const [setting, currentPurchase] = await Promise.all([getIndividualPricing(), getActivePurchase()]);
+        const setting = await getIndividualPricing();
         setSetting(setting);
-
-        if (currentPurchase) {
-          console.log('has current purchase')
-          setPurchaseId(currentPurchase._id)
-        }
-        
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       } finally {
         setIsLoading(false);
       }
     };
+
+    if (user) {
+      fetchActivePurchase()
+    }
 
     fetchSettings();
   }, []);
@@ -97,9 +104,9 @@ const Payment = () => {
 
         // Save purchaseId for case of retry in store
         setPurchaseId(purchase._id);
-        createCheckoutUrl(purchase._id)
+        createCheckoutUrl(purchase._id);
       } else {
-        createCheckoutUrl(purchaseId)
+        createCheckoutUrl(purchaseId);
       }
     } catch (error) {
       console.log(error);

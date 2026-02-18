@@ -46,7 +46,7 @@ const OrganizationHowItWorks = () => {
   };
 
   return (
-    <div id="how-it-works" className="pb-16 relative overflow-hidden">
+    <div id="how-it-works" className="pb-20 relative overflow-hidden px-4">
       <Card className="max-w-6xl mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-4">
           <h2 className="text-3xl text-foreground font-main font-bold mb-2">

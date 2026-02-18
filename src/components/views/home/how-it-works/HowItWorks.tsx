@@ -1,12 +1,10 @@
 import {
-  ArrowRight,
   ClipboardCheck,
   Sparkles,
   MessageCircle,
   TrendingUp,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import IndividualPricing from '../packages/IndividualPricing';
+import IndividualPricing from '../IndividualPricing';
 
 const steps = [
   {
@@ -40,7 +38,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="pb-16 relative overflow-hidden">
+    <section id="how-it-works" className="pb-25 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16 ">
           <h2 className="text-3xl font-bold font-main mb-2">How It Works</h2>
@@ -49,7 +47,7 @@ const HowItWorks = () => {
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto">
+        <div className="mb-5 max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
             {/* Connection line for desktop */}
             <div className="hidden lg:block absolute top-16 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-accent to-primary opacity-20" />
@@ -112,7 +110,7 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        <IndividualPricing />
+        <IndividualPricing/>
       </div>
     </section>
   );

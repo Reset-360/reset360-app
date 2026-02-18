@@ -66,3 +66,13 @@
 - Fix auth routes, make sure post logout is successful
 - Fix registaraion flow
 - Update tier pricing cards
+- Fix auth middleware and use next auth cookies for role redirects
+
+# ✅ Completed Tasks — 2026-02-16
+
+- Initiate Org Form
+
+# ✅ Completed Tasks — 2026-02-17
+
+- Complete Org Stepper Form Registration
+- Add Privacy, Terms of Service, DPA agreements

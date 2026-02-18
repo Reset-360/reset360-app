@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { isAuthenticated } from '@/services/authService';
 import AvatarMenu from './AvatarMenu';
 import useAuthStore from '@/store/AuthState';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 const DesktopNavigation = () => {
+  const router = useRouter()
   const pathname = usePathname()
 
   const user = useAuthStore(s => s.user)
@@ -31,6 +33,9 @@ const DesktopNavigation = () => {
   if (pathname == '/organizations') {
     return (
       <div className="hidden md:flex space-x-8 text-gray-700 font-medium items-center">
+        <NavLinkItem href="/" title="Home" />
+        <NavLinkItem href="#how-it-works" title="How It Works" />
+        <NavLinkItem href="#pricing" title="Pricing" />
         {authLink}
       </div>
     );

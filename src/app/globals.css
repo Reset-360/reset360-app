@@ -168,3 +168,7 @@ body {
   font-family: var(--font-label), Arial, Helvetica, sans-serif;
   font-size: 16px;
 }
+
+html {
+  scroll-behavior: smooth;
+}

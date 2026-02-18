@@ -1,8 +1,8 @@
 import { ArrowRight, Heart } from "lucide-react";
-import Pricing from '../packages/Pricing';
+import Pricing from './packages/Pricing';
 import { Button } from '../../ui/button';
 import { useRouter } from 'next/navigation';
-import OrganizationHowItWorks from '../how-it-works/OrganizationHowItWorks';
+import OrganizationHowItWorks from './how-it-works/OrganizationHowItWorks';
 
 const CTA = () => {
   const router = useRouter()
@@ -12,11 +12,11 @@ const CTA = () => {
   }
 
   return (
-    <section id='organization' className="pt-24 relative overflow-hidden">
+    <section id='organization' className="pt-24 pb-20 relative overflow-hidden">
       {/* Gradient background */}
       <div className="absolute inset-0 gradient-hero opacity-95" />
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-10 pb-10">
         <div className="max-w-4xl mx-auto text-center text-primary-foreground" data-aos='fade-up'>
           <div className="inline-flex items-center gap-2 mb-6">
             <Heart className="w-8 h-8 fill-current animate-float" />

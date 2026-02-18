@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -25,19 +25,22 @@ const PrivacyPolicy = () => {
           <h1 className="text-3xl font-bold text-foreground mb-2">
             ERC Privacy Policy
           </h1>
-          <p className="text-muted-foreground">Effective Date: January 1, 2026</p>
+          <p className="text-muted-foreground">
+            Effective Date: January 1, 2026
+          </p>
         </div>
 
         {/* Content */}
         <div className="bg-card rounded-xl border border-border p-6 md:p-8 space-y-8 text-foreground/90 leading-relaxed">
           <p>
-            Emotional Reset Center (&quot;ERC&quot;, &quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is committed to protecting your privacy and
-            ensuring the security of your personal data. This Privacy Policy
-            explains how we collect, use, store, disclose, and protect personal
-            information in compliance with the Data Privacy Act of 2012
-            (Republic Act No. 10173) and its Implementing Rules and Regulations,
-            as enforced by the National Privacy Commission (NPC) of the
-            Philippines.
+            Emotional Reset Center (&quot;ERC&quot;, &quot;we&quot;,
+            &quot;our&quot;, or &quot;us&quot;) is committed to protecting your
+            privacy and ensuring the security of your personal data. This
+            Privacy Policy explains how we collect, use, store, disclose, and
+            protect personal information in compliance with the Data Privacy Act
+            of 2012 (Republic Act No. 10173) and its Implementing Rules and
+            Regulations, as enforced by the National Privacy Commission (NPC) of
+            the Philippines.
           </p>
           <p>
             By accessing or using ERC services, platforms, assessments, or
@@ -47,18 +50,32 @@ const PrivacyPolicy = () => {
 
           {/* Privacy Summary */}
           <section className="bg-primary/10 border border-info/30 rounded-lg p-5">
-            <h2 className="text-xl font-semibold text-foreground mb-3">Privacy Summary (Short Form)</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-3">
+              Privacy Summary (Short Form)
+            </h2>
             <p className="mb-3">
-              ERC collects and processes personal data in accordance with the Data Privacy Act of 2012 (RA 10173).
+              ERC collects and processes personal data in accordance with the
+              Data Privacy Act of 2012 (RA 10173).
             </p>
             <p className="mb-3">
-              We collect only the information you voluntarily provide, including assessment responses and basic identifying details when required, for the purposes of self-reflection, screening, coaching support, and program planning. ADAPTS and other ERC assessments are not diagnostic or clinical tools.
+              We collect only the information you voluntarily provide, including
+              assessment responses and basic identifying details when required,
+              for the purposes of self-reflection, screening, coaching support,
+              and program planning. ADAPTS and other ERC assessments are not
+              diagnostic or clinical tools.
             </p>
             <p className="mb-3">
-              Your responses are treated as confidential and accessed only by authorized personnel. We do not sell personal data and do not share individual responses with third parties without consent, except when required by law or to protect safety. Data may be reported only in anonymized or aggregated form.
+              Your responses are treated as confidential and accessed only by
+              authorized personnel. We do not sell personal data and do not
+              share individual responses with third parties without consent,
+              except when required by law or to protect safety. Data may be
+              reported only in anonymized or aggregated form.
             </p>
             <p>
-              ERC applies reasonable security measures to protect your data and retains it only for as long as necessary. You have the right to access, correct, or withdraw consent regarding your personal data, subject to applicable laws.
+              ERC applies reasonable security measures to protect your data and
+              retains it only for as long as necessary. You have the right to
+              access, correct, or withdraw consent regarding your personal data,
+              subject to applicable laws.
             </p>
             <p className="mt-4 text-sm text-muted-foreground">
               👉 Read the full ERC Privacy Policy below.

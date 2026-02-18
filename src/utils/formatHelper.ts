@@ -13,7 +13,10 @@ export function toCents(amount: number | string): number {
  * Convert a value in cents (integer) back to standard currency units.
  */
 export function fromCents(cents: number): number {
-  return numeral(cents).divide(100).value() ?? 0
+  if (cents) {
+return numeral(cents).divide(100).value() ?? 0
+  }
+  return 0
 }
 
 /**

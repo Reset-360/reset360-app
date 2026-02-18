@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
 import { formatCents } from '@/utils/formatHelper';
 import { Button } from '@/components/ui/button';
+import usePaymentStore from '@/store/PaymentState';
+import { useRouter } from 'next/navigation';
+import useOrgRegistrationStore from '@/store/OrgRegistrationState';
 
 type PricingCardProps = {
   tier: IAdaptsPriceTier;
@@ -20,7 +23,15 @@ const PricingCard: React.FC<PricingCardProps> = ({
   discount,
   index
 }) => {
+  const router = useRouter();
+
   const [hovered, setHovered] = useState(false);
+  const setSelectedTierId = useOrgRegistrationStore(s => s.setSelectedTierId);
+
+  const handleRegister = () => {
+    setSelectedTierId(tier.id)
+    router.push('/organizations')
+  }
 
   return (
     <Card
@@ -84,8 +95,9 @@ const PricingCard: React.FC<PricingCardProps> = ({
           variant={active || hovered ? 'default' : 'outline'}
           size="lg"
           className="w-full"
+          onClick={handleRegister}
         >
-          Register
+          Select Plan
         </Button>
       </CardContent>
     </Card>

@@ -37,23 +37,22 @@ const IndividualPricing = () => {
 
   return (
     <Card
-      className="mt-15 max-w-5xl  mx-auto"
+      className="mt-20 max-w-5xl  mx-auto"
       data-aos="fade-up"
       data-aos-delay={200}
     >
-      <h2 className="text-sm uppercase tracking-widest text-muted-foreground mb-6 text-center">
+      <h2 className="text-sm uppercase tracking-widest text-muted-foreground text-center">
         ADAPTS Individual Assessment
       </h2>
       <div className="mx-auto group">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center">
           {/* Left: Info */}
-          <div className="flex-1">
+          <div className="flex-1 p-8 lg:px-0">
             <h3 className="text-2xl font-semibold text-foreground mb-2">
               Single Assessment
             </h3>
-            <p className="text-muted-foreground text-sm mb-4">
-              Gain meaningful insights with every assessment. Your journey to
-              emotional well‑being starts here.
+            <p className="max-w-2xl mx-auto text-muted-foreground text-sm mb-4">
+              Measuring what matters: anxiety and depression, empowering individuals and schools to build stronger support systems.
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
               {tests.map((test) => (
@@ -77,7 +76,7 @@ const IndividualPricing = () => {
           {/* Right: Price + CTA */}
           <div className="flex flex-col items-center md:items-end gap-4 md:min-w-[180px]">
             <div className="text-center md:text-right">
-              <div className="flex items-baseline gap-1 justify-center md:justify-end">
+              <div className="flex items-baseline gap-1 justify-center md:justify-end pt-4">
                 <span className="text-muted-foreground text-lg">₱</span>
                 <span className="text-5xl text-foreground font-bold text-gradient">
                   {formatCents(baseAmount)}
@@ -94,7 +93,7 @@ const IndividualPricing = () => {
               </span>
             </div>
             <div
-              className="text-center mt-16"
+              className="text-center mt-2 xl:mt-16 w-full px-8 md:px-0"
               data-aos="fade-up"
               data-aos-delay={200}
             >
@@ -102,7 +101,7 @@ const IndividualPricing = () => {
                 variant="default"
                 size="lg"
                 onClick={handleStartJourney}
-                className="rou w-full md:w-auto"
+                className="flex w-full md:w-auto"                
               >
                 Start Your Journey
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
