@@ -15,10 +15,16 @@ import { useRoleRedirect } from '@/hooks/useRoleRedirect';
 import { getClientProfile } from '@/services/clientService';
 import useAuthStore from '@/store/AuthState';
 import { EUserRole } from '@/types/user';
+import { getMemberProfile, getOrgLatestPurchase } from '@/services/organizationService';
+import { useOrgStore } from '@/store/OrgState';
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
+  const router = useRouter();
+
   const { redirectByRole } = useRoleRedirect();
-  const { setUser, setClientProfile, setToken } = useAuthStore(state => state)
+  const { setUser, setClientProfile, setOrgMember } = useAuthStore(state => state);
+  const { setOrganization, setPurchase, setSeatBatch } = useOrgStore(state => state);
 
   const handleLoginSubmit = async (
     values: any,
@@ -28,17 +34,49 @@ const LoginPage = () => {
     try {
       const response = await loginUser(values);
       const user = await getUser();
-      const profile = await getClientProfile(user._id);
-      
-      // setup store data
-      setToken(response.accessToken);
-      setUser(user);
 
-      if (user.role == EUserRole.CLIENT) {
-        setClientProfile(profile);
+      if (user.role == EUserRole.ADMIN) {
+        setErrors({ password: 'Username or password did not match.'})
+        return
       }
       
-      redirectByRole(user.role)
+      // setup store data
+      setUser(user);
+
+      switch (user.role) {
+        case EUserRole.CLIENT: {
+          const profile = await getClientProfile(user._id);
+          setClientProfile(profile);
+          break;
+        }
+        case EUserRole.COACH: {
+          console.log('prep coach');
+          break;
+        }
+        case EUserRole.ORG_ADMIN: {
+          const member = await getMemberProfile(user._id);
+          const org = member.organization;
+          setOrgMember(member)
+          setOrganization(member.organization)
+          
+          const dataRecord = await getOrgLatestPurchase(org._id)
+          if (dataRecord) {
+            setPurchase(dataRecord.purchase)
+            setSeatBatch(dataRecord.batch)
+
+            if (needsSeatGeneration(dataRecord.batch)) {
+              console.log('need generating')
+              // Go to setup screen FIRST
+              router.push("/org-setup");
+              return; // stop normal redirect
+            }
+          }
+          
+          break;
+        }
+      }
+
+      redirectByRole(user.role);
     } catch (err: any) {
       if (err.message == 'Invalid credentials' || err.id == 'Profile not found') {
         setErrors({ password: 'Username or password did not match.'})
@@ -172,6 +210,12 @@ const LoginPage = () => {
       </div>
     </div>
   );
+};
+
+const needsSeatGeneration = (batch?: any) => {
+  if (!batch) return false;
+  if (batch.status === "DONE") return false;
+  return (batch.seatsIssued ?? 0) < (batch.totalSeats ?? 0) || batch.status === "GENERATING";
 };
 
 export default LoginPage;

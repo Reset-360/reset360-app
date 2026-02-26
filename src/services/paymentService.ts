@@ -1,4 +1,4 @@
-import api from '@/lib/axios';
+import api, { axios } from '@/lib/axios';
 
 /**
  * Create Individual Adapts Purchase record
@@ -54,7 +54,7 @@ export async function createPaymongoIntent(purhcaseId: string) {
  */
 export async function createPaymongoCheckout(purhcaseId: string) {
   try {
-    const { data } = await api.post(`/payments/paymongo/checkout`, {
+    const { data } = await axios.post(`/payments/paymongo/checkout`, {
       purchaseId: purhcaseId
     });
 
@@ -62,5 +62,22 @@ export async function createPaymongoCheckout(purhcaseId: string) {
   } catch (error: any) {
     console.log(error);
     throw error.response?.data || { message: 'Checkout failed' };
+  }
+}
+
+/**
+ * Create Individual Adapts Purchase record
+ *
+ * @export createIndividualPurchase
+ * @return {*}
+ */
+export async function getOrgLatestPurchase(purchaseId: string) {
+  try {
+    const { data } = await api.get(`/purchases/${purchaseId}`);
+
+    return data;
+  } catch (error: any) {
+    console.log(error);
+    throw error.response?.data || { message: 'Unable to retrieve purchase' };
   }
 }

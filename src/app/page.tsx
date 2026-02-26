@@ -17,6 +17,7 @@ import CTA from '@/components/views/home/CTA';
 import Footer from '@/components/layout/PageFooter';
 import AdaptsTypes from '@/components/views/home/adapts/AdaptsTypes';
 import { useLogout } from '@/hooks/useLogout';
+import { EUserRole } from '@/types/user';
 
 export default function Home() {
   const logout = useLogout()
@@ -33,7 +34,7 @@ export default function Home() {
     const checkUser = async () => {
       try {
         const auth = await getUser(); // e.g. API call to validate token/session
-        if (!auth) {
+        if (!auth || auth.role == EUserRole.ADMIN) {
           logout('/')
         }
       } catch (err) {
@@ -44,7 +45,11 @@ export default function Home() {
       }
     };
 
-    checkUser()
+    if (user) {
+      checkUser()
+    } else {
+      setLoaded(true)
+    }
   }, [user]);
 
   if (!isLoaded) {

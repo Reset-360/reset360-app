@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import PaymentStatusSplash from '@/components/client/payments/PaymentStatusSplash';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import OrgPaymentStatusSplash from '@/components/organization/splash/OrgPaymentStatusSplash';
 
 const PaymentSuccessPage = ({
   searchParams,
@@ -17,7 +17,7 @@ const PaymentSuccessPage = ({
         </div>
       }
     >
-      <PaymentStatusSplash purchaseId={purchaseId ? String(purchaseId) : ""} />
+      <OrgPaymentStatusSplash purchaseId={purchaseId ? String(purchaseId) : ""} />
     </Suspense>
   );
 };

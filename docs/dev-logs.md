@@ -76,3 +76,18 @@
 
 - Complete Org Stepper Form Registration
 - Add Privacy, Terms of Service, DPA agreements
+
+# ✅ Completed Tasks — 2026-02-24
+
+- Update role routes
+- Prevent Super Admin login
+- Add org route and redirects
+
+# ✅ Completed Tasks — 2026-02-25
+
+- Add /org-setup with Broadcast channel to generate seatcode on merchant onboarding
+
+# ✅ Completed Tasks — 2026-02-26
+
+- Add /org/payment/success splash screen
+- fix redirects and actions on splash screens

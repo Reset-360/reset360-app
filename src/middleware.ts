@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { decodeJwt } from 'jose'; // Lightweight and Edge-compatible
+import { EUserRole } from './types/user';
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get('accessToken')?.value;
@@ -14,13 +15,18 @@ export function middleware(req: NextRequest) {
 
   try {
     // 1. Role-based protection logic
-    if (role === 'CLIENT' && !url.pathname.startsWith('/client')) {
+    if (role === EUserRole.CLIENT && !url.pathname.startsWith('/client')) {
       url.pathname = '/client/dashboard'; // Redirect to their actual home
       return NextResponse.redirect(url);
     }
 
-    if (role === 'COACH' && !url.pathname.startsWith('/coach')) {
+    if (role === EUserRole.COACH && !url.pathname.startsWith('/coach')) {
       url.pathname = '/coach/dashboard';
+      return NextResponse.redirect(url);
+    }
+
+    if (role === EUserRole.ORG_ADMIN && !url.pathname.startsWith('/org')) {
+      url.pathname = '/org/dashboard';
       return NextResponse.redirect(url);
     }
 
@@ -35,5 +41,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/client/:path*', '/coach/:path*'],
+  matcher: ['/client/:path*', '/coach/:path*', '/org/:path*'],
 };

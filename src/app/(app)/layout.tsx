@@ -1,11 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { isAuthenticated } from '@/services/authService';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import useAuthStore from '@/store/AuthState';
-import { useRoleRedirect } from '@/hooks/useRoleRedirect';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/ui/app-sidebar';
 

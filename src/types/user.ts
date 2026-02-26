@@ -4,6 +4,7 @@ export enum EUserRole {
   ADMIN = 'ADMIN',
   COACH = 'COACH',
   CLIENT = 'CLIENT',
+  ORG_ADMIN = 'ORG_ADMIN'
 }
 
 export type IUser = {

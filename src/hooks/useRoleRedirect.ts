@@ -12,10 +12,11 @@ export function useRoleRedirect() {
       toast.error('User role not found.')
       return
     }
-    console.log('catch role', role)
+
     const routeMap: Partial<Record<EUserRole, string>> = {
       [EUserRole.CLIENT]: '/client/dashboard',
       [EUserRole.COACH]: '/coach/dashboard',
+      [EUserRole.ORG_ADMIN]: '/org/dashboard',
       [EUserRole.ADMIN]: '/',
     }
 

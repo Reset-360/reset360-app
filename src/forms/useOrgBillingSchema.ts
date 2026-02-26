@@ -38,5 +38,7 @@ export type BillingProfile = {
   agreeDpa: boolean;
   agreePrivacy: boolean;
   confirmAuthority: boolean;
+
+  totalAmount: number;
 };
 

@@ -4,6 +4,7 @@ import { persist, devtools } from 'zustand/middleware';
 import { AUTH_STORAGE } from '../constants/storage-keys';
 import { IUser } from '@/types/user';
 import { IClient } from '@/types/client';
+import { IOrganization, IOrgMember } from '@/types/organization';
 
 export type Theme = 'dark' | 'light' | 'system';
 
@@ -20,8 +21,11 @@ interface AuthState {
   coachProfile?: IClient;
   setCoachProfile: (profile: IClient) => void;
 
-  accessToken?: string;
-  setToken: (token: string) => void;
+  orgMember?: IOrgMember;
+  setOrgMember: (member: IOrgMember) => void;
+
+  organization?: IOrganization;
+  setOrganization: (org: IOrganization) => void;
 
   clearUser: () => void;
 }
@@ -35,13 +39,15 @@ const useAuthStore = create<AuthState>()(
         setUser: (user: IUser) => set(() => ({ user })),
         setClientProfile: (profile: IClient) => set(() => ({ clientProfile: profile })),
         setCoachProfile: (profile: IClient) => set(() => ({ coachProfile: profile })),
-        setToken: (token) => set({ accessToken: token }),
+        setOrgMember: (member: IOrgMember) => set(() => ({ orgMember: member })),
+        setOrganization: (org: IOrganization) => set(() => ({ organization: org })),
         clearUser: () =>
           set({
             user: undefined,
             clientProfile: undefined,
             coachProfile: undefined,
-            accessToken: undefined,
+            orgMember: undefined,
+            organization: undefined,
           }),
 
         setHasHydrated: (v) => set({ hasHydrated: v }),

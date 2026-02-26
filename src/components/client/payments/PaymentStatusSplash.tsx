@@ -15,11 +15,11 @@ import {
   IAssessmentEntitlement,
 } from '@/types/entitlement';
 
-interface PaymentStatusComponentProps {
+interface PaymentStatusSplashProps {
   purchaseId?: string
 }
 
-const PaymentStatusComponent: React.FC<PaymentStatusComponentProps> = ({ purchaseId }) => {
+const PaymentStatusSplash: React.FC<PaymentStatusSplashProps> = ({ purchaseId }) => {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
 
@@ -34,14 +34,16 @@ const PaymentStatusComponent: React.FC<PaymentStatusComponentProps> = ({ purchas
   const redirectDelay = 4000;
 
   useEffect(() => {
-    if (!purchaseId) return;
-
     const fetchPurchase = async () => {
       const { data: purchase } = await api.get(`/purchases/${purchaseId}`);
       setStatus(purchase.status);
     };
 
-    fetchPurchase();
+    if (purchaseId) {
+      fetchPurchase();
+    } else {
+      router.replace('/adapts/payment')
+    }
   }, [purchaseId]);
 
   useEffect(() => {
@@ -185,4 +187,4 @@ const PaymentStatusComponent: React.FC<PaymentStatusComponentProps> = ({ purchas
   );
 };
 
-export default PaymentStatusComponent;
+export default PaymentStatusSplash;

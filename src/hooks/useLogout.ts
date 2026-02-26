@@ -7,6 +7,7 @@ import useQuizStore from '@/store/QuizState'
 import { useCallback } from 'react'
 import { logoutUser } from '@/services/authService'
 import usePaymentStore from '@/store/PaymentState'
+import { useOrgStore } from '@/store/OrgState'
 
 export function useLogout() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export function useLogout() {
   const resetEntitlement = useEntitlementStore(state => state.resetEntitlement);
   const resetQuiz = useQuizStore(state => state.resetQuiz);
   const resetPayment = usePaymentStore(s => s.resetPayment)
+  const resetOrg = useOrgStore(s => s.resetOrgData)
 
   const handleLogout = useCallback(
     async (redirectTo = '/') => {
@@ -27,6 +29,7 @@ export function useLogout() {
         resetEntitlement();
         resetQuiz();
         resetPayment();
+        resetOrg();
 
         // Refresh and redirect
         router.refresh();

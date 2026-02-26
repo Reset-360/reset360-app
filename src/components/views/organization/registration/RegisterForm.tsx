@@ -1,31 +1,59 @@
 import { Button } from '@/components/ui/button';
 import { IAdaptsPriceTier } from '@/types/settings';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, Check, ArrowRight } from 'lucide-react';
 import useOrgRegistrationStore from '@/store/OrgRegistrationState';
 import ProgressHeader, { STEPS } from './ProgressHeader';
 import ConfirmSeatsAndPlanForm from './confirm-plan/ConfirmSeatsAndPlanForm';
 import OrganizationInfoForm from './org-profile/OrganizationInfoForm';
 import LicenseAndBillingForm from './license-billing/LicenseAndBillingForm';
+import { toast } from 'sonner';
+import { registerOrganization } from '@/services/organizationService';
+import { createPaymongoCheckout } from '@/services/paymentService';
+import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
 interface RegisterFormProps {
   tiers: IAdaptsPriceTier[];
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
+  const router = useRouter()
+
   const seatFormRef = useRef<any>(null);
   const orgFormRef = useRef<any>(null);
   const billingFormRef = useRef<any>(null);
-  const complianceFormRef = useRef<any>(null);
 
   const currentStep = useOrgRegistrationStore((s) => s.currentStep);
   const setCurrentStep = useOrgRegistrationStore((s) => s.setCurrentStep);
+  const selectedTierId = useOrgRegistrationStore((s) => s.selectedTierId);
+  const seats = useOrgRegistrationStore((s) => s.seats);
+  const orgProfile = useOrgRegistrationStore((s) => s.orgProfile);
+  const billingProfile = useOrgRegistrationStore((s) => s.billingProfile);
+  const resetRegistrationState = useOrgRegistrationStore((s) => s.resetRegistrationState);
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (loading) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [loading]);
+
 
   const goNext = () => {
-    if (currentStep < STEPS.length - 1) setCurrentStep(currentStep + 1);
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep(currentStep + 1);    
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
   const goBack = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const getStepCta = () => {
@@ -56,13 +84,111 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
     }
   };
 
-  const handleRegister = () => {
-    console.log('Register org');
+  const handleRegister = async () => {
+    if (!orgProfile || !billingProfile || !selectedTierId || !seats) {
+      toast.error('Missing required information in store');
+      return
+    }
+
+    const payload = {
+      name: orgProfile.orgName,
+      email: orgProfile.adminEmail, // organization-level email can reuse admin email if not separate
+      phone: orgProfile.adminPhone,
+      address: billingProfile.billingAddress,
+      profile: {
+        selectedTierId: selectedTierId,
+        seats: Number(seats),
+        totalAmount: billingProfile.totalAmount,
+        orgType: orgProfile.orgType,
+        industry: orgProfile.industry,
+        orgSize: orgProfile.orgSize,
+        website: orgProfile.website,
+        country: orgProfile.country,
+        taxId: orgProfile.taxId,
+        admin: {
+          name: orgProfile.adminName,
+          title: orgProfile.adminTitle,
+          email: orgProfile.adminEmail,
+          phone: orgProfile.adminPhone,
+          password: 'SecurePass123', // or collected separately
+        },
+        billing: {
+          intendedUse: billingProfile.intendedUse,
+          contact: billingProfile.billingContact || orgProfile.adminName,
+          email: billingProfile.billingEmail,
+          address: billingProfile.billingAddress,
+          vatId: billingProfile.vatId,
+        },
+        agreements: {
+          tosAcceptedAt: billingProfile.agreeTos
+            ? new Date().toISOString()
+            : undefined,
+          dpaAcceptedAt: billingProfile.agreeDpa
+            ? new Date().toISOString()
+            : undefined,
+          privacyPolicyAcceptedAt: billingProfile.agreePrivacy
+            ? new Date().toISOString()
+            : undefined,
+          acceptedByName: orgProfile.adminName,
+          acceptedByEmail: orgProfile.adminEmail,
+          acceptedByUser: undefined, // optional Mongo ObjectId
+        },
+        onboardingStatus: 'submitted',
+      },
+    };
+
+    try {
+      setLoading(true)
+
+      const orgData = await registerOrganization(payload);
+      const purchase = orgData.purchase;
+
+      if (purchase) {
+        createCheckoutUrl(purchase._id);
+        console.log('Organization registered successfully:', orgData);
+      }
+    } catch (error) {
+      setLoading(false)
+
+      console.error('Error posting organization registration:', error);
+      throw error;
+    }
   };
+
+  const createCheckoutUrl = async (purchaseId: string) => {
+      try {
+        setLoading(true)
+        const paymongoCheckout = await createPaymongoCheckout(purchaseId);
+        if (!paymongoCheckout) {
+          toast.error('An error occurred while processing payment request. Please try again.');
+          return;
+        }
+  
+        const checkoutUrl = paymongoCheckout.checkoutUrl;
+        
+        // reset registration state
+        resetRegistrationState()
+
+        // open paymongo checkout url
+        router.replace(checkoutUrl);
+      } catch (error) {
+        setLoading(false)
+
+        console.log(error);
+        toast.error('An error occurred when creating a payment intent');
+      } finally {
+        setLoading(false)
+      }
+    };
 
   return (
     <div className="py-8 px-4">
-      <div className="max-w-5xl mx-auto space-y-6">
+      { loading && (
+        <div className="fixed inset-0 flex items-center justify-center h-screen bg-primary/30 z-99">
+        <LoadingSpinner />
+      </div>)}
+
+      <div className="relative max-w-5xl mx-auto space-y-6">
         {/* Progress */}
         <ProgressHeader />
 

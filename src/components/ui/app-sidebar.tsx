@@ -12,42 +12,38 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { clientMenuItems, coachMenuItems, orgMenuItems } from '@/constants/menu';
 import { logoutUser } from '@/services/authService';
 import useAuthStore from '@/store/AuthState';
 import useEntitlementStore from '@/store/EntitlementState';
 import useQuizStore from '@/store/QuizState';
-import {
-  ClipboardClock,
-  Home,
-  LogOutIcon,
-  Receipt,
-} from 'lucide-react';
+import { EUserRole } from '@/types/user';
+import { LogOutIcon, } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-
-const items = [
-  {
-    title: 'Home',
-    url: '/client/dashboard',
-    icon: Home,
-  },
-  {
-    title: 'History',
-    url: '/client/history',
-    icon: ClipboardClock,
-  },
-  {
-    title: 'Orders',
-    url: '/client/orders',
-    icon: Receipt,
-  },
-];
+import { useMemo } from 'react';
 
 export function AppSidebar() {
   const router = useRouter();
+  const user = useAuthStore((s) => s.user);
   const clearUser = useAuthStore((state) => state.clearUser);
-  const resetQuiz = useQuizStore(state => state.resetQuiz);
+  const resetQuiz = useQuizStore((state) => state.resetQuiz);
   const resetEntitlement = useEntitlementStore((s) => s.resetEntitlement);
+
+  const role = user?.role;
+
+  const navItems = useMemo(() => {
+    switch (role) {
+      case EUserRole.CLIENT:
+        return clientMenuItems;
+      case EUserRole.COACH:
+        return coachMenuItems;
+      case EUserRole.ORG_ADMIN:
+        return orgMenuItems;
+      default:
+        return []; // or a safe default nav
+    }
+  }, [role]);
 
   // 🔒 Logging out user and redirecting to login, regardless of outcome
   const logout = async () => {
@@ -95,7 +91,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {navItems?.map((item: any) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>

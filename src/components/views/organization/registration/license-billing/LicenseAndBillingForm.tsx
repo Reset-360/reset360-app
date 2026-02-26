@@ -11,7 +11,7 @@ import {
   Mail,
   User,
 } from 'lucide-react';
-import { formatCents } from '@/utils/formatHelper';
+import { formatCents, toCents } from '@/utils/formatHelper';
 import {
   Select,
   SelectContent,
@@ -95,6 +95,8 @@ const LicenseAndBillingForm: React.FC<LicenseAndBillingFormProps> = ({
             agreeDpa: values.agreeDpa,
             agreePrivacy: values.agreePrivacy,
             confirmAuthority: values.confirmAuthority,
+
+            totalAmount: total,
           });
 
           goNext();

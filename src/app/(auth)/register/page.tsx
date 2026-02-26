@@ -40,7 +40,7 @@ minAgeDate.setFullYear(minAgeDate.getFullYear() - 6);
 const defaultDate = subYears(new Date(), 18);
 
 const RegisterPage = () => {
-  const { setUser, setClientProfile, setToken } = useAuthStore(state => state)
+  const { setUser, setClientProfile } = useAuthStore(state => state)
 
   const { redirectByRole } = useRoleRedirect();
   const [open, setOpen] = useState(false);
@@ -81,7 +81,6 @@ const RegisterPage = () => {
         const profile = await getClientProfile(user._id);
         
         // setup store data
-        setToken(regResponse.accessToken);
         setUser(user);
   
         if (user.role == EUserRole.CLIENT) {

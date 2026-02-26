@@ -1,11 +1,40 @@
-import { ClipboardClock, Settings, Grid } from 'lucide-react';
+import { ClipboardClock, Home, Receipt } from 'lucide-react';
 
 export const clientMenuItems = [
-  { label: 'Dashboard', href: '/client/dashboard', icon: Grid },
   {
-    label: 'My Appointments',
-    href: '/client/appointments',
+    title: 'Home',
+    url: '/client/dashboard',
+    icon: Home,
+  },
+  {
+    title: 'History',
+    url: '/client/history',
     icon: ClipboardClock,
   },
-  { label: 'Settings', href: '/client/settings', icon: Settings },
+  {
+    title: 'Orders',
+    url: '/client/orders',
+    icon: Receipt,
+  },
+];
+
+export const coachMenuItems = [
+  {
+    title: 'Home',
+    url: '/coach/dashboard',
+    icon: Home,
+  },
+];
+
+export const orgMenuItems = [
+  {
+    title: 'Home',
+    url: '/org/dashboard',
+    icon: Home,
+  },
+  {
+    title: 'Orders',
+    url: '/org/orders',
+    icon: Receipt,
+  },
 ];
