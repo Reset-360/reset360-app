@@ -243,7 +243,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
         <p className="text-center text-xs text-muted-foreground pb-8">
           {currentStep < STEPS.length - 1
             ? 'Your progress is saved automatically'
-            : 'You will be redirected to PayMongo secure checkout to complete your payment'}
+            : '🔒 You will be redirected to PayMongo secure checkout to complete your payment'}
         </p>
       </div>
     </div>

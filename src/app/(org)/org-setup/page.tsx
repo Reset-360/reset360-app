@@ -99,10 +99,10 @@ const OrgSetupPage = () => {
       ) {
         const remainingSeats =
           currentBatch.totalSeats - currentBatch.seatsIssued;
-        const capQty = remainingSeats > 100 ? 100 : remainingSeats;
+        const capQty = remainingSeats > 50 ? 50 : remainingSeats;
 
         // ⏱ Add delay before each request
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Check again before firing request
         if (cancelledRef.current) break;
@@ -112,6 +112,9 @@ const OrgSetupPage = () => {
           quantity: capQty,
         });
 
+        // Add second guard rail to prevent successive requests
+        if (cancelledRef.current) break;
+
         setSeatBatch(res.batch);
         setSeatsIssued(res.seatsIssued);
         currentBatch = res.batch;
@@ -120,7 +123,7 @@ const OrgSetupPage = () => {
       }
 
       if (!cancelledRef.current) {
-        setDone(true)
+        setDone(true);
       }
     };
 
