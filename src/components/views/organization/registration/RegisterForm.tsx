@@ -79,7 +79,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
       await orgFormRef.current?.submitForm();
       return;
     } else if (currentStep == 2) {
+      console.log('submit here')
       await billingFormRef.current?.submitForm();
+      handleRegister()
       return;
     }
   };
@@ -166,11 +168,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
   
         const checkoutUrl = paymongoCheckout.checkoutUrl;
         
-        // reset registration state
-        resetRegistrationState()
-
         // open paymongo checkout url
         router.replace(checkoutUrl);
+
+         // reset registration state
+        resetRegistrationState()
       } catch (error) {
         setLoading(false)
 
@@ -207,7 +209,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
           <LicenseAndBillingForm
             tiers={tiers}
             formRef={billingFormRef}
-            goNext={handleRegister}
+            goNext={goNext}
           />
         )}
 

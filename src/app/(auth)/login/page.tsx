@@ -65,9 +65,8 @@ const LoginPage = () => {
             setSeatBatch(dataRecord.batch)
 
             if (needsSeatGeneration(dataRecord.batch)) {
-              console.log('need generating')
               // Go to setup screen FIRST
-              router.push("/org-setup");
+              router.replace("/org-setup");
               return; // stop normal redirect
             }
           }

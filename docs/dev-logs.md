@@ -91,3 +91,7 @@
 
 - Add /org/payment/success splash screen
 - fix redirects and actions on splash screens
+
+# ✅ Completed Tasks — 2026-02-27
+
+- Fix missing store error when submitting org reg form
