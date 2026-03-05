@@ -2,7 +2,7 @@ import useOrgRegistrationStore from '@/store/OrgRegistrationState';
 import { IAdaptsPriceTier } from '@/types/settings';
 import React, { useMemo, useState } from 'react';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { schema } from '@/forms/useOrgBillingSchema';
+import { BillingProfile, schema } from '@/forms/useOrgBillingSchema';
 import SectionHeader from '../SectionHeader';
 import {
   Building2,
@@ -38,14 +38,14 @@ const INTENDED_USES = [
 
 interface LicenseAndBillingFormProps {
   formRef: any;
-  goNext: () => void;
   tiers: IAdaptsPriceTier[];
+  onValidSubmit?: (billingValues: BillingProfile) => void;
 }
 
 const LicenseAndBillingForm: React.FC<LicenseAndBillingFormProps> = ({
   formRef,
   tiers,
-  goNext,
+  onValidSubmit,
 }) => {
   const seats = useOrgRegistrationStore((s) => s.seats);
   const selectedTierId = useOrgRegistrationStore((s) => s.selectedTierId);
@@ -81,26 +81,22 @@ const LicenseAndBillingForm: React.FC<LicenseAndBillingFormProps> = ({
         }}
         validationSchema={schema}
         onSubmit={(values, actions) => {
-          // ✅ only runs if valid
-          setBillingProfile({
-            intendedUse: values.intendedUse || undefined,
+          const billingData = {
+          intendedUse: values.intendedUse || undefined,
+          billingContact: values.billingContact || undefined,
+          billingEmail: values.billingEmail,
+          billingAddress: values.billingAddress,
+          vatId: values.vatId || undefined,
+          agreeTos: values.agreeTos,
+          agreeDpa: values.agreeDpa,
+          agreePrivacy: values.agreePrivacy,
+          confirmAuthority: values.confirmAuthority,
+          totalAmount: total,
+        };
 
-            billingContact: values.billingContact || undefined,
-            billingEmail: values.billingEmail,
-
-            billingAddress: values.billingAddress,
-            vatId: values.vatId || undefined,
-
-            agreeTos: values.agreeTos,
-            agreeDpa: values.agreeDpa,
-            agreePrivacy: values.agreePrivacy,
-            confirmAuthority: values.confirmAuthority,
-
-            totalAmount: total,
-          });
-
-          goNext();
-          actions.setSubmitting(false);
+        setBillingProfile(billingData);
+        onValidSubmit?.(billingData); // ← pass values up directly
+        actions.setSubmitting(false);
         }}
       >
         {({ values, setFieldValue, setFieldTouched }) => (
@@ -144,7 +140,7 @@ const LicenseAndBillingForm: React.FC<LicenseAndBillingFormProps> = ({
                   {/* Intended Use (shadcn Select -> Formik) */}
                   <div>
                     <label className="text-sm font-medium text-foreground flex items-center gap-1.5 mb-1.5">
-                      <FileText className="w-4 h-4 text-primary" /> Intended Use
+                      <FileText className="w-4 h-4 text-primary" /> Intended Use <div className="text-primary">*</div>
                     </label>
 
                     <Select

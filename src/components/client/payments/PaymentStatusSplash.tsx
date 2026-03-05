@@ -42,7 +42,7 @@ const PaymentStatusSplash: React.FC<PaymentStatusSplashProps> = ({ purchaseId })
     if (purchaseId) {
       fetchPurchase();
     } else {
-      router.replace('/adapts/payment')
+      router.replace('/client/adapts/payment')
     }
   }, [purchaseId]);
 
@@ -75,7 +75,7 @@ const PaymentStatusSplash: React.FC<PaymentStatusSplashProps> = ({ purchaseId })
 
       if (elapsed >= redirectDelay) {
         clearInterval(interval);
-        router.replace('/adapts');
+        router.replace('/client/adapts/assessment');
       }
     }, 50);
 

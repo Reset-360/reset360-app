@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Open_Sans, Newsreader, Funnel_Display } from "next/font/google";
+import { DM_Sans, Funnel_Display, Playfair_Display } from "next/font/google";
 import './globals.css';
 import { Toaster } from "@/components/ui/sonner"
+import ScrollToHash from '@/components/layout/ScrollHash';
 
 export const metadata: Metadata = {
   title: 'Reset 360',
@@ -12,13 +13,13 @@ export const metadata: Metadata = {
   },
 };
 
-const newsReader = Newsreader({
+const playFair = Playfair_Display({
   variable: "--font-main",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "700", "800"],
 });
 
-const openSans = Open_Sans({
+const dmSans = DM_Sans({
   variable: "--font-secondary",
   subsets: ["latin"],
   weight: ["300", "400"],
@@ -38,9 +39,11 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body
-        className={`${openSans.variable} ${newsReader.variable} ${funnel.variable} antialiased`}
+        className={`${dmSans.variable} ${playFair.variable} ${funnel.variable} antialiased`}
       >
+        <ScrollToHash />
         {children}
+        
         <Toaster position='top-right' richColors closeButton theme='light' />
       </body>
     </html>

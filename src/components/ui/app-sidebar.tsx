@@ -78,7 +78,12 @@ export function AppSidebar() {
                   height={32}
                 />
                 <span className="font-main font-bold text-primary text-xl">
-                  Reset 360
+                   <Image
+                  src="/logo/reset360_text_250.png"
+                  alt="Reset 360 Logo"
+                  width={140}
+                  height={40}
+                />
                 </span>
               </div>
             </SidebarMenuButton>

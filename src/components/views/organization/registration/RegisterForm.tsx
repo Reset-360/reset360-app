@@ -12,13 +12,14 @@ import { registerOrganization } from '@/services/organizationService';
 import { createPaymongoCheckout } from '@/services/paymentService';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
+import { BillingProfile } from '@/forms/useOrgBillingSchema';
 
 interface RegisterFormProps {
   tiers: IAdaptsPriceTier[];
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
-  const router = useRouter()
+  const router = useRouter();
 
   const seatFormRef = useRef<any>(null);
   const orgFormRef = useRef<any>(null);
@@ -27,10 +28,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
   const currentStep = useOrgRegistrationStore((s) => s.currentStep);
   const setCurrentStep = useOrgRegistrationStore((s) => s.setCurrentStep);
   const selectedTierId = useOrgRegistrationStore((s) => s.selectedTierId);
+  const setSelectedTierId = useOrgRegistrationStore((s) => s.setSelectedTierId);
   const seats = useOrgRegistrationStore((s) => s.seats);
   const orgProfile = useOrgRegistrationStore((s) => s.orgProfile);
   const billingProfile = useOrgRegistrationStore((s) => s.billingProfile);
-  const resetRegistrationState = useOrgRegistrationStore((s) => s.resetRegistrationState);
+  const resetRegistrationState = useOrgRegistrationStore(
+    (s) => s.resetRegistrationState
+  );
 
   const [loading, setLoading] = useState(false);
 
@@ -42,10 +46,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
     }
   }, [loading]);
 
+  useEffect(() => {
+    if (tiers.length && !selectedTierId) {
+      setSelectedTierId(tiers[0].id);
+    }
+  }, [tiers, selectedTierId]);
 
   const goNext = () => {
     if (currentStep < STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);    
+      setCurrentStep(currentStep + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -77,19 +86,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
       }
     } else if (currentStep == 1) {
       await orgFormRef.current?.submitForm();
-      return;
-    } else if (currentStep == 2) {
-      console.log('submit here')
+    } else if (currentStep === 2) {
       await billingFormRef.current?.submitForm();
-      handleRegister()
-      return;
     }
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (billingProfile: BillingProfile) => {    
     if (!orgProfile || !billingProfile || !selectedTierId || !seats) {
       toast.error('Missing required information in store');
-      return
+      return;
     }
 
     const payload = {
@@ -140,7 +145,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
     };
 
     try {
-      setLoading(true)
+      setLoading(true);
 
       const orgData = await registerOrganization(payload);
       const purchase = orgData.purchase;
@@ -150,7 +155,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
         console.log('Organization registered successfully:', orgData);
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
 
       console.error('Error posting organization registration:', error);
       throw error;
@@ -158,37 +163,40 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
   };
 
   const createCheckoutUrl = async (purchaseId: string) => {
-      try {
-        setLoading(true)
-        const paymongoCheckout = await createPaymongoCheckout(purchaseId);
-        if (!paymongoCheckout) {
-          toast.error('An error occurred while processing payment request. Please try again.');
-          return;
-        }
-  
-        const checkoutUrl = paymongoCheckout.checkoutUrl;
-        
-        // open paymongo checkout url
-        router.replace(checkoutUrl);
-
-         // reset registration state
-        resetRegistrationState()
-      } catch (error) {
-        setLoading(false)
-
-        console.log(error);
-        toast.error('An error occurred when creating a payment intent');
-      } finally {
-        setLoading(false)
+    try {
+      setLoading(true);
+      const paymongoCheckout = await createPaymongoCheckout(purchaseId);
+      if (!paymongoCheckout) {
+        toast.error(
+          'An error occurred while processing payment request. Please try again.'
+        );
+        return;
       }
-    };
+
+      const checkoutUrl = paymongoCheckout.checkoutUrl;
+
+      // open paymongo checkout url
+      router.replace(checkoutUrl);
+
+      // reset registration state
+      resetRegistrationState();
+    } catch (error) {
+      setLoading(false);
+
+      console.log(error);
+      toast.error('An error occurred when creating a payment intent');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="py-8 px-4">
-      { loading && (
+      {loading && (
         <div className="fixed inset-0 flex items-center justify-center h-screen bg-primary/30 z-99">
-        <LoadingSpinner />
-      </div>)}
+          <LoadingSpinner />
+        </div>
+      )}
 
       <div className="relative max-w-5xl mx-auto space-y-6">
         {/* Progress */}
@@ -209,7 +217,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
           <LicenseAndBillingForm
             tiers={tiers}
             formRef={billingFormRef}
-            goNext={goNext}
+            onValidSubmit={(billingData) => handleRegister(billingData)}
           />
         )}
 
@@ -219,11 +227,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ tiers }) => {
             <Button
               type="button"
               onClick={goBack}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-foreground font-semibold text-sm hover:bg-accent transition-colors"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-foreground text-sm hover:bg-accent hover:text-white transition-colors"
             >
               <ChevronLeft className="w-4 h-4" /> Back
             </Button>
           )}
+
           <Button
             type="button"
             onClick={handleNextStep}

@@ -56,7 +56,7 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex items-center gap-3 rounded-md px-2 py-1 hover:bg-muted focus:outline-none"
+          className="flex items-center gap-3 rounded-md px-2 py-1 focus:outline-none"
           aria-label="Open profile menu"
         >
           <Avatar className="h-9 w-9">

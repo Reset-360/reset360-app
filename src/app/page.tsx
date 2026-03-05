@@ -7,20 +7,19 @@ import useAuthStore from '@/store/AuthState';
 
 import AOS from 'aos';
 
-import Header from '@/components/layout/Header';
-import Hero from '@/components/views/home/Hero';
-import Features from '@/components/views/home/Features';
-import AboutAdapts from '@/components/views/home/adapts/AboutAdapts';
-import HowItWorks from '@/components/views/home/how-it-works/HowItWorks';
-import CoachPreview from '@/components/views/home/coach-preview/CoachPreview';
-import CTA from '@/components/views/home/CTA';
-import Footer from '@/components/layout/PageFooter';
-import AdaptsTypes from '@/components/views/home/adapts/AdaptsTypes';
 import { useLogout } from '@/hooks/useLogout';
 import { EUserRole } from '@/types/user';
+import Navbar from '@/components/layout/navigation/Navbar';
+import Footer from '@/components/layout/navigation/Footer';
+import HomeHero from '@/components/views/home/marketing/HomeHero';
+import HomeWhatIs from '@/components/views/home/marketing/HomeWhatIs';
+import HomeHowItWorks from '@/components/views/home/marketing/HomeHowItWorks';
+import HomeBuiltFor from '@/components/views/home/marketing/HomeBuiltFor';
+import HomeTrust from '@/components/views/home/marketing/HomeTrust';
+import HomeCTA from '@/components/views/home/marketing/HomeCTA';
 
 export default function Home() {
-  const logout = useLogout()
+  const logout = useLogout();
 
   const user = useAuthStore((state) => state.user);
 
@@ -35,20 +34,20 @@ export default function Home() {
       try {
         const auth = await getUser(); // e.g. API call to validate token/session
         if (!auth || auth.role == EUserRole.ADMIN) {
-          logout('/')
+          logout('/');
         }
       } catch (err) {
         // If error, also clear user
-        logout('/')
+        logout('/');
       } finally {
         setLoaded(true);
       }
     };
 
     if (user) {
-      checkUser()
+      checkUser();
     } else {
-      setLoaded(true)
+      setLoaded(true);
     }
   }, [user]);
 
@@ -62,16 +61,13 @@ export default function Home() {
 
   return (
     <main id="top" className="">
-      <Header />
-
-      <Hero />
-      <Features />
-      <AboutAdapts />
-      <AdaptsTypes />
-      <HowItWorks />
-      {/* <CoachPreview /> */}
-      <CTA />
-
+      <Navbar />
+      <HomeHero />
+      <HomeWhatIs />
+      <HomeHowItWorks />
+      <HomeBuiltFor />
+      <HomeTrust />
+      <HomeCTA />
       <Footer />
     </main>
   );

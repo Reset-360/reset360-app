@@ -22,7 +22,7 @@ const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({
       <DialogContent className="bg-card max-w-2xl max-h-[90vh] p-0">
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="text-xl font-extrabold text-foreground">
-            Terms of Service
+            Privacy Policy
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
             Emotional Reset Center — Last Updated: February 2026

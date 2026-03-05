@@ -65,7 +65,7 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
         setCurrentEntitlement(entitlement);
         addEntitlement(entitlement);
 
-        router.push('/adapts');
+        router.push('/adapts/assessment');
       }
     } catch (error: any) {
       console.log(error);
@@ -82,9 +82,9 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
       currentEntitlement?.status == EEntitlementStatus.AVAILABLE ||
       currentEntitlement?.status == EEntitlementStatus.IN_USE
     ) {
-      router.push('/adapts');
+      router.push('/client/adapts/assessment');
     } else {
-      router.push('/adapts/payment');
+      router.push('/client/adapts/payment');
     }
   };
 
