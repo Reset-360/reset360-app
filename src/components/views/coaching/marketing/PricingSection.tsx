@@ -54,7 +54,7 @@ const plans = [
 
 const PricingSection = () => {
   return (
-    <section id="pricing" className="py-24 bg-gradient-to-t from-violet-100 via-violet-20 to-violet-300">
+    <section id="pricing" className="py-24 bg-gradient-to-b from-primary/20 via-primary/10 to-primary/5">
       <div className="container mx-auto px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ const PricingSection = () => {
             Pricing
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Simple, Transparent Pricing
+            <span className="text-primary">Simple, Transparent</span> Pricing
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             Choose the plan that fits your journey. No hidden fees.

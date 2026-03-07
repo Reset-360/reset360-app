@@ -62,7 +62,7 @@ const HomeWhatIs = () => (
 
       <div className="text-center mb-14">
         <h3 className="text-xl md:text-2xl font-display font-bold text-foreground">
-          The Three Pillars of Reset 360
+          The <span className="text-primary"> Three Pillars</span> of Reset 360
         </h3>
       </div>
 

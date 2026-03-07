@@ -17,6 +17,7 @@ import HomeHowItWorks from '@/components/views/home/marketing/HomeHowItWorks';
 import HomeBuiltFor from '@/components/views/home/marketing/HomeBuiltFor';
 import HomeTrust from '@/components/views/home/marketing/HomeTrust';
 import HomeCTA from '@/components/views/home/marketing/HomeCTA';
+import HomeBenefits from '@/components/views/home/marketing/HomeBenefits';
 
 export default function Home() {
   const logout = useLogout();
@@ -65,6 +66,7 @@ export default function Home() {
       <HomeHero />
       <HomeWhatIs />
       <HomeHowItWorks />
+      <HomeBenefits />
       <HomeBuiltFor />
       <HomeTrust />
       <HomeCTA />

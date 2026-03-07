@@ -52,6 +52,11 @@ const navItems: NavItem[] = [
         description: 'What is the ADAPTS model',
       },
       {
+        label: 'Why take ADAPTS',
+        href: '/adapts#benefits',
+        description: 'Benefits of using ADAPTS',
+      },
+      {
         label: 'Who is it for',
         href: '/adapts#who',
         description: 'Who can use ADAPTS?',
@@ -474,7 +479,7 @@ const Navbar = () => {
         <div className="hidden lg:flex items-center gap-2">
           <Button
             onClick={() => router.push('/coaching/find')}
-            className="rounded-full text-foreground bg-transparent hover:bg-primary px-6 hover:opacity-90 transition-opacity"
+            className="rounded-full"
           >
             Find a Coach
           </Button>

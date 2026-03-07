@@ -2,6 +2,7 @@
 
 import ADAPTSSection from '@/components/views/coaching/marketing/ADAPTSSection'
 import CafeAccreditation from '@/components/views/coaching/marketing/CafeAccreditation'
+import CoachBenefits from '@/components/views/coaching/marketing/CoachBenefits'
 import CoachRecruitment from '@/components/views/coaching/marketing/CoachRecruitment'
 import CoachingHero from '@/components/views/coaching/marketing/Hero'
 import HowItWorks from '@/components/views/coaching/marketing/HowItWorks'
@@ -15,6 +16,7 @@ const CoachingPage = () => {
   return (
     <main className=''>
       <CoachingHero />
+      <CoachBenefits />
       <HowItWorks />
       <LocationMatching />
       <SessionOptions />

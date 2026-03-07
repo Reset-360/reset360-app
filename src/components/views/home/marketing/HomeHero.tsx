@@ -56,11 +56,11 @@ const HomeHero = () => (
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/adapts">
               <Button className="rounded-full">
-                Take the ADAPTS Assessment
+                Start ADAPTS
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
-            <Link href="/">
+            <Link href="/coaching/find">
               <Button
                 variant="outline"
                 className="text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 backdrop-blur-sm rounded-full hover:bg-primary-foreground/20 hover:text-primary-foreground"

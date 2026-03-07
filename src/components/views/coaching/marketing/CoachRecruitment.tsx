@@ -11,7 +11,7 @@ const benefits = [
 
 const CoachRecruitment = () => {
   return (
-    <section className="py-24 bg-gradient-to-b from-violet-100 via-violet-20 to-violet-300">
+    <section className="py-24 bg-gradient-to-t from-primary/20 via-primary/10 to-primary/5">
       <div className="container px-10 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

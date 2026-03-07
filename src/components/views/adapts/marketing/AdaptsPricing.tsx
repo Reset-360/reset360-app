@@ -26,7 +26,7 @@ const AdaptsPricing = () => {
   }, []);
 
   return (
-    <section id='pricing' className="py-24 bg-gradient-to-b from-primary/60 via-primary/50 to-background">
+    <section id='pricing' className="py-24 bg-gradient-to-b from-primary/20 via-primary/0 to-background">
       <div className="container mx-auto px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -37,8 +37,8 @@ const AdaptsPricing = () => {
           <span className="text-primary font-semibold tracking-wide uppercase text-sm mb-3 block">
             Pricing
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">
-            Simple, Transparent Pricing
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+            <span className="text-primary">Simple, Transparent</span> Pricing
           </h2>
         </motion.div>
 

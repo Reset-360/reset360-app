@@ -10,7 +10,7 @@ const features = [
 ];
 
 const AdaptsReceive = () => (
-  <section className="py-24 bg-gradient-to-b from-background via-primary/50 to-primary/60">
+  <section className="py-24 bg-gradient-to-b from-background via-primary/20 to-primary/30">
     <div className="container mx-auto px-10">
       <div className="max-w-3xl mx-auto">
         <motion.div

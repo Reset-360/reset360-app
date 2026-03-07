@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { MapPin, Shield, Clock, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image';
+import Link from 'next/link';
 
 const badges = [
   { icon: Heart, label: "Personalized" },
@@ -60,16 +61,21 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant={'default'} className="rounded-full">
-                <MapPin className="w-5 h-5" />
-                Find a Coach Near Me
-              </Button>
-              <Button
-                variant="outline"
-                className="text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 backdrop-blur-sm rounded-full hover:bg-primary-foreground/20 hover:text-primary-foreground"
-              >
-                Learn How It Works
-              </Button>
+              <Link href={'/coaching/find'}>
+                <Button variant={'default'} className="rounded-full">
+                  <MapPin className="w-5 h-5" />
+                  Find a Coach Near Me
+                </Button>
+              </Link>
+
+              <Link href={'#how-it-works'}>
+                <Button
+                  variant="outline"
+                  className="text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 backdrop-blur-sm rounded-full hover:bg-primary-foreground/20 hover:text-primary-foreground"
+                >
+                  Learn How It Works
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

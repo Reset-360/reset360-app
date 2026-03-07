@@ -73,7 +73,7 @@ const AdaptsHero = () => (
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           <Button variant={'default'} className="rounded-full">
-            Start Your Assessment
+            Start ADAPTS
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </motion.div>

@@ -8,16 +8,19 @@ import AdaptsHow from '@/components/views/adapts/marketing/AdaptsHow';
 import AdaptsReceive from '@/components/views/adapts/marketing/AdaptsReceive';
 import AdaptsPricing from '@/components/views/adapts/marketing/AdaptsPricing';
 import AdaptsNextSteps from '@/components/views/adapts/marketing/AdaptsNextSteps';
+import AdaptsBenefits from '@/components/views/adapts/marketing/AdaptsBenefits';
 
 const AdaptsPage = () => {
   return (
     <main>
       <AdaptsHero />
       <AdaptsWhat />
+      <AdaptsBenefits />
       <AdaptsWho />
+      
       <AdaptsHow />
-      <AdaptsReceive />
       <AdaptsPricing />
+      <AdaptsReceive />
       <AdaptsNextSteps />
     </main>
   );
