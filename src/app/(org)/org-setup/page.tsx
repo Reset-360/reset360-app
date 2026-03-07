@@ -5,12 +5,12 @@ import useAuthStore from '@/store/AuthState';
 import { useOrgStore } from '@/store/OrgState';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import OrgSeatCodeGenerationSplash from '../../../components/organization/splash/OrgSeatCodeGenerationSplash';
+import OrgSeatCodeGenerationSplash from '../../../components/views/organization/dashboard/splash/OrgSeatCodeGenerationSplash';
 import { generateSeatCodesBatch } from '@/services/organizationService';
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { useLogout } from '@/hooks/useLogout';
 import { getUser } from '@/services/authService';
-import OrgSeatInactiveTabSplash from '@/components/organization/splash/OrgSeatInactiveTabSplash';
+import OrgSeatInactiveTabSplash from '@/components/views/organization/dashboard/splash/OrgSeatInactiveTabSplash';
 
 const REDIRECT_SECONDS = 10;
 

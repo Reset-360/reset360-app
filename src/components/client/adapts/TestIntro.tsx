@@ -79,15 +79,15 @@ const TestIntro = () => {
   }, [router]);
 
   return (
-    <div className="max-w-4xl w-full space-y-8 my-10">
+    <div className="max-w-4xl w-full space-y-8 py-24">
       {/* 🌟 Hero */}
       <div
         className="space-y-6 text-center"
         data-aos="fade-down"
         data-aos-delay="50"
       >
-        <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary/5 to-primary/20 flex items-center justify-center">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent/5 flex items-center justify-center">
+        <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/50 to-accent/20 flex items-center justify-center">
             <Image
               src={'/logo/logo_250.png'}
               width={50}

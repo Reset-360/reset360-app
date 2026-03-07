@@ -65,9 +65,8 @@ const LoginPage = () => {
             setSeatBatch(dataRecord.batch)
 
             if (needsSeatGeneration(dataRecord.batch)) {
-              console.log('need generating')
               // Go to setup screen FIRST
-              router.push("/org-setup");
+              router.replace("/org-setup");
               return; // stop normal redirect
             }
           }
@@ -99,7 +98,7 @@ const LoginPage = () => {
           className="flex items-center gap-1"
         >
           <Image
-            src="/logo/logo_full_250.png"
+            src="/logo/reset360_full_250.png"
             alt="Reset 360 Logo"
             width={150}
             height={50}

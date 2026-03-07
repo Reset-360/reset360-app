@@ -91,3 +91,19 @@
 
 - Add /org/payment/success splash screen
 - fix redirects and actions on splash screens
+
+# ✅ Completed Tasks — 2026-02-27
+
+- Fix missing store error when submitting org reg form
+
+
+# ✅ Completed Tasks — 2026-03-01 to 03
+
+- Update marketing pages
+-- Adapts, Coaching, Organization, Become Coach
+- Update client and adapts routes
+
+# ✅ Completed Tasks — 2026-03-04 to 05
+
+- Update marketing pages
+- Added benefits on adapts and coaching

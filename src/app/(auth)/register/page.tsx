@@ -111,7 +111,7 @@ const RegisterPage = () => {
           className="flex items-center gap-2"
         >
           <Image
-            src="/logo/logo_full_250.png"
+            src="/logo/reset360_full_250.png"
             alt="Reset 360 Logo"
             width={150}
             height={50}
