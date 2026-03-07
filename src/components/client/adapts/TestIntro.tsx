@@ -99,7 +99,7 @@ const TestIntro = () => {
 
         <div className="space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold">
-            The ADAPTS Screening
+            The <span className="text-primary">ADAPTS</span> Screening
           </h1>
           <p className="text-lg text-muted-foreground mx-auto">
             Anxiety and Depression Assessment for Parents, Teachers and Students

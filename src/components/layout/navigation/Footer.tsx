@@ -15,8 +15,8 @@ const footerLinks = [
   {
     title: 'Company',
     links: [
-      { label: 'About Us', href: '/' },
-      { label: 'Café Partners', href: '/' },
+      { label: 'About Us', href: '/about-us' },
+      { label: 'Café Partners', href: '/cafe-partners' },
     ],
   },
   {

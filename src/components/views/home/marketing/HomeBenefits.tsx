@@ -116,8 +116,7 @@ const HomeBenefits = () => (
           className="flex justify-center"
         >
           <Button
-            size="lg"
-            className="bg-primary text-primary-foreground text-lg px-8 py-6 rounded-full hover:opacity-90 transition-opacity"
+            className="rounded-full"
             asChild
           >
             <a href="/coaching">Learn about Coaching</a>

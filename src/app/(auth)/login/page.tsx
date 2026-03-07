@@ -190,7 +190,7 @@ const LoginPage = () => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full"
+                  className="w-full rounded-full"
                 >
                   {isSubmitting ? 'Logging in...' : 'Login'}
                 </Button>
