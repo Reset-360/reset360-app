@@ -47,7 +47,7 @@ const AdaptsBenefits = () => (
           Benefits of ADAPTS
         </span>
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-          Understand your emotional patterns with <span className="text-gradient-primary">clarity</span>
+          Understand your emotional patterns with <span className="text-primary">clarity</span>
         </h2>
         <p className="text-muted-foreground text-lg leading-relaxed">
           ADAPTS is designed to help individuals, educators, and organizations better understand
