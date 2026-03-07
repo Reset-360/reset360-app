@@ -403,7 +403,7 @@ const RegisterPage = () => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-4"
+                className="w-full rounded-full mt-4"
               >
                 {isSubmitting ? 'Creating your account...' : 'Create Account'}
               </Button>

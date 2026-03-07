@@ -479,7 +479,8 @@ const Navbar = () => {
         <div className="hidden lg:flex items-center gap-2">
           <Button
             onClick={() => router.push('/coaching/find')}
-            className="rounded-full"
+            className="rounded-full text-foreground"
+            variant={'link'}
           >
             Find a Coach
           </Button>
