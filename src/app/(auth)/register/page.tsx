@@ -88,7 +88,7 @@ const RegisterPage = () => {
         }
       }
 
-      redirectByRole(user.role)
+      redirectByRole(user.role, true)
     } catch (err: any) {
       if (err.username || err.email || err.phone || err.password) {
         setErrors(err); 

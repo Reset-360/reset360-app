@@ -170,7 +170,7 @@ const Payment = () => {
               <Shield className="w-4 h-4" />
               <span>
                 You will be redirected to PayMongo secure checkout to complete
-                your payment.`
+                your payment.
               </span>
             </div>
           </CardContent>

@@ -42,8 +42,8 @@ const navItems: NavItem[] = [
       title: 'ADAPTS Assessment',
       description:
         'Our proprietary mental wellness tool that measures 6 key dimensions of psychological health.',
-      href: '/',
-      cta: 'Take the Assessment',
+      href: '/adapts',
+      cta: 'Get Started',
     },
     submenu: [
       {

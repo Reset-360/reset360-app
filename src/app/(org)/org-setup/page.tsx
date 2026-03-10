@@ -139,7 +139,7 @@ const OrgSetupPage = () => {
     if (!done) return;
     if (countdown <= 0) {
       // Replace with your actual dashboard route
-      redirectByRole(user?.role);
+      redirectByRole(user?.role, true);
       return;
     }
 

@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Award, HeartHandshake } from "lucide-react";
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, Award, HeartHandshake } from 'lucide-react';
 import Link from 'next/link';
 
 const CoachHero = () => (
@@ -10,8 +10,8 @@ const CoachHero = () => (
       className="absolute inset-0 opacity-[0.03]"
       style={{
         backgroundImage:
-          "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
-        backgroundSize: "40px 40px",
+          'radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)',
+        backgroundSize: '40px 40px',
       }}
     />
 
@@ -41,8 +41,10 @@ const CoachHero = () => (
           transition={{ delay: 0.2, duration: 0.7 }}
           className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6"
         >
-          Become a Certified{" "}
-          <span className="bg-gradient-to-r from-accent via-violet-400 to-violet-600 bg-clip-text text-transparent">Mental Wellness Coach</span>
+          Become a Certified{' '}
+          <span className="bg-gradient-to-r from-accent via-violet-400 to-violet-600 bg-clip-text text-transparent">
+            Mental Wellness Coach
+          </span>
         </motion.h1>
 
         <motion.p
@@ -72,13 +74,13 @@ const CoachHero = () => (
           transition={{ delay: 0.6, duration: 0.5 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Button
-            className="rounded-full"
-          >
-            Apply as a Coach
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-          <Link href='#tracks'>
+          <Link href="/coaching/apply">
+            <Button className="rounded-full">
+              Apply as a Coach
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+          <Link href="#tracks">
             <Button
               size="lg"
               variant="outline"
@@ -100,9 +102,12 @@ const CoachHero = () => (
         <div className="inline-flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-border/50 rounded-full px-6 py-3 shadow-soft">
           <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
           <p className="text-sm text-muted-foreground">
-            All Reset 360 coaches are trained through{" "}
-            <span className="font-semibold text-foreground">ERC-certified programs</span>{" "}
-            to ensure ethical, structured, and responsible mental wellness support.
+            All Reset 360 coaches are trained through{' '}
+            <span className="font-semibold text-foreground">
+              ERC-certified programs
+            </span>{' '}
+            to ensure ethical, structured, and responsible mental wellness
+            support.
           </p>
         </div>
       </motion.div>

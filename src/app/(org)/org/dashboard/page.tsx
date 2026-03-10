@@ -1,8 +1,9 @@
+import UnderConstructionComponent from '@/components/layout/UnderConstructionComponent'
 import React from 'react'
 
 const DashboardPage = () => {
   return (
-    <div>DashboardPage</div>
+    <UnderConstructionComponent />
   )
 }
 

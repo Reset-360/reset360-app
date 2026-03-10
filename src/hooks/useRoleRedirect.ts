@@ -7,7 +7,7 @@ import { EUserRole } from '@/types/user'
 export function useRoleRedirect() {
   const router = useRouter()
 
-  const redirectByRole = (role?: EUserRole) => {
+  const redirectByRole = (role?: EUserRole, replace: boolean = false) => {
     if (!role) {
       toast.error('User role not found.')
       return
@@ -23,10 +23,15 @@ export function useRoleRedirect() {
     const target = routeMap[role]
 
     if (target) {
-      router.push(target);
-      console.log('redirect to ', target)
+      if (replace) {
+        router.replace(target)
+      } else {
+        router.push(target)
+      }
+      
+      console.log(`redirect to ${target} with replace=${replace}`)
     } else {
-      toast.error('Unauthorized access.');
+      toast.error('Unauthorized access.')
     }
   }
 
