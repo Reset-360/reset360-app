@@ -4,6 +4,9 @@ import { ArrowRight, Check, ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getIndividualPricing } from '@/services/settingService';
 import { formatCents } from '@/utils/formatHelper';
+import { useRouter } from 'next/navigation';
+import useAuthStore from '@/store/AuthState';
+import { EUserRole } from '@/types/user';
 
 const included = [
   'Full 50-item structured assessment',
@@ -14,6 +17,21 @@ const included = [
 ];
 
 const AdaptsPricing = () => {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+
+  const onPayment = () => {
+    if (user) {
+      if (user.role == EUserRole.CLIENT) {
+        router.push('/client/adapts/payment');
+      } else {
+        router.push('/restricted?feature=adapts');
+      }
+    } else {
+      router.push('/login');
+    }
+  };
+
   const [baseAmount, setBaseAmount] = useState(0);
 
   useEffect(() => {
@@ -26,7 +44,10 @@ const AdaptsPricing = () => {
   }, []);
 
   return (
-    <section id='pricing' className="py-24 bg-gradient-to-b from-primary/20 via-primary/0 to-background">
+    <section
+      id="pricing"
+      className="py-24 bg-gradient-to-b from-primary/20 via-primary/0 to-background"
+    >
       <div className="container mx-auto px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,7 +95,11 @@ const AdaptsPricing = () => {
               ))}
             </div>
 
-            <Button variant="default" className=" rounded-full">
+            <Button
+              onClick={onPayment}
+              variant="default"
+              className="rounded-full"
+            >
               Start Your Journey
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>

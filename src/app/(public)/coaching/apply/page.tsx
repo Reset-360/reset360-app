@@ -1,13 +1,12 @@
 'use client'
 
 
+import UnderConstructionComponent from '@/components/layout/UnderConstructionComponent';
 import React from 'react';
 
 const ApplyCoachPage = () => {
   return (
-    <main>
-
-    </main>
+    <UnderConstructionComponent />
   );
 };
 

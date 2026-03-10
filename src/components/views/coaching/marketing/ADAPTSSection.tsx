@@ -1,8 +1,26 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
+import useAuthStore from '@/store/AuthState';
+import { EUserRole } from '@/types/user';
 
 const ADAPTSSection = () => {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  
+  const onResults = () => {
+    if (user) {
+      if (user.role == EUserRole.CLIENT) {
+        router.push('/client/dashboard');
+      } else {
+        router.push('/restricted?feature=adapts');
+      }
+    } else {
+      router.push('/login');
+    }
+  };
+
   return (
     <section className="py-24 bg-gradient-to-b from-violet-100 via-violet-20 to-violet-300">
       <div className="container px-10 mx-auto">
@@ -25,7 +43,7 @@ const ADAPTSSection = () => {
             We&apos;ll use your assessment results to match you with the right coach
             automatically — tailored to your unique needs and goals.
           </p>
-          <Button variant={'default'} className="rounded-full">
+          <Button onClick={onResults} variant={'default'} className="rounded-full">
             Continue With My Results
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>

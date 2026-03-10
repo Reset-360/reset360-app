@@ -1,12 +1,36 @@
-import { motion } from "framer-motion";
-import { ArrowRight, Users, Briefcase, TrendingUp, Shield, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { motion } from 'framer-motion';
+import {
+  ArrowRight,
+  Users,
+  Briefcase,
+  TrendingUp,
+  Shield,
+  Target,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const benefits = [
-  { icon: Users, title: "Help People", desc: "Make a real impact on mental wellness in your community" },
-  { icon: Briefcase, title: "Build Your Practice", desc: "Access clients, tools, and a trusted brand to grow with" },
-  { icon: TrendingUp, title: "Flexible Income", desc: "Set your own schedule and earn on your terms" },
-  { icon: Shield, title: "Full Support", desc: "Training, certification, and ongoing mentorship included" },
+  {
+    icon: Users,
+    title: 'Help People',
+    desc: 'Make a real impact on mental wellness in your community',
+  },
+  {
+    icon: Briefcase,
+    title: 'Build Your Practice',
+    desc: 'Access clients, tools, and a trusted brand to grow with',
+  },
+  {
+    icon: TrendingUp,
+    title: 'Flexible Income',
+    desc: 'Set your own schedule and earn on your terms',
+  },
+  {
+    icon: Shield,
+    title: 'Full Support',
+    desc: 'Training, certification, and ongoing mentorship included',
+  },
 ];
 
 const CoachRecruitment = () => {
@@ -23,8 +47,7 @@ const CoachRecruitment = () => {
             <Target className="w-8 h-8 text-accent" />
           </div> */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Become a Reset 360{" "}
-            <span className="text-primary">Coach</span>
+            Become a Reset 360 <span className="text-primary">Coach</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Help People. Build Your Practice. Grow With Us.
@@ -44,7 +67,9 @@ const CoachRecruitment = () => {
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <item.icon className="w-6 h-6 text-primary" />
               </div>
-              <h4 className="font-display font-bold text-foreground mb-1">{item.title}</h4>
+              <h4 className="font-display font-bold text-foreground mb-1">
+                {item.title}
+              </h4>
               <p className="text-sm text-muted-foreground">{item.desc}</p>
             </motion.div>
           ))}
@@ -56,13 +81,17 @@ const CoachRecruitment = () => {
           viewport={{ once: true }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Button variant={'default'} className='rounded-full'>
-            Apply as a Coach
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-          <Button className='rounded-full' variant="outline">
-            Learn How It Works
-          </Button>
+          <Link href="/coaching/apply">
+            <Button variant={'default'} className="rounded-full">
+              Apply as a Coach
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+          <Link href="/coaching/apply#how-it-works">
+            <Button className="rounded-full" variant="outline">
+              Learn How It Works
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>
