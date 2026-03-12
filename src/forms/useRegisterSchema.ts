@@ -72,6 +72,10 @@ export const schema = yup.object().shape({
     .string()
     .required('Please confirm your password')
     .oneOf([yup.ref('password')], 'The passwords you entered must match'),
+
+  segment: yup
+    .string()
+    .required('Please choose the option that best describes you')
 });
 
 export interface ClientRegisterSchema {

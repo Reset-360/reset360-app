@@ -27,7 +27,7 @@ const AnswerItemSummary: React.FC<AnswerItemSummaryProps> = ({
         <div className="text-xs text-muted-foreground">
           Question #{question.id}
         </div>
-        <h3 className="text-lg">{question.question}</h3>
+        <p className="text-lg">{question.question}</p>
       </div>
 
       {answer !== undefined ? (

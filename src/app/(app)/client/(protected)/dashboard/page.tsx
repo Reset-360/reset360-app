@@ -145,7 +145,7 @@ export default function ClientDashboardPage() {
         </>
       )}
 
-      <AdaptsCTA showDetails={latestAssessment ? false : true} />
+      <AdaptsCTA latestAssessment={latestAssessment} />
     </div>
   );
 }

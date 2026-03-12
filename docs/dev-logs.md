@@ -116,3 +116,10 @@
 
 -  Add 404 and Under Dev pages
 -  Fix dead links
+
+# ✅ Completed Tasks — 2026-03-13
+
+- improve assessment test flow
+- improve code redeem flow
+- change parents and teachers questions to be self assessed
+- remove phone number on client registration

@@ -127,7 +127,7 @@ const Payment = () => {
   return (
     <div className="min-h-screen bg-[var(--gradient-bg)] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Button variant="ghost" onClick={() => router.back()} className="mb-6">
+        <Button variant="ghost" onClick={() => router.push('/client/dashboard')} className="mb-6">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>

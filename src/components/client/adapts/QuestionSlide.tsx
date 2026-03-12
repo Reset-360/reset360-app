@@ -36,9 +36,9 @@ const QuestionSlideComponent: React.FC<QuestionSlideProps> = ({
             <span className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
               {question.id}
             </span>
-            <h3 className="text-xl md:text-2xl font-semibold pt-2">
+            <p className="text-xl md:text-2xl font-semibold pt-2">
               {question.question}
-            </h3>
+            </p>
           </div>
 
           {/* 🗳 Radio options */}

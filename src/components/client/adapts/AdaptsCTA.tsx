@@ -1,3 +1,4 @@
+import LoadingSpinner from '@/components/layout/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,16 +12,25 @@ import { Input } from '@/components/ui/input';
 import { redeemSeatCode } from '@/services/adaptsService';
 import useAuthStore from '@/store/AuthState';
 import useEntitlementState from '@/store/EntitlementState';
+import { EAssessmentType } from '@/types/adapts';
 import { EEntitlementStatus } from '@/types/entitlement';
-import clsx from 'clsx';
-import { ArrowRight, ClipboardList, Sparkles, Ticket } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { renderAssessmentType, getAssessmentType } from '@/utils/adaptsHelper';
 
-export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
+import {
+  ArrowRight,
+  CheckCircle,
+  ClipboardList,
+  Sparkles,
+  Ticket,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => { 
   const router = useRouter();
 
   const user = useAuthStore((s) => s.user);
+  const clientProfile = useAuthStore((s) => s.clientProfile);
 
   // Entitlement state
   const currentEntitlement = useEntitlementState((s) => s.currentEntitlement);
@@ -39,9 +49,16 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
   const [seatCode, setSeatCode] = useState('');
   const [error, setError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
+  const [isLoading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (user && clientProfile) {
+      setLoading(false)
+    }
+  }, [user, clientProfile])
 
   const handleRedeemCode = async () => {
-    if (!user?._id) return;
+    if (!user?._id || !clientProfile?._id) return;
 
     if (!seatCode.trim()) {
       setError('Please enter a seat code');
@@ -52,9 +69,12 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
     setError('');
 
     try {
+      const type = getAssessmentType(user, clientProfile);
+
       const redeemData = {
         userId: user._id,
         code: seatCode,
+        type,
       };
 
       const { entitlement } = await redeemSeatCode(redeemData);
@@ -65,7 +85,7 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
         setCurrentEntitlement(entitlement);
         addEntitlement(entitlement);
 
-        router.push('/adapts/assessment');
+        // router.push('/client/adapts/assessment');
       }
     } catch (error: any) {
       console.log(error);
@@ -88,20 +108,49 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
     }
   };
 
+  const hasCode = hasAvailableRedeemedCode;
+  const assessmentType =
+    currentEntitlement?.type ??
+    (user && clientProfile
+      ? getAssessmentType(user, clientProfile)
+      : undefined);
+
+      console.log('type', assessmentType)
+
+  //  Assigned assessment callout
+  const assessmentTypeInfo = (
+    <div className="rounded-md bg-primary/[0.04] border border-primary/10 p-4">
+      <p className="text-xs text-muted-foreground mb-1">
+        Based on your profile, your assigned assessment is:
+      </p>
+      <p className="text-base font-bold text-primary">
+        {renderAssessmentType(assessmentType as EAssessmentType)}
+      </p>
+    </div>
+  );
+
+   if (isLoading) {
+    return (
+      <Card className="flex items-center justify-center xl:w-1/2 h-80">
+        <LoadingSpinner />
+      </Card>
+    );
+  }
+
   return (
-    <Card className="backdrop-blur-sm bg-gradient-to-br from-card/90 to-primary/5 border-primary/20 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-card)] transition-all duration-300 mb-6 xl:w-1/2">
-      <CardHeader className="">
+    <Card className="gap-0 backdrop-blur-sm bg-gradient-to-br from-card/90 to-primary/5 border-primary/20 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-card)] transition-all duration-300 mb-6 xl:w-1/2">
+      <CardHeader className="py-0 mb-2">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="text-2xl flex items-center gap-2">
               <ClipboardList className="w-6 h-6 text-primary" />
               Take Your ADAPTS Assessment
             </CardTitle>
-            <CardDescription
-              className={clsx('text-base', !showDetails && 'hiddenl')}
-            >
-              Anxiety Depression Assessment for Parents Teachers and Students
-            </CardDescription>
+            {!hasCode && (
+              <CardDescription className="text-xs">
+                Anxiety Depression Assessment for Parents Teachers and Students
+              </CardDescription>
+            )}
           </div>
           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
             <Sparkles className="w-6 h-6 text-primary" />
@@ -109,43 +158,57 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
         </div>
       </CardHeader>
 
-      <CardContent className={clsx('space-y-4', !showDetails && 'hidden')}>
-        <p className="text-muted-foreground">
-          ADAPTS is a 50-item self-report questionnaire that measures the
-          presence and frequency of depression and anxiety symptoms in children,
-          youth, parents and teachers.
-        </p>
-        <p className="text-muted-foreground">
-          Complete this comprehensive assessment to unlock customized
-          recommendations.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-            15-20 minutes
-          </span>
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-accent/10 text-accent">
-            Science-backed
-          </span>
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-            Confidential
-          </span>
-        </div>
+      <CardContent className={hasCode ? 'mb-4' : 'space-y-4'}>
+        {hasCode ? (
+          <>
+            <div className="flex flex-col justify-center items-center py-4">
+              <div className="text-md p-0 font-semibold text-accent flex gap-2 items-center">
+                <CheckCircle className="w-5 h-5 text-accent" />
+                Seat Code Accepted
+              </div>
+              <p className="text-muted-foreground text-xs mb-3 ">
+                Your access has been successfully activated.
+              </p>
+            </div>
+
+            {assessmentTypeInfo}
+          </>
+        ) : !latestAssessment ? (
+          <>
+            <p className="text-muted-foreground text-sm">
+              ADAPTS is a 50‑item questionnaire that helps explore experiences
+              with anxiety and depression. Completing it offers guidance to
+              support emotional well‑being.
+            </p>
+
+            {assessmentTypeInfo}
+
+            <div className="flex flex-wrap gap-2 mb-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                5-15 minutes
+              </span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-accent/10 text-accent">
+                Science-backed
+              </span>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                Confidential
+              </span>
+            </div>
+          </>
+        ) : (
+          <div className='mb-2'>
+            {assessmentTypeInfo}
+          </div>
+        )}
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-4">
-        {/* Seat Code Redemption */}
-        <div
-          className={clsx(
-            hasAvailableRedeemedCode && 'hidden',
-            'w-full space-y-2'
-          )}
-        >
-          <div className={clsx('w-full space-y-2')}>
+      <CardFooter className="flex flex-col gap-4 ">
+        {!hasCode && (
+          <div className="w-full space-y-2">
             <label className="text-sm font-medium text-foreground flex items-center gap-2">
               <Ticket className="w-6 h-6 text-primary" />
               Have a seat code?
             </label>
-
             <div className="flex gap-2">
               <Input
                 placeholder="Enter your code"
@@ -165,18 +228,17 @@ export const AdaptsCTA = ({ showDetails = true }: { showDetails: boolean }) => {
               </Button>
             </div>
             {error && <p className="text-xs text-destructive">{error}</p>}
-          </div>
 
-          {/* Divider */}
-          <div className="relative w-full">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-dashed" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="text-muted-foreground px-2 bg-b">Or</span>
+            <div className="relative w-full mt-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-dashed" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="text-muted-foreground px-2 bg-b">Or</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <Button
           size="lg"

@@ -7,6 +7,7 @@ import {
 } from '@/utils/adaptsResultHelper';
 import useQuizStore from '@/store/QuizState';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface RecommendationsListProps {
   recommendations: string[];
@@ -22,12 +23,12 @@ export function RecommendationsList({
   const riskTextColor = getRiskTextColor(riskLevel);
   const riskAccent = getRiskAccentClasses(riskLevel);
 
-  const resetQuiz = useQuizStore((s) => s.resetQuiz)
+  const resetQuiz = useQuizStore((s) => s.resetQuiz);
 
   const handleRetake = () => {
-    resetQuiz()
-    router.replace('/adapts')
-  }
+    resetQuiz();
+    router.replace('/adapts');
+  };
 
   return (
     <Card className={`p-6 border-2 ${riskAccent}`}>
@@ -80,10 +81,12 @@ export function RecommendationsList({
       </div>
 
       <div className="pt-4 flex flex-col sm:flex-row gap-3">
-        <Button className="flex-1 gap-2">
-          <Calendar className="w-4 h-4" />
-          Book a Session
-        </Button>
+        <Link href="/client/book">
+          <Button className="flex-1 gap-2">
+            <Calendar className="w-4 h-4" />
+            Book a Session
+          </Button>
+        </Link>
         {/* <Button variant="outline" className="flex-1 gap-2" onClick={handleRetake}>
           Retake ADAPTS
           <ArrowRight className="w-4 h-4" />
