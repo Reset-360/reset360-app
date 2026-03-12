@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format, subYears } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Eye, EyeOff } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -32,6 +32,7 @@ import { RegisterParams } from '@/types/auth';
 import moment from 'moment';
 import { getClientProfile } from '@/services/clientService';
 import useAuthStore from '@/store/AuthState';
+import { getAssessmentLabel } from '@/utils/adaptsHelper';
 
 // Helper: minimum age = 6 years old
 const minAgeDate = new Date();
@@ -43,7 +44,10 @@ const RegisterPage = () => {
   const { setUser, setClientProfile } = useAuthStore(state => state)
 
   const { redirectByRole } = useRoleRedirect();
+
   const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleLoginSubmit = async (
     values: ClientRegisterSchema,
@@ -138,7 +142,7 @@ const RegisterPage = () => {
             email: '',
             phone: '',
             countryCode: '+63',
-            segment: EClientSegment.STUDENT
+            segment: '' as EClientSegment
           }}
           validationSchema={schema}
           onSubmit={(values, { setSubmitting, setErrors }) => {
@@ -164,7 +168,7 @@ const RegisterPage = () => {
               {/* First Name + Last Name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">* First Name</Label>
                   <Field
                     as={Input}
                     name="firstName"
@@ -173,12 +177,12 @@ const RegisterPage = () => {
                   <ErrorMessage
                     name="firstName"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 text-xs mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">* Last Name</Label>
                   <Field
                     as={Input}
                     name="lastName"
@@ -187,14 +191,14 @@ const RegisterPage = () => {
                   <ErrorMessage
                     name="lastName"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 text-xs mt-1"
                   />
                 </div>
               </div>
 
               {/* Username */}
               <div>
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">* Username</Label>
                 <Field
                   as={Input}
                   type="text"
@@ -205,47 +209,62 @@ const RegisterPage = () => {
                 <ErrorMessage
                   name="username"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-red-500 text-xs mt-1"
                 />
               </div>
 
               {/* Password + Confirm */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Label htmlFor="password">* Password</Label>
                   <Field
                     as={Input}
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Password"
                     autoComplete="new-password"
                   />
+                  <button
+                    type="button"
+                     className="absolute right-2 top-7  text-muted-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                   <ErrorMessage
                     name="password"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 text-xs mt-1"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Label htmlFor="confirmPassword">* Confirm Password</Label>
                   <Field
                     as={Input}
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     placeholder="Confirm Password"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-7 text-gray-500"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                   <ErrorMessage
                     name="confirmPassword"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 text-xs mt-1"
                   />
                 </div>
               </div>
 
+
               {/* Email */}
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">* Email</Label>
                 <Field
                   as={Input}
                   type="text"
@@ -256,12 +275,12 @@ const RegisterPage = () => {
                 <ErrorMessage
                   name="email"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-red-500 text-xs mt-1"
                 />
               </div>
 
               {/* Phone */}
-              <div>
+              {/* <div>
                 <Label htmlFor="phone">Phone</Label>
                 <div className="flex gap-3">
                   <Select
@@ -297,15 +316,15 @@ const RegisterPage = () => {
                 <ErrorMessage
                   name="phone"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-red-500 text-xs mt-1"
                 />
-              </div>
+              </div> */}
 
               {/* Birthdate + Gender */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Birthdate */}
                 <div>
-                  <Label htmlFor="birthDate">Birthdate</Label>
+                  <Label htmlFor="birthDate">* Birthdate</Label>
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                       <Button
@@ -348,13 +367,13 @@ const RegisterPage = () => {
                   <ErrorMessage
                     name="birthDate"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 text-xs mt-1"
                   />
                 </div>
 
                 {/* Gender */}
                 <div>
-                  <Label htmlFor="gender">Gender</Label>
+                  <Label htmlFor="gender">* Gender</Label>
                   <Select
                     onValueChange={(value) => setFieldValue('gender', value)}
                     defaultValue={values.gender}
@@ -370,32 +389,46 @@ const RegisterPage = () => {
                   <ErrorMessage
                     name="gender"
                     component="div"
-                    className="text-red-500 text-sm mt-1"
+                    className="text-red-500 text-xs mt-1"
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="segment">I am a...</Label>
+                <Label htmlFor="segment">* Which best describes you?</Label>
                 <Select
                   value={values.segment}
-                  onValueChange={(val) => setFieldValue('segment', val)}
+                  onValueChange={(val) => setFieldValue("segment", val)}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Category" />
+                    <SelectValue placeholder="I am a ..." />
                   </SelectTrigger>
+
                   <SelectContent>
                     <SelectItem value={EClientSegment.STUDENT}>Student</SelectItem>
                     <SelectItem value={EClientSegment.PARENT}>Parent</SelectItem>
                     <SelectItem value={EClientSegment.TEACHER}>Teacher</SelectItem>
-                    <SelectItem value={EClientSegment.INDIVIDUAL}>College / Young Adult</SelectItem>
+                    <SelectItem value={EClientSegment.INDIVIDUAL}>
+                      College / Young Adult
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
+                <p className="mt-1 text-xs">
+                  <span className="text-muted-foreground">
+                    This helps us assign the correct ADAPTS assessment for you. <br/>Please note that this cannot be changed after assessment setup.
+                  </span>
+                  {values.segment && (
+                    <span className="block mt-1 font-medium text-primary text-sm">
+                      {getAssessmentLabel(values.segment)}
+                    </span>
+                  )}
+                </p>
+
                 <ErrorMessage
-                  name="phone"
+                  name="segment"
                   component="div"
-                  className="text-red-500 text-sm mt-1"
+                  className="text-red-500 text-xs mt-1"
                 />
               </div>
 

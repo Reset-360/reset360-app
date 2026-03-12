@@ -7,12 +7,14 @@ import {
   AlertCircle,
   Home,
   Play,
-  RotateCcw,
 } from 'lucide-react';
 
 import { Progress } from '@/components/ui/progress';
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
+import useEntitlementState from '@/store/EntitlementState';
+import { renderAssessmentType } from '@/utils/adaptsHelper';
+import { EAssessmentType } from '@/types/adapts';
 
 type ResumeAssessmentProps = {
   onResume: () => void;
@@ -31,6 +33,9 @@ const ResumeAssessment: React.FC<ResumeAssessmentProps> = ({
   totalQuestions,
   lastAttemptDate,
 }) => {
+  // Entitlement state
+  const currentEntitlement = useEntitlementState((s) => s.currentEntitlement);
+
   const router = useRouter()
 
   const onBackToHome = () => {
@@ -56,9 +61,12 @@ const ResumeAssessment: React.FC<ResumeAssessmentProps> = ({
 
         {/* Assessment Details */}
         <div className="bg-lavender-light rounded-lg p-6 mb-6 border border-primary/10">
-          <h3 className="font-semibold text-lg text-foreground mb-4">
+          <h3 className="font-semibold text-lg text-foreground ">
             ADAPTS Screening
           </h3>
+          <p className="font-medium tracking-wider font-semibold text-accent mb-4">
+            {renderAssessmentType(currentEntitlement?.type as EAssessmentType)}
+          </p>
 
           {/* Progress Section */}
           <div className="space-y-3 mb-4">

@@ -17,6 +17,7 @@ import {
   estimateTscore,
   getAssessmentType,
   getQuestionsByType,
+  renderAssessmentType,
 } from '@/utils/adaptsHelper';
 
 import {
@@ -24,6 +25,7 @@ import {
   Factor,
   Scores,
   SubmitAssessmentData,
+  EAssessmentType,
 } from '@/types/adapts';
 import { QuestionSlide } from '@/components/client/adapts/QuestionSlide';
 import ResumeAssessment from '@/components/client/adapts/ResumeAssessment';
@@ -62,6 +64,7 @@ const AssessmentPage: React.FC = () => {
   const setCurrentQuestion = useQuizStore((s) => s.setCurrentQuestionIndex);
 
   const resetQuiz = useQuizStore((s) => s.resetQuiz);
+  const resetEntitlement = useEntitlementState((s) => s.resetEntitlement);
 
   // 🚦 Local UI state
   const [redirecting, setRedirecting] = useState(false);
@@ -69,7 +72,7 @@ const AssessmentPage: React.FC = () => {
   const [isResumed, setIsResumed] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
 
-  // 👇 NEW: only true if we detect existing progress on mount
+  // Only true if we detect existing progress on mount
   const [canPromptResume, setCanPromptResume] = useState(false);
 
   // 📝 Load questions based on profile
@@ -78,6 +81,13 @@ const AssessmentPage: React.FC = () => {
       ? getQuestionsByType(currentEntitlement.type)
       : [];
   }, [currentEntitlement, clientProfile]);
+
+  // 📝 Load assessment type based on profile
+  const assessmentType =
+    currentEntitlement?.type ??
+    (user && clientProfile
+      ? getAssessmentType(user, clientProfile)
+      : undefined);
 
   // 📊 Derived quiz metadata
   const totalQuestions = questions.length;
@@ -104,19 +114,22 @@ const AssessmentPage: React.FC = () => {
     }
   }, [user, assessment?.submittedAt, router, hasHydrated]);
 
-  // 💾 Detect if we should show resume prompt on load
+  // 💾 Detect if we should show resume prompt on load.
+  // Snapshot answeredCount once on hydration so subsequent answer changes
+  // never re-trigger this effect and flip canPromptResume unexpectedly.
   useEffect(() => {
     if (!hasHydrated) return;
 
-    // If there are saved answers and the test is not completed,
-    // this looks like a returning session ➜ allow resume prompt.
-    if (hasStarted && answeredCount > 0 && !assessment?.submittedAt) {
+    const savedAnswerCount = Object.keys(answers || {}).length;
+
+    if (hasStarted && savedAnswerCount > 0 && !assessment?.submittedAt) {
       setCanPromptResume(true);
     } else {
-      // Fresh session: treat as already "resumed" so we never show the prompt.
       setIsResumed(true);
     }
-  }, [hasHydrated, hasStarted, assessment?.submittedAt]); // ⬅️ deliberately NOT depending on answeredCount
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasHydrated]); // ✅ Only run once when store finishes hydrating
 
   // 🧮 Compute all subscale totals
   const calculateSubscales = useCallback(() => {
@@ -139,13 +152,13 @@ const AssessmentPage: React.FC = () => {
     return base;
   }, [answers, questions]);
 
-  // 🔁 Resume handler: just flip the flag, slider initial handles positioning
+  // 🔁 Resume handler
   const handleResume = useCallback(() => {
     if (!hasHydrated) return;
     setIsResumed(true);
   }, [hasHydrated]);
 
-  // ▶️ Prev
+  // ◀️ Prev
   const handlePrev = useCallback(() => {
     if (currentQuestion === 0) return;
     setDirection(-1);
@@ -153,77 +166,90 @@ const AssessmentPage: React.FC = () => {
   }, [currentQuestion, setCurrentQuestion]);
 
   // ▶️ Next / Review Answers
-  const handleNext = useCallback(async () => {
+  // FIX: Separated concerns — advancing questions vs. showing summary are now
+  // mutually exclusive branches with explicit early returns.
+  const handleNext = useCallback(() => {
     if (!user || !assessmentId) return;
 
-    // 👉 Move to next question
+    // On the last question and all questions answered → show summary
+    if (isLast && isComplete) {
+      setShowSummary(true);
+      return; // ← early return prevents falling through to advance logic
+    }
+
+    // Not on last question → advance
     if (!isLast) {
       setDirection(1);
       setCurrentQuestion(Math.min(currentQuestion + 1, questions.length - 1));
-      return;
     }
+  }, [user, assessmentId, isLast, isComplete, currentQuestion, questions.length, setCurrentQuestion]);
 
-    // ✅ Submit when complete
-    if (isComplete && clientProfile && assessmentId) {
-      setShowSummary(true);
-    }
-  }, [user, assessmentId, answers, isLast, isComplete, clientProfile, router]);
-
-  // ▶️ Next / Submit
+  // ✅ Submit (called from AnswersSummary)
   const handleSubmit = useCallback(async () => {
-    if (!user || !assessmentId) return;
+    if (!user || !assessmentId || !isComplete || !clientProfile) return;
 
-    // ✅ Submit when complete
-    if (isComplete && clientProfile && assessmentId) {
-      const subScales = calculateSubscales();
-      const totalRating = Object.values(answers || {}).reduce(
-        (a, b) => a + b,
-        0
-      );
-      const totalScore: Scores = calculateTotalScores(subScales);
-      const tScore = estimateTscore(totalRating, clientProfile);
+    const subScales = calculateSubscales();
+    const totalRating = Object.values(answers || {}).reduce(
+      (a, b) => a + b,
+      0
+    );
+    const totalScore: Scores = calculateTotalScores(subScales);
+    const tScore = estimateTscore(totalRating, clientProfile);
 
-      const assessmentResult: SubmitAssessmentData = {
-        totalRating,
-        tScore: tScore.adjustedTScore,
-        tScoreSummary: tScore,
-        riskBand: tScore.riskBand,
-        riskLevel: tScore.riskLevel,
-        answers: answers || {},
-        subScales,
-        totalSubScalesScore: totalScore,
-        submittedAt: moment().format(dbDateFormat),
-      };
+    const assessmentResult: SubmitAssessmentData = {
+      totalRating,
+      tScore: tScore.adjustedTScore,
+      tScoreSummary: tScore,
+      riskBand: tScore.riskBand,
+      riskLevel: tScore.riskLevel,
+      answers: answers || {},
+      subScales,
+      totalSubScalesScore: totalScore,
+      submittedAt: moment().format(dbDateFormat),
+    };
 
-      const data = await submitAssessmentResult(assessmentId, assessmentResult);
+    const data = await submitAssessmentResult(assessmentId, assessmentResult);
+    hydrateFromAssessment(data);
 
-      // update assessment record for results
-      hydrateFromAssessment(data);
-
-      if (data) {
-        router.replace('/client/adapts/result');
-      }
+    if (data) {
+      await router.replace('/client/adapts/result');
+      resetEntitlement();
     }
   }, [
     user,
     assessmentId,
-    isLast,
     isComplete,
     answers,
     calculateSubscales,
     clientProfile,
     router,
+    hydrateFromAssessment,
+    resetEntitlement,
   ]);
 
-  // ✍️ Save answer handler
+  // ✍️ Answer change handler with safe auto-advance
+  // Auto-next moves to currentQuestion + 1 (not by question ID), only when:
+  // - not already on the last question
+  // - not all questions are already complete (avoid accidental summary skip)
   const handleAnswerChange = useCallback(
     (questionId: number, value: string) => {
       setAnswer(questionId, Number(value));
 
-      // For testing only
-      if (questionId < questions.length) setCurrentQuestion(questionId);
+      const newAnsweredCount = Object.keys(answers || {}).length + 1;
+      const willBeComplete = newAnsweredCount === totalQuestions;
+
+      // If this answer completes the quiz, don't auto-advance — let the user
+      // click "Review Answers" deliberately.
+      if (willBeComplete) return;
+
+      // Only advance if we're still on the question that was just answered
+      // (guards against stale closures firing on an already-navigated slide)
+      if (!isLast) {
+        setDirection(1);
+        setCurrentQuestion(Math.min(currentQuestion + 1, totalQuestions - 1));
+      }
     },
-    [setAnswer]
+    [setAnswer, answers, totalQuestions, isLast, currentQuestion, setCurrentQuestion]
   );
 
   // ⏳ Loading / redirecting state
@@ -296,7 +322,7 @@ const AssessmentPage: React.FC = () => {
           </div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-primary">
-            ADAPTS Assessment
+            {renderAssessmentType(assessmentType as EAssessmentType)}
           </h1>
           <p className="text-sm text-muted-foreground">
             Question {currentQuestion + 1} of {totalQuestions}
@@ -335,7 +361,6 @@ const AssessmentPage: React.FC = () => {
           <div className="text-center">
             <Button
               onClick={handlePrev}
-              // disabled={currentQuestion !== 0}
               size="lg"
               variant={'outline'}
               className="w-100 flex items-center gap-2"
@@ -348,7 +373,10 @@ const AssessmentPage: React.FC = () => {
           <div className="text-center">
             <Button
               onClick={handleNext}
-              disabled={!isCurrentAnswered && !isLast}
+              // FIX: Button is disabled if current question is unanswered,
+              // UNLESS we're on the last question where isComplete already gates
+              // the summary transition. Prevents clicking through unanswered questions.
+              disabled={!isCurrentAnswered}
               size="lg"
               variant={isComplete ? 'accent' : 'default'}
               className="w-100 flex items-center gap-2"

@@ -323,3 +323,43 @@ export function getMaxScoresPerFactor(
 
   return maxScores;
 }
+
+/**
+ * 🖼️ Render a readable assessment type label
+ *
+ * @param {EAssessmentType} type - The assessment type enum
+ * @returns {string} - Human-friendly label
+ */
+export function renderAssessmentType(type: EAssessmentType): string {
+  switch (type) {
+    case EAssessmentType.ADAPTS_S:
+      return "Student Wellness Self-Assessment";
+
+    case EAssessmentType.ADAPTS_P:
+      return "Parent Wellness Self-Assessment";
+
+    case EAssessmentType.ADAPTS_T:
+      return "Teacher Wellness Self-Assessment";
+
+    case EAssessmentType.ADAPTS_C:
+      return "College & Young Adult Self-Assessment";
+
+    default:
+      return "General Wellness Assessment";
+  }
+}
+
+export const getAssessmentLabel = (segment?: EClientSegment) => {
+  switch (segment) {
+    case EClientSegment.STUDENT:
+      return "You will take ADAPTS-S (Student Assessment).";
+    case EClientSegment.PARENT:
+      return "You will take ADAPTS-P (Parent Assessment).";
+    case EClientSegment.TEACHER:
+      return "You will take ADAPTS-T (Teacher Assessment).";
+    case EClientSegment.INDIVIDUAL:
+      return "You will take ADAPTS-C (College / Young Adult Assessment).";
+    default:
+      return "This helps us assign the correct ADAPTS assessment for you.";
+  }
+};
