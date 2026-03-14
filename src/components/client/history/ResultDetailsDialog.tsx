@@ -58,7 +58,7 @@ const ResultDetailsDialog: React.FC<ResultDetailsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='bg-card w-[800px] max-w-none'>
+      <DialogContent className='bg-card w:auto lg:w-[800px] max-w-none'>
         <DialogHeader>
           <DialogTitle>Result Details</DialogTitle>
           <DialogDescription>Assessment result details</DialogDescription>

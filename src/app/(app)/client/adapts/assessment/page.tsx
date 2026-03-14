@@ -297,7 +297,7 @@ const AssessmentPage: React.FC = () => {
   // 🧭 Main assessment UI
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="p-6 border-b bg-card/50 backdrop-blur-sm">
+      <header className="p-2 lg:p-6 border-b bg-card/50 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => router.push('/client/dashboard')}
@@ -312,7 +312,7 @@ const AssessmentPage: React.FC = () => {
       {/* Header */}
       <div className="w-full px-4 pt-10 pb-6 space-y-4">
         <div className="text-center space-y-2 flex flex-col items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/50 to-accent/5 flex items-center justify-center">
+          <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-primary/50 to-accent/5 flex items-center justify-center">
             <Image
               src={'/logo/logo_250.png'}
               width={32}
@@ -321,7 +321,7 @@ const AssessmentPage: React.FC = () => {
             />
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold text-primary">
+          <h1 className="text-lg lg:text-3xl md:text-4xl font-bold text-primary">
             {renderAssessmentType(assessmentType as EAssessmentType)}
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -358,20 +358,17 @@ const AssessmentPage: React.FC = () => {
       {/* Navigation */}
       <div className="w-full px-4 pb-8">
         <div className="max-w-4xl mx-auto flex justify-center items-center gap-4">
-          <div className="text-center">
-            <Button
+           <Button
               onClick={handlePrev}
               size="lg"
               variant={'outline'}
-              className="w-100 flex items-center gap-2"
+              className="lg:w-100 flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              Previous
+              <span className="hidden lg:inline-block">Previous</span>
             </Button>
-          </div>
 
-          <div className="text-center">
-            <Button
+          <Button
               onClick={handleNext}
               // FIX: Button is disabled if current question is unanswered,
               // UNLESS we're on the last question where isComplete already gates
@@ -379,12 +376,11 @@ const AssessmentPage: React.FC = () => {
               disabled={!isCurrentAnswered}
               size="lg"
               variant={isComplete ? 'accent' : 'default'}
-              className="w-100 flex items-center gap-2"
+              className="flex-1 flex items-center gap-2"
             >
               {isLast && isComplete ? 'Review Answers' : 'Next'}
               <ArrowRight className="w-4 h-4" />
             </Button>
-          </div>
         </div>
       </div>
     </div>

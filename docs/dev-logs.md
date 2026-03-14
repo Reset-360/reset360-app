@@ -117,9 +117,20 @@
 -  Add 404 and Under Dev pages
 -  Fix dead links
 
-# ✅ Completed Tasks — 2026-03-13
+# ✅ Completed Tasks — 2026-03-12
 
 - improve assessment test flow
 - improve code redeem flow
 - change parents and teachers questions to be self assessed
 - remove phone number on client registration
+
+# ✅ Completed Tasks — 2026-03-13
+
+- Added agree to terms on register
+- Add Profile user tab and updates
+
+# ✅ Completed Tasks — 2026-03-13
+
+- Add Next TopLoader
+- Fix some UI responsiveness
+- Add ADAPTS Demo

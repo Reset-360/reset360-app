@@ -8,7 +8,7 @@ import Link from 'next/link';
 const UnderConstructionComponent = () => {
   return (
     <div className="min-h-screen bg-violet-200 absolute top-0 left-0 right-0 z-50">
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center px-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

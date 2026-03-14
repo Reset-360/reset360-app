@@ -11,20 +11,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
-  User,
-  LogOut,
-  Settings,
-  ChevronDown,
-  Users,
-} from 'lucide-react';
+import { User, LogOut, Settings, ChevronDown, Users } from 'lucide-react';
 import useAuthStore from '@/store/AuthState';
 import { EUserRole } from '@/types/user';
 import clsx from 'clsx';
 import { useLogout } from '@/hooks/useLogout';
+import { usePathname } from 'next/navigation';
 
 export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
-  const logout = useLogout()
+  const pathname = usePathname();
+  const logout = useLogout();
 
   // read directly from the store
   const user = useAuthStore((s) => s.user);
@@ -51,6 +47,8 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
   const avatarUrl = profile?.imageUrl ?? profile?.imageUrl ?? '';
 
   const role = user?.role ?? 'guest';
+
+  const showDashboard = pathname.includes('/dashboard') ? false : true;
 
   return (
     <DropdownMenu>
@@ -103,20 +101,27 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel className="px-3 text-xs">Account</DropdownMenuLabel>
+        <DropdownMenuLabel className="px-3 text-xs">
+          <Link href="/client/profile" className="flex items-center gap-2">
+            <User size={16} />
+            Account Settings
+          </Link>
+        </DropdownMenuLabel>
 
         {/* role-specific items */}
         {role === EUserRole.CLIENT && (
           <>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/client/dashboard"
-                className="flex items-center gap-2"
-              >
-                <User size={16} />
-                Dashboard
-              </Link>
-            </DropdownMenuItem>
+            {showDashboard && (
+              <DropdownMenuItem asChild>
+                <Link
+                  href="/client/dashboard"
+                  className="flex items-center gap-2"
+                >
+                  <User size={16} />
+                  Dashboard
+                </Link>
+              </DropdownMenuItem>
+            )}
           </>
         )}
 
@@ -148,7 +153,7 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={() => logout('/') }
+          onClick={() => logout('/')}
           className="flex items-center gap-2 text-accent"
         >
           <LogOut size={16} />

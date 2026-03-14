@@ -1,0 +1,26 @@
+export enum ESpecialty {
+  SMOKING_CESSATION = "Smoking Cessation",
+  WEIGHT_LOSS_SUPPORT = "Weight-Loss Support",
+  SLEEP_ISSUES = "Sleep Issues",
+  TEST_ANXIETY = "Test Anxiety",
+  RELATIONSHIP_PROBLEMS = "Relationship Problems",
+  STRESS_MANAGEMENT = "Stress Management",
+  WORK_LIFE_BALANCE = "Work and Life Balance",
+  SCHOOL_WORK_ADJUSTMENT = "School/Work Adjustment",
+  GENERAL_WELL_BEING = "General Well-Being",
+  FATIGUE = "Fatigue",
+  ANXIETY_SYMPTOMS = "Anxiety Symptoms",
+  DEPRESSION_SYMPTOMS = "Depression Symptoms",
+  SEEKING_CLARITY_DIRECTION = "Seeking Clarity/Direction",
+  LOW_SELF_ESTEEM_CONFIDENCE = "Low Self-Esteem/Building Confidence",
+  ANGER_MANAGEMENT = "Anger Management",
+  RESILIENCE = "Resilience",
+  IMPROVING_COMMUNICATION = "Improving Communication Skills",
+  PARENTING = "Parenting",
+  GRIEF_AND_LOSS = "Grief and Loss",
+  CAREER_COACHING = "Career Coaching",
+  GENERAL_LIFE_COACHING = "General Life Coaching",
+  NEEDING_SOMEONE_TO_TALK = "Needing Someone to Talk to",
+}
+
+export const PRESENTING_CONCERNS_OPTIONS = Object.values(ESpecialty);

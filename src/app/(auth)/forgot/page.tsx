@@ -13,7 +13,7 @@ const ForgotPasswordPage = () => {
   const [error, setError] = useState('');
 
   return (
-    <div className="w-full md:w-[80%] flex flex-col">
+    <div className="w-full flex flex-col">
       <nav>
         <Link
           href="/"
