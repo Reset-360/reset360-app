@@ -3,7 +3,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Button } from '@/components/ui/button';
 import { schema } from '@/forms/useLoginSchema';
@@ -18,6 +18,7 @@ import { EUserRole } from '@/types/user';
 import { getMemberProfile, getOrgLatestPurchase } from '@/services/organizationService';
 import { useOrgStore } from '@/store/OrgState';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -25,6 +26,8 @@ const LoginPage = () => {
   const { redirectByRole } = useRoleRedirect();
   const { setUser, setClientProfile, setOrgMember } = useAuthStore(state => state);
   const { setOrganization, setPurchase, setSeatBatch } = useOrgStore(state => state);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLoginSubmit = async (
     values: any,
@@ -90,7 +93,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="w-full md:w-[80%] flex flex-col">
+    <div className="w-full flex flex-col">
       <nav>
         <Link
           href="/"
@@ -126,8 +129,8 @@ const LoginPage = () => {
           <Formik
             initialValues={{ username: '', password: '', rememberMe: false }}
             validationSchema={schema}
-            onSubmit={(values, { setSubmitting, setErrors }) => {
-              handleLoginSubmit(values, setSubmitting, setErrors);
+            onSubmit={async (values, { setSubmitting, setErrors }) => {
+              await handleLoginSubmit(values, setSubmitting, setErrors);
             }}
           >
             {({ values, setFieldValue, isSubmitting }) => (
@@ -147,19 +150,26 @@ const LoginPage = () => {
                   />
                 </div>
 
-                <div>
+                <div className="relative">
                   <Label htmlFor="password">Password</Label>
-
                   <Field
                     as={Input}
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="••••••••"
+                    autoComplete="password"
                   />
+                  <button
+                    type="button"
+                     className="absolute right-2 top-7  text-muted-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                   <ErrorMessage
                     name="password"
                     component="div"
-                    className="text-red-500 font-label text-xs mt-1"
+                    className="text-red-500 text-xs mt-1"
                   />
                 </div>
 

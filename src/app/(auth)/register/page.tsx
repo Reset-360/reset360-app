@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format, subYears } from 'date-fns';
-import { Calendar as CalendarIcon, Eye, EyeOff } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, Eye, EyeOff, XCircle } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
@@ -33,6 +33,7 @@ import moment from 'moment';
 import { getClientProfile } from '@/services/clientService';
 import useAuthStore from '@/store/AuthState';
 import { getAssessmentLabel } from '@/utils/adaptsHelper';
+import { ApiValidationError } from '@/lib/axios';
 
 // Helper: minimum age = 6 years old
 const minAgeDate = new Date();
@@ -40,8 +41,21 @@ minAgeDate.setFullYear(minAgeDate.getFullYear() - 6);
 // Default selected = today - 18 years
 const defaultDate = subYears(new Date(), 18);
 
+interface PasswordRule {
+  label: string;
+  test: (pw: string) => boolean;
+}
+
+const PASSWORD_RULES: PasswordRule[] = [
+  { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
+  { label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
+  { label: 'One number', test: (pw) => /\d/.test(pw) },
+  { label: 'One special character', test: (pw) => /[^A-Za-z0-9]/.test(pw) },
+];
+
 const RegisterPage = () => {
-  const { setUser, setClientProfile } = useAuthStore(state => state)
+  const { setUser, setClientProfile } = useAuthStore((state) => state);
 
   const { redirectByRole } = useRoleRedirect();
 
@@ -52,7 +66,7 @@ const RegisterPage = () => {
   const handleLoginSubmit = async (
     values: ClientRegisterSchema,
     setSubmitting: (isSubmitting: boolean) => void,
-    setErrors: (errors: any ) => void
+    setErrors: (errors: any) => void
   ) => {
     try {
       const params: RegisterParams = {
@@ -66,9 +80,9 @@ const RegisterPage = () => {
           segment: values.segment,
           birthDate: moment(values.birthDate, 'YYYY-MM-DD').toDate(),
           gender: values.gender,
-          status: EClientStatus.ACTIVE
-        }
-      }
+          status: EClientStatus.ACTIVE,
+        },
+      };
 
       if (values.email) {
         params.email = values.email;
@@ -83,20 +97,29 @@ const RegisterPage = () => {
 
       if (user.role == EUserRole.CLIENT) {
         const profile = await getClientProfile(user._id);
-        
+
         // setup store data
         setUser(user);
-  
+
         if (user.role == EUserRole.CLIENT) {
           setClientProfile(profile);
         }
       }
 
-      redirectByRole(user.role, true)
+      redirectByRole(user.role, true);
     } catch (err: any) {
-      if (err.username || err.email || err.phone || err.password) {
-        setErrors(err); 
-        return;
+      if (err instanceof ApiValidationError) {
+        console.log(err.details.username);
+
+        if (
+          err.details.username ||
+          err.details.email ||
+          err.details.phone ||
+          err.details.password
+        ) {
+          setErrors(err.details);
+          return;
+        }
       }
 
       renderApiError(err);
@@ -106,7 +129,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="w-full md:w-[80%] flex flex-col mx-auto px-4 md:px-0 py-8">
+    <div className="w-full flex flex-col">
       {/* Logo */}
       <nav className="mb-8">
         <Link
@@ -142,15 +165,15 @@ const RegisterPage = () => {
             email: '',
             phone: '',
             countryCode: '+63',
-            segment: '' as EClientSegment
+            segment: '' as EClientSegment,
           }}
           validationSchema={schema}
-          onSubmit={(values, { setSubmitting, setErrors }) => {
-            handleLoginSubmit(values, setSubmitting, setErrors);
+          onSubmit={async (values, { setSubmitting, setErrors }) => {
+            await handleLoginSubmit(values, setSubmitting, setErrors);
           }}
         >
           {({ values, setFieldValue, isSubmitting }) => (
-            <Form className="space-y-5" >
+            <Form className="space-y-5">
               {/* Fake fields to prevent autofill */}
               <input
                 type="text"
@@ -169,11 +192,7 @@ const RegisterPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName">* First Name</Label>
-                  <Field
-                    as={Input}
-                    name="firstName"
-                    placeholder="First Name"
-                  />
+                  <Field as={Input} name="firstName" placeholder="First Name" />
                   <ErrorMessage
                     name="firstName"
                     component="div"
@@ -183,11 +202,7 @@ const RegisterPage = () => {
 
                 <div>
                   <Label htmlFor="lastName">* Last Name</Label>
-                  <Field
-                    as={Input}
-                    name="lastName"
-                    placeholder="Last Name"
-                  />
+                  <Field as={Input} name="lastName" placeholder="Last Name" />
                   <ErrorMessage
                     name="lastName"
                     component="div"
@@ -214,23 +229,44 @@ const RegisterPage = () => {
               </div>
 
               {/* Password + Confirm */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="relative">
                   <Label htmlFor="password">* Password</Label>
                   <Field
                     as={Input}
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     name="password"
                     placeholder="Password"
                     autoComplete="new-password"
                   />
                   <button
                     type="button"
-                     className="absolute right-2 top-7  text-muted-foreground"
+                    className="absolute right-2 top-7  text-muted-foreground"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
+
+                  {values.password.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {PASSWORD_RULES.map((rule) => {
+                        const passed = rule.test(values.password);
+                        return (
+                          <li key={rule.label} className={cn('flex items-center gap-2 text-xs', passed ? 'text-green-600' : 'text-muted-foreground')}>
+                            {passed
+                              ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                              : <XCircle className="w-3.5 h-3.5 shrink-0" />
+                            }
+                            {rule.label}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                   <ErrorMessage
                     name="password"
                     component="div"
@@ -242,7 +278,7 @@ const RegisterPage = () => {
                   <Label htmlFor="confirmPassword">* Confirm Password</Label>
                   <Field
                     as={Input}
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={showConfirmPassword ? 'text' : 'password'}
                     name="confirmPassword"
                     placeholder="Confirm Password"
                   />
@@ -251,7 +287,11 @@ const RegisterPage = () => {
                     className="absolute right-2 top-7 text-gray-500"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                   <ErrorMessage
                     name="confirmPassword"
@@ -260,7 +300,6 @@ const RegisterPage = () => {
                   />
                 </div>
               </div>
-
 
               {/* Email */}
               <div>
@@ -398,16 +437,22 @@ const RegisterPage = () => {
                 <Label htmlFor="segment">* Which best describes you?</Label>
                 <Select
                   value={values.segment}
-                  onValueChange={(val) => setFieldValue("segment", val)}
+                  onValueChange={(val) => setFieldValue('segment', val)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="I am a ..." />
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value={EClientSegment.STUDENT}>Student</SelectItem>
-                    <SelectItem value={EClientSegment.PARENT}>Parent</SelectItem>
-                    <SelectItem value={EClientSegment.TEACHER}>Teacher</SelectItem>
+                    <SelectItem value={EClientSegment.STUDENT}>
+                      Student
+                    </SelectItem>
+                    <SelectItem value={EClientSegment.PARENT}>
+                      Parent
+                    </SelectItem>
+                    <SelectItem value={EClientSegment.TEACHER}>
+                      Teacher
+                    </SelectItem>
                     <SelectItem value={EClientSegment.INDIVIDUAL}>
                       College / Young Adult
                     </SelectItem>
@@ -416,7 +461,10 @@ const RegisterPage = () => {
 
                 <p className="mt-1 text-xs">
                   <span className="text-muted-foreground">
-                    This helps us assign the correct ADAPTS assessment for you. <br/>Please note that this cannot be changed after assessment setup.
+                    This helps us assign the correct ADAPTS assessment for you.{' '}
+                    <br />
+                    Please note that this cannot be changed after assessment
+                    setup.
                   </span>
                   {values.segment && (
                     <span className="block mt-1 font-medium text-primary text-sm">
@@ -430,6 +478,26 @@ const RegisterPage = () => {
                   component="div"
                   className="text-red-500 text-xs mt-1"
                 />
+              </div>
+
+              <div className="pt-4 text-muted-foreground text-xs">
+                By creating an account, you agree to our{' '}
+                <Link
+                  href="/terms-of-service"
+                  target="_blank"
+                  className="text-foreground"
+                >
+                  Terms of Service
+                </Link>{' '}
+                and acknowledge our{' '}
+                <Link
+                  href="/privacy-policy"
+                  target="_blank"
+                  className="text-foreground"
+                >
+                  Privacy Policy
+                </Link>
+                .
               </div>
 
               {/* Submit */}

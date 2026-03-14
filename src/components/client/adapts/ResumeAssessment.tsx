@@ -73,7 +73,7 @@ const ResumeAssessment: React.FC<ResumeAssessmentProps> = ({
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Progress</span>
               <span className="font-semibold text-primary">
-                {progress}% Complete
+                {progress.toFixed(0)}% Complete
               </span>
             </div>
             <Progress value={progress} className="h-2" />

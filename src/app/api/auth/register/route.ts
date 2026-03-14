@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { ApiServiceError } from '@/lib/axios';
 
 export async function POST(req: Request) {
   try {
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error('Register failed', err.response?.data || err.message);
     return NextResponse.json(
-      { error: err.response?.data?.message || 'Registration failed' },
+      { error: err.response?.data || err.message},
       { status: err.response?.status || 500 }
     );
   }

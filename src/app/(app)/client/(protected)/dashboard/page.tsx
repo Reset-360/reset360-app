@@ -36,7 +36,7 @@ export default function ClientDashboardPage() {
   const profile = useAuthStore((state) => state.clientProfile);
 
   // 🔧 Quiz store: setters + getters
-  const assessment = useQuizStore((s) => s.assessment);
+  const setHasPrevAttempts = useQuizStore((s) => s.setHasPrevAttempts);
   const hydrateFromAssessment = useQuizStore((s) => s.hydrateFromAssessment);
 
   // Entitlement store
@@ -105,6 +105,7 @@ export default function ClientDashboardPage() {
 
         if (data) {
           setLatestAssessment(data);
+          setHasPrevAttempts(true);
         }
       } catch (error) {
         console.error('Failed to fetch assessment:', error);

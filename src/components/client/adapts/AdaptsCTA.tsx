@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { redeemSeatCode } from '@/services/adaptsService';
 import useAuthStore from '@/store/AuthState';
 import useEntitlementState from '@/store/EntitlementState';
+import useQuizStore from '@/store/QuizState';
 import { EAssessmentType } from '@/types/adapts';
 import { EEntitlementStatus } from '@/types/entitlement';
 import { renderAssessmentType, getAssessmentType } from '@/utils/adaptsHelper';
@@ -26,11 +27,12 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => { 
+export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
   const router = useRouter();
 
   const user = useAuthStore((s) => s.user);
   const clientProfile = useAuthStore((s) => s.clientProfile);
+  const hasPrevAttempts = useQuizStore((s) => s.hasPrevAttempts);
 
   // Entitlement state
   const currentEntitlement = useEntitlementState((s) => s.currentEntitlement);
@@ -49,13 +51,13 @@ export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
   const [seatCode, setSeatCode] = useState('');
   const [error, setError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
-  const [isLoading, setLoading] = useState(true)
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user && clientProfile) {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [user, clientProfile])
+  }, [user, clientProfile]);
 
   const handleRedeemCode = async () => {
     if (!user?._id || !clientProfile?._id) return;
@@ -115,7 +117,7 @@ export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
       ? getAssessmentType(user, clientProfile)
       : undefined);
 
-      console.log('type', assessmentType)
+  console.log('type', assessmentType);
 
   //  Assigned assessment callout
   const assessmentTypeInfo = (
@@ -129,7 +131,7 @@ export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
     </div>
   );
 
-   if (isLoading) {
+  if (isLoading) {
     return (
       <Card className="flex items-center justify-center xl:w-1/2 h-80">
         <LoadingSpinner />
@@ -138,16 +140,16 @@ export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
   }
 
   return (
-    <Card className="gap-0 backdrop-blur-sm bg-gradient-to-br from-card/90 to-primary/5 border-primary/20 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-card)] transition-all duration-300 mb-6 xl:w-1/2">
+    <Card className="mb-6 xl:w-1/2">
       <CardHeader className="py-0 mb-2">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-2xl flex items-center gap-2">
+            <CardTitle className="text-lg lg:text-2xl flex items-center gap-2">
               <ClipboardList className="w-6 h-6 text-primary" />
               Take Your ADAPTS Assessment
             </CardTitle>
             {!hasCode && (
-              <CardDescription className="text-xs">
+              <CardDescription className="text-xs mt-2">
                 Anxiety Depression Assessment for Parents Teachers and Students
               </CardDescription>
             )}
@@ -196,9 +198,7 @@ export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
             </div>
           </>
         ) : (
-          <div className='mb-2'>
-            {assessmentTypeInfo}
-          </div>
+          <div className="mb-2">{assessmentTypeInfo}</div>
         )}
       </CardContent>
 
@@ -248,6 +248,17 @@ export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
           Start Assessment
           <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Button>
+
+        {!hasPrevAttempts ? (
+          <div className="text-xs text-gray-700">
+            Once the <span className="font-bold">ADAPTS screening</span> has been
+            started, the {' '}
+            <span className="font-bold">assessment type</span> and {' '}
+            <span className="font-bold">demographic information</span>{' '}
+            associated with your profile can no longer be modified. If you
+            require assistance, please contact support.
+          </div>
+        ) : null}
       </CardFooter>
     </Card>
   );

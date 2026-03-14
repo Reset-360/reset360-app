@@ -1,4 +1,4 @@
-import { ClipboardClock, Home, Receipt } from 'lucide-react';
+import { CircleUserRound, ClipboardClock, Home, Receipt } from 'lucide-react';
 
 export const clientMenuItems = [
   {
@@ -15,6 +15,11 @@ export const clientMenuItems = [
     title: 'Orders',
     url: '/client/orders',
     icon: Receipt,
+  },
+  {
+    title: 'Profile',
+    url: '/client/profile',
+    icon: CircleUserRound,
   },
 ];
 

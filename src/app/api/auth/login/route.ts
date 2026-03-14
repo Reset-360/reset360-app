@@ -30,7 +30,6 @@ export async function POST(req: Request) {
 
     return response;
   } catch (err: any) {
-    console.error('Register failed', err.response?.data || err.message);
     return NextResponse.json(
       { error: err.response?.data?.message || 'Login failed' },
       { status: err.response?.status || 500 }

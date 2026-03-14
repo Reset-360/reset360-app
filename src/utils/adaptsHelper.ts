@@ -363,3 +363,18 @@ export const getAssessmentLabel = (segment?: EClientSegment) => {
       return "This helps us assign the correct ADAPTS assessment for you.";
   }
 };
+
+export const getSegmentLabel = (segment?: EClientSegment) => {
+  switch (segment) {
+    case EClientSegment.STUDENT:
+      return "Student";
+    case EClientSegment.PARENT:
+      return "Parent";
+    case EClientSegment.TEACHER:
+      return "Teacher";
+    case EClientSegment.INDIVIDUAL:
+      return "College / Young Adult";
+    default:
+      return "";
+  }
+};

@@ -45,3 +45,27 @@ export interface IClient {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+// For dashboard use
+export interface ProfileData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  phone: string;
+  countryCode: string;
+  gender: string;
+  birthDate: string;
+  segment: string;
+  maritalStatus: string;
+  address: string;
+  city: string;
+  country: string;
+  highestEducationalAttainment: string;
+  occupation: string;
+  presentingConcerns: string[];
+  notes: string;
+  imageUrl: string;
+  locale: string;
+  timezone: string;
+}

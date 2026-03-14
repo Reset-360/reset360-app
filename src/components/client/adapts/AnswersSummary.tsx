@@ -22,7 +22,7 @@ const AnswersSummary: React.FC<AnswersSummaryProps> = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="p-6 border-b bg-card/50 backdrop-blur-sm">
+      <header className="p-2 lg:p-6 border-b bg-card/50 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => router.push('/client/dashboard')}
@@ -35,24 +35,24 @@ const AnswersSummary: React.FC<AnswersSummaryProps> = ({
       </header>
 
       {/* Header */}
-      <div className="max-w-4xl mx-auto py-6 space-y-4">
+      <div className="max-w-4xl mx-auto py-6 px-10 space-y-4">
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/50 to-accent/5 flex items-center justify-center">
+            <div className="w-10 h-10 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-primary/50 to-accent/5 flex items-center justify-center">
               <CheckCircle2 className="w-12 h-12 text-violet-500" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-violet-600">
+          <h1 className="text-lg lg:text-3xl md:text-4xl font-bold text-violet-600">
             Answers Summary
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="max-w-4xl text-sm text-muted-foreground">
             Review your responses to all questions. Once ready, submit to
             finalize and view your assessment results.
           </p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto flex flex-col gap-5">
+      <div className="max-w-4xl mx-auto flex flex-col gap-5 px-10">
         {questions.map((question: Question) => (
           <AnswerItemSummary
             key={question.id}

@@ -7,6 +7,7 @@ import { devtools, persist } from 'zustand/middleware';
 type QuizState = {
   hasHydrated: boolean;
   hasStarted: boolean;
+  hasPrevAttempts: boolean;
 
   assessment?: IAssessment;
   assessmentId?: string;
@@ -23,6 +24,7 @@ type QuizState = {
 
   hydrateFromAssessment: (assessment: any) => void;
   setHasStarted: (v: boolean) => void;
+  setHasPrevAttempts: (v: boolean) => void;
   setHasHydrated: (v: boolean) => void;
 
   setAnswer: (path: number, value: any) => void;
@@ -41,6 +43,7 @@ const useQuizStore = create<QuizState>()(
       (set, get) => ({
         hasHydrated: false,
         hasStarted: false,
+        hasPrevAttempts: false,
 
         answersDraft: [],
 
@@ -54,6 +57,7 @@ const useQuizStore = create<QuizState>()(
         _saveTimer: null as NodeJS.Timeout | null,
 
         setHasStarted: (v) => set({ hasStarted: v }),
+        setHasPrevAttempts: (v) => set({ hasPrevAttempts: v }),
 
         hydrateFromAssessment: (assessment) => {
           set({
@@ -65,6 +69,7 @@ const useQuizStore = create<QuizState>()(
             timeSpentSec: assessment.timeSpentSec || 0,
 
             hasStarted: Object.keys(assessment.answersDraft?.[0] || {}).length > 0 ? true : false,
+            hasPrevAttempts: false,
 
             isDirty: false,
             isSaving: false,
@@ -143,6 +148,7 @@ const useQuizStore = create<QuizState>()(
             currentQuestionIndex: 0,
             assessment: undefined,
             hasStarted: false,
+            hasPrevAttempts: false,
           }),
 
         setHasHydrated: (v) => set({ hasHydrated: v }),
