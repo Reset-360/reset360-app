@@ -1,24 +1,18 @@
-import React, { useEffect } from 'react';
-import AOS from 'aos';
+import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
-  AlertCircle,
-  ArrowRight,
   Clock,
-  FileCheck,
   FileText,
   Info,
   Lock,
-  Phone,
   RotateCcw,
-  ShieldCheck,
 } from 'lucide-react';
 import Image from 'next/image';
 
 const DemoTestIntro = ({ onStart }: { onStart: () => void }) => {
   return (
-    <div className="max-w-4xl w-full space-y-8 py-24">
+    <div className="max-w-4xl mx-auto w-full space-y-8 py-24">
       {/* 🌟 Hero */}
       <div className="space-y-6 text-center">
         <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">

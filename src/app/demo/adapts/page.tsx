@@ -104,7 +104,7 @@ const DemoAssessmentPage: React.FC = () => {
   if (showSummary) {
     // You can replace this with a proper DemoResult component
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 gap-6 text-center">
+      <div className="fixed inset-0 z-[99999] bg-background  min-h-screen flex flex-col items-center justify-center px-4 gap-6 text-center">
         <Image
           src="/logo/logo_250.png"
           width={64}
