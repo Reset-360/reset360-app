@@ -138,7 +138,10 @@ export function getAssessmentType(
 
 /**
  * 📊 Estimate a T-score and provide a risk band with recommendations.
- *
+ * 
+ * IMPORTANT !! This computation is based on how ResetClinic scores ADAPTS assessment (resetClinic-Front)
+ * This is not yet the ideal version as this is using an arbitrary values
+ * 
  * @param totalRating - Raw total score from the assessment
  * @param clientProfile - User info for age/sex adjustments
  * @returns {tScoreResult} - { tScoreCategory,  riskBand, riskLevel, description, recommendations }

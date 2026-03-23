@@ -134,3 +134,7 @@
 - Add Next TopLoader
 - Fix some UI responsiveness
 - Add ADAPTS Demo
+
+# ✅ Completed Tasks — 2026-03-23
+
+- Add page title on marketing pages for SEO

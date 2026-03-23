@@ -1,0 +1,528 @@
+'use client';
+
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import Image from 'next/image';
+import React, { useState } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { ClientRegisterSchema, schema } from '@/forms/useRegisterSchema';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { format, subYears } from 'date-fns';
+import { Calendar as CalendarIcon, CheckCircle2, Eye, EyeOff, XCircle } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn, renderApiError } from '@/lib/utils';
+import { useRoleRedirect } from '@/hooks/useRoleRedirect';
+import { getUser, registerUser } from '@/services/authService';
+import { EClientSegment, EClientStatus, EGender } from '@/types/client';
+import { EUserRole } from '@/types/user';
+import { RegisterParams } from '@/types/auth';
+import moment from 'moment';
+import { getClientProfile } from '@/services/clientService';
+import useAuthStore from '@/store/AuthState';
+import { getAssessmentLabel } from '@/utils/adaptsHelper';
+import { ApiValidationError } from '@/lib/axios';
+
+// Helper: minimum age = 6 years old
+const minAgeDate = new Date();
+minAgeDate.setFullYear(minAgeDate.getFullYear() - 6);
+// Default selected = today - 18 years
+const defaultDate = subYears(new Date(), 18);
+
+interface PasswordRule {
+  label: string;
+  test: (pw: string) => boolean;
+}
+
+const PASSWORD_RULES: PasswordRule[] = [
+  { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
+  { label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
+  { label: 'One number', test: (pw) => /\d/.test(pw) },
+  { label: 'One special character', test: (pw) => /[^A-Za-z0-9]/.test(pw) },
+];
+
+const RegisterClient = () => {
+  const { setUser, setClientProfile } = useAuthStore((state) => state);
+
+  const { redirectByRole } = useRoleRedirect();
+
+  const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleLoginSubmit = async (
+    values: ClientRegisterSchema,
+    setSubmitting: (isSubmitting: boolean) => void,
+    setErrors: (errors: any) => void
+  ) => {
+    try {
+      const params: RegisterParams = {
+        username: values.username,
+        password: values.password,
+        countryCode: values.countryCode,
+        role: EUserRole.CLIENT,
+        profile: {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          segment: values.segment,
+          birthDate: moment(values.birthDate, 'YYYY-MM-DD').toDate(),
+          gender: values.gender,
+          status: EClientStatus.ACTIVE,
+        },
+      };
+
+      if (values.email) {
+        params.email = values.email;
+      }
+
+      if (values.phone) {
+        params.phone = values.phone;
+      }
+
+      const regResponse = await registerUser(params);
+      const user = await getUser();
+
+      if (user.role == EUserRole.CLIENT) {
+        const profile = await getClientProfile(user._id);
+
+        // setup store data
+        setUser(user);
+
+        if (user.role == EUserRole.CLIENT) {
+          setClientProfile(profile);
+        }
+      }
+
+      redirectByRole(user.role, true);
+    } catch (err: any) {
+      if (err instanceof ApiValidationError) {
+        console.log(err.details.username);
+
+        if (
+          err.details.username ||
+          err.details.email ||
+          err.details.phone ||
+          err.details.password
+        ) {
+          setErrors(err.details);
+          return;
+        }
+      }
+
+      renderApiError(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="w-full flex flex-col">
+      {/* Logo */}
+      <nav className="mb-8">
+        <Link
+          href="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="flex items-center gap-2"
+        >
+          <Image
+            src="/logo/reset360_full_250.png"
+            alt="Reset 360 Logo"
+            width={150}
+            height={50}
+          />
+        </Link>
+      </nav>
+
+      {/* Register Form */}
+      <div className="flex-1 flex flex-col justify-center">
+        <h2 className="text-2xl font-main font-bold">Create an Account</h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Begin your reset: your journey to balance starts here.
+        </p>
+
+        <Formik
+          initialValues={{
+            firstName: '',
+            lastName: '',
+            username: '',
+            password: '', // Prev defaults: P@ssword1!
+            confirmPassword: '',
+            gender: '',
+            birthDate: '',
+            email: '',
+            phone: '',
+            countryCode: '+63',
+            segment: '' as EClientSegment,
+          }}
+          validationSchema={schema}
+          onSubmit={async (values, { setSubmitting, setErrors }) => {
+            await handleLoginSubmit(values, setSubmitting, setErrors);
+          }}
+        >
+          {({ values, setFieldValue, isSubmitting }) => (
+            <Form className="space-y-5">
+              {/* Fake fields to prevent autofill */}
+              <input
+                type="text"
+                name="fakeusernameremembered"
+                autoComplete="off"
+                className="hidden"
+              />
+              <input
+                type="password"
+                name="fakepasswordremembered"
+                autoComplete="new-password"
+                className="hidden"
+              />
+
+              {/* First Name + Last Name */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">* First Name</Label>
+                  <Field as={Input} name="firstName" placeholder="First Name" />
+                  <ErrorMessage
+                    name="firstName"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="lastName">* Last Name</Label>
+                  <Field as={Input} name="lastName" placeholder="Last Name" />
+                  <ErrorMessage
+                    name="lastName"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+              </div>
+
+              {/* Username */}
+              <div>
+                <Label htmlFor="username">* Username</Label>
+                <Field
+                  as={Input}
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  autoComplete="new-username"
+                />
+                <ErrorMessage
+                  name="username"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div>
+
+              {/* Password + Confirm */}
+              <div className="grid grid-cols-1 gap-4">
+                <div className="relative">
+                  <Label htmlFor="password">* Password</Label>
+                  <Field
+                    as={Input}
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    placeholder="Password"
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-7  text-muted-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+
+                  {values.password.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {PASSWORD_RULES.map((rule) => {
+                        const passed = rule.test(values.password);
+                        return (
+                          <li key={rule.label} className={cn('flex items-center gap-2 text-xs', passed ? 'text-green-600' : 'text-muted-foreground')}>
+                            {passed
+                              ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                              : <XCircle className="w-3.5 h-3.5 shrink-0" />
+                            }
+                            {rule.label}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+
+                <div className="relative">
+                  <Label htmlFor="confirmPassword">* Confirm Password</Label>
+                  <Field
+                    as={Input}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-7 text-gray-500"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                  <ErrorMessage
+                    name="confirmPassword"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <Label htmlFor="email">* Email</Label>
+                <Field
+                  as={Input}
+                  type="text"
+                  name="email"
+                  placeholder="Email"
+                  autoComplete="new-email"
+                />
+                <ErrorMessage
+                  name="email"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div>
+
+              {/* Phone */}
+              {/* <div>
+                <Label htmlFor="phone">Phone</Label>
+                <div className="flex gap-3">
+                  <Select
+                    value={values.countryCode}
+                    onValueChange={(val) => setFieldValue('countryCode', val)}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue placeholder="+Code" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="+63">+63</SelectItem>
+                      <SelectItem value="+9">+9</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Field name="phone">
+                    {({ field }: any) => (
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="Enter 10-digit number"
+                        maxLength={10}
+                        inputMode="numeric"
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          setFieldValue('phone', value);
+                        }}
+                        className="flex-1"
+                      />
+                    )}
+                  </Field>
+                </div>
+                <ErrorMessage
+                  name="phone"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div> */}
+
+              {/* Birthdate + Gender */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Birthdate */}
+                <div>
+                  <Label htmlFor="birthDate">* Birthdate</Label>
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          'w-full justify-start text-left font-normal',
+                          !values.birthDate && 'text-muted-foreground'
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {values.birthDate
+                          ? format(new Date(values.birthDate), 'PPP')
+                          : 'Select your birthdate'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          values.birthDate
+                            ? new Date(values.birthDate)
+                            : defaultDate
+                        }
+                        onSelect={(date: any) => {
+                          if (date) {
+                            setFieldValue('birthDate', date);
+                          } else {
+                            setFieldValue('birthDate', defaultDate);
+                          }
+                          setOpen(false);
+                        }}
+                        defaultMonth={defaultDate}
+                        captionLayout="dropdown"
+                        disabled={(date) =>
+                          date > new Date() || date > minAgeDate
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <ErrorMessage
+                    name="birthDate"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+
+                {/* Gender */}
+                <div>
+                  <Label htmlFor="gender">* Gender</Label>
+                  <Select
+                    onValueChange={(value) => setFieldValue('gender', value)}
+                    defaultValue={values.gender}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={EGender.MALE}>Male</SelectItem>
+                      <SelectItem value={EGender.FEMALE}>Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <ErrorMessage
+                    name="gender"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="segment">* Which best describes you?</Label>
+                <Select
+                  value={values.segment}
+                  onValueChange={(val) => setFieldValue('segment', val)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="I am a ..." />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem value={EClientSegment.STUDENT}>
+                      Student
+                    </SelectItem>
+                    <SelectItem value={EClientSegment.PARENT}>
+                      Parent
+                    </SelectItem>
+                    <SelectItem value={EClientSegment.TEACHER}>
+                      Teacher
+                    </SelectItem>
+                    <SelectItem value={EClientSegment.INDIVIDUAL}>
+                      College / Young Adult
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <p className="mt-1 text-xs">
+                  <span className="text-muted-foreground">
+                    This helps us assign the correct ADAPTS assessment for you.{' '}
+                    <br />
+                    Please note that this cannot be changed after assessment
+                    setup.
+                  </span>
+                  {values.segment && (
+                    <span className="block mt-1 font-medium text-primary text-sm">
+                      {getAssessmentLabel(values.segment)}
+                    </span>
+                  )}
+                </p>
+
+                <ErrorMessage
+                  name="segment"
+                  component="div"
+                  className="text-red-500 text-xs mt-1"
+                />
+              </div>
+
+              <div className="pt-4 text-muted-foreground text-xs">
+                By creating an account, you agree to our{' '}
+                <Link
+                  href="/terms-of-service"
+                  target="_blank"
+                  className="text-foreground"
+                >
+                  Terms of Service
+                </Link>{' '}
+                and acknowledge our{' '}
+                <Link
+                  href="/privacy-policy"
+                  target="_blank"
+                  className="text-foreground"
+                >
+                  Privacy Policy
+                </Link>
+                .
+              </div>
+
+              {/* Submit */}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-full mt-4"
+              >
+                {isSubmitting ? 'Creating your account...' : 'Create Account'}
+              </Button>
+            </Form>
+          )}
+        </Formik>
+
+        {/* Footer */}
+        <hr className="my-8 border-t border-muted-foreground/40" />
+        <p className="text-center text-muted-foreground">
+          Already have an account?{' '}
+          <Link href="/login" className="text-foreground font-medium">
+            Login
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default RegisterClient;

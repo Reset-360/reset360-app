@@ -1,5 +1,10 @@
 import React from 'react'
 
+export const metadata = {
+  title: "Data Processing Agreement",
+  description: "Reset 360’s Data Processing Agreement outlines our commitment to privacy, security, and compliance with data protection regulations.",
+};
+
 const DataProcessingAgreement = () => {
   return (
     <main className="container max-w-3xl mx-auto px-6 py-24">

@@ -1,6 +1,7 @@
-import { motion } from "framer-motion";
-import { Building2, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { motion } from 'framer-motion';
+import { Building2, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const OrgHero = () => {
   return (
@@ -14,7 +15,7 @@ const OrgHero = () => {
           className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
-            backgroundSize: "60px 60px",
+            backgroundSize: '60px 60px',
           }}
         />
       </div>
@@ -37,28 +38,32 @@ const OrgHero = () => {
             </motion.div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-primary-foreground mb-6">
-              Enterprise Mental Wellness,{" "}
+              Enterprise Mental Wellness,{' '}
               <span className="text-accent">Simplified.</span>
             </h1>
 
             <p className="text-lg md:text-xl text-primary-foreground/70 mb-10 leading-relaxed max-w-2xl mx-auto">
-              Deploy ADAPTS assessments across your organization, distribute seat
-              codes instantly, and monitor progress from a centralized dashboard.
+              Deploy ADAPTS assessments across your organization, distribute
+              seat codes instantly, and monitor progress from a centralized
+              dashboard.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button                
-                className="bg-primary text-primary-foreground rounded-full shadow-elevated hover:opacity-90 transition-opacity"
-              >
-                Get Started
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-              <Button
-                variant="outline"                
-                className="text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 backdrop-blur-sm rounded-full hover:bg-primary-foreground/20 hover:text-primary-foreground"
-              >
-                View Plans
-              </Button>
+              <Link href="/organization/register">
+                <Button className="bg-primary text-primary-foreground rounded-full shadow-elevated hover:opacity-90 transition-opacity">
+                  Get Started
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+
+              <Link href="#org-pricing">
+                <Button
+                  variant="outline"
+                  className="text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 backdrop-blur-sm rounded-full hover:bg-primary-foreground/20 hover:text-primary-foreground"
+                >
+                  View Plans
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

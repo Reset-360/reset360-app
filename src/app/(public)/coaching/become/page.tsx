@@ -1,24 +1,13 @@
-'use client'
+import BecomeCoachClient from '@/components/views/coaching/become/BecomeCoachClient'
+import { Metadata } from 'next';
 
-import CoachAfterCert from '@/components/views/coaching/become/CoachAfterCert';
-import CoachCertRequirement from '@/components/views/coaching/become/CoachCertRequirement';
-import CoachCTA from '@/components/views/coaching/become/CoachCTA';
-import CoachERCTracks from '@/components/views/coaching/become/CoachERCTracks';
-import CoachHero from '@/components/views/coaching/become/CoachHero';
-import CoachWhyJoin from '@/components/views/coaching/become/CoachWhyJoin';
-import React from 'react';
-
-const BecomeCoachPage = () => {
-  return (
-    <main>
-      <CoachHero />
-      <CoachWhyJoin />
-      <CoachCertRequirement />
-      <CoachERCTracks />
-      <CoachAfterCert />
-      <CoachCTA />
-    </main>
-  );
+export const metadata: Metadata = {
+  title: 'Become a coach',
+  keywords: ['coaching', 'organization']
 };
 
-export default BecomeCoachPage;
+const BecomeCoachPage = () => {
+  return <BecomeCoachClient />
+}
+
+export default BecomeCoachPage
