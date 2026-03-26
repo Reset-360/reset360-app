@@ -129,7 +129,7 @@ const TestIntro = () => {
                 For each item choose the response that best fits how you have
                 been feeling recently:{' '}
                 <span className="font-semibold">
-                  NEVER, RARELY, SOMETIMES, OFTEN,
+                  NEVER, SOMETIMES, OFTEN,
                 </span>{' '}
                 or <span className="font-semibold">ALL THE TIME</span>.
               </p>
@@ -141,7 +141,7 @@ const TestIntro = () => {
             </div>
             <div>
               <p className="font-medium text-foreground">
-                Time: about 15–20 minutes
+                Time: about 10 to 15 minutes
               </p>
               <p className="text-sm text-muted-foreground">
                 Take your time to answer thoughtfully
@@ -157,7 +157,7 @@ const TestIntro = () => {
                 Questions: 50 items, one response per item
               </p>
               <p className="text-sm text-muted-foreground">
-                Choose the option that best describes you
+                Select the option that best reflects how you’ve felt over the past two weeks.
               </p>
             </div>
           </div>

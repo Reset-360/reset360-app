@@ -3,23 +3,29 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { CalendarCheck, RefreshCw } from 'lucide-react';
+
 import useQuizStore from '@/store/QuizState';
 import useAuthStore from '@/store/AuthState';
 
-import { estimateTscore, getQuestionsForProfile } from '@/utils/adaptsHelper';
-import { defaultRiskProfile, Scores, TotalSubScaleScore, tScoreResult } from '@/types/adapts';
+import { getQuestionsForProfile } from '@/utils/adaptsHelper';
+import { Scores, TScoreResult } from '@/types/adapts';
 
 import LoadingSpinner from '@/components/layout/LoadingSpinner';
 
-import { TScoreGauge } from '@/components/client/adapts-results/TScoreGauge';
-import RiskCard from '@/components/client/adapts-results/RiskCard';
 import { EmotionalProfileHeader } from '@/components/client/adapts-results/EmotionalProfileHeader';
-import { SubscaleSummary } from '@/components/client/adapts-results/SubScaleSummary';
-import { RecommendationsList } from '@/components/client/adapts-results/RecommendationsList';
-import MentalHealthRadialProfile from '@/components/client/adapts-results/MentalHealthRadialProfile';
+
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
 import useEntitlementStore from '@/store/EntitlementState';
+import { estimateTscore } from '@/utils/adaptsScoreHelper';
+import moment from 'moment';
+import SelfHarmBanner from '@/components/client/adapts-results/SelfHarmBanner';
+import RiskCard from '@/components/client/adapts-results/RiskCard';
+import MentalHealthRadialProfile from '@/components/client/adapts-results/MentalHealthRadialProfile';
+import SubscaleSummary from '@/components/client/adapts-results/SubScaleSummary';
+import { RecommendationsList } from '@/components/client/adapts-results/RecommendationsList';
 
 const ResultsPage = () => {
   const router = useRouter();
@@ -27,15 +33,9 @@ const ResultsPage = () => {
   const user = useAuthStore((s) => s.user);
   const clientProfile = useAuthStore((s) => s.clientProfile);
 
-  const assessment = useQuizStore((s) => s.assessment)
+  const assessment = useQuizStore((s) => s.assessment);
   const resetQuiz = useQuizStore((s) => s.resetQuiz);
   const resetEntitlement = useEntitlementStore((s) => s.resetEntitlement);
-
-  const hasCompleted = assessment?.submittedAt ? true : false;
-  const completedAt = assessment?.submittedAt
-  const totalRating = assessment?.totalRating || 0
-  const totalSubScaleScore = assessment?.totalSubScalesScore as Scores
-  const subScaleScore = assessment?.subScales as TotalSubScaleScore
 
   // 📝 Load questions based on profile
   const questions = useMemo(() => {
@@ -44,12 +44,14 @@ const ResultsPage = () => {
       : [];
   }, [user, clientProfile]);
 
+  const hasCompleted = assessment?.submittedAt ? true : false;
+  const completedAt = assessment?.submittedAt;
+
   // 🟢 Track whether component mounted (hydration finished)
   const [mounted, setMounted] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
 
-  const [estimatedTScore, setEstimatedTScore] =
-    useState<tScoreResult>(defaultRiskProfile);
+  const [result, setResult] = useState<TScoreResult>();
 
   useEffect(() => setMounted(true), []);
 
@@ -69,21 +71,24 @@ const ResultsPage = () => {
   }, [mounted, user, hasCompleted, assessment, router]);
 
   useEffect(() => {
-    if (mounted && clientProfile && totalRating) {
-      const tScore = estimateTscore(totalRating, clientProfile!);
-      setEstimatedTScore(tScore);
+    if (mounted && clientProfile && assessment) {
+      const tScore = estimateTscore(
+        assessment?.answers[0] as any,
+        assessment?.type
+      );
+      console.log(tScore);
+      setResult(tScore);
     }
-  }, [mounted, clientProfile, totalRating]);
+  }, [mounted, clientProfile, assessment]);
 
-  
   const onBackToHome = () => {
     // reset quiz state
     // reset entitlement state
     resetQuiz();
     resetEntitlement();
 
-    router.replace('/client/dashboard')
-  }
+    router.replace('/client/dashboard');
+  };
 
   if (!mounted || redirecting) {
     return (
@@ -98,31 +103,51 @@ const ResultsPage = () => {
       <div className="max-w-5xl mx-auto space-y-8">
         <EmotionalProfileHeader />
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <RiskCard
-            riskLevel={estimatedTScore.riskLevel}
-            description={estimatedTScore.description}
-            completedAt={completedAt}
-          />
+        {result ? (
+          <div className="">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 text-xs text-foreground bg-primary/10 border border-primary/20 p-2 rounded-md">
+                <CalendarCheck className="h-4 w-4 text-primary" />
+                <span>
+                  Completed on{' '}
+                  {moment(completedAt).format('MMMM Do, YYYY HH:mm A')}
+                </span>
+              </div>
+              
+              {/* Self-harm banner (if flagged) */}
+              {result.hasSelfHarmFlag && <SelfHarmBanner />}
 
-          <TScoreGauge
-            score={estimatedTScore.adjustedTScore}
-            riskLevel={estimatedTScore.riskLevel}
-            tScoreCategory={estimatedTScore.tScoreCategory}
-          />
-        </div>
+              <div className="grid gap-6">
+                {/* Overall risk level*/}
+                <RiskCard result={result} />
+                <MentalHealthRadialProfile
+                  totalSubScaleScore={result.subscales}
+                  questions={questions}
+                />
+              </div>
 
-        {assessment && (
-          <>
-            <MentalHealthRadialProfile totalSubScaleScore={subScaleScore} questions={questions} />
-            <SubscaleSummary totalSubScaleScore={subScaleScore} questions={questions} />
-          </>
+              <div className="grid gap-6 xl:grid-cols-2">
+                <SubscaleSummary
+                  subscales={result.subscales}
+                  elevatedSubscales={result.elevatedSubscales}
+                />
+
+                <RecommendationsList
+                  recommendations={result.recommendations}
+                  riskBand={result.riskBand}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <Alert variant="destructive" className="mt-4 mx-auto max-w-md">
+            <RefreshCw className="h-4 w-4" />
+            <AlertTitle>Unable to load results</AlertTitle>
+            <AlertDescription>
+              Please try refreshing the page or check back later.
+            </AlertDescription>
+          </Alert>
         )}
-
-        <RecommendationsList
-          recommendations={estimatedTScore.recommendations}
-          riskLevel={estimatedTScore.riskLevel}
-        />
 
         <div className="flex flex-col">
           <Button

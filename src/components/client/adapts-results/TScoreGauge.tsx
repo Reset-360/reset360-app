@@ -10,9 +10,8 @@ interface TScoreGaugeProps {
 
 const ticks = [
   { value: 20, label: '20' },
-  { value: 50, label: '50' },
-  { value: 65, label: '65' },
-  { value: 70, label: '70' },
+  { value: 40, label: '40' },
+  { value: 60, label: '60' },
   { value: 80, label: '80+' },
 ];
 
@@ -29,13 +28,11 @@ export function TScoreGauge({
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <RiskIcon riskLevel={riskLevel} />
-            <h3 className="text-lg font-semibold">Your T-Score</h3>
+            <h3 className="text-lg font-semibold">Your Response Score</h3>
           </div>
           <div className="md:w-[70%]">
             <p className="text-xs text-muted-foreground">
-              T scores show how your results compare to a reference group. They
-              help us understand whether your scores are typical, elevated, or
-              high.
+              This score reflects how your responses fall across this assessment’s range. It helps indicate whether your reported experiences are low, moderate, or elevated
             </p>
           </div>
         </div>
@@ -44,7 +41,7 @@ export function TScoreGauge({
           <p className={`text-6xl font-bold ${getRiskTextColor(riskLevel)}`}>
             {score}
           </p>
-          <div className="text-sm font-bold text-gray-700">
+          <div className="text-sm font-bold text-gray-700 capitalize">
             {tScoreCategory}
           </div>
         </div>
@@ -60,7 +57,8 @@ export function TScoreGauge({
               background: `linear-gradient(
                 to right,
                 #10b981 0%,   /* emerald-500 */
-                #10b981 40%,  
+                #10b981 25%,
+                #f59e0b 40%, 
                 #f59e0b 60%,  /* amber-500 */
                 #ef4444 80%,  /* red-500 */
                 #ef4444 100%
