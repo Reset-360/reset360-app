@@ -1,4 +1,4 @@
-import { CircleUserRound, ClipboardClock, Home, Receipt } from 'lucide-react';
+import { CircleUserRound, ClipboardClock, Heart, Home, Receipt, ToolCase } from 'lucide-react';
 
 export const clientMenuItems = [
   {
@@ -20,6 +20,11 @@ export const clientMenuItems = [
     title: 'Profile',
     url: '/client/profile',
     icon: CircleUserRound,
+  },
+  {
+    title: 'The Calm Room',
+    url: '/client/calm-room',
+    icon: Heart,
   },
 ];
 

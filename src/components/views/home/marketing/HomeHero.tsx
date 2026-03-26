@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Compass } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -54,12 +54,20 @@ const HomeHero = () => (
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <Link href="/adapts">
-              <Button className="rounded-full">
-                Start ADAPTS
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
+            <div className="flex flex-col gap-2">
+              <Link href="/adapts">
+                <Button className="rounded-full">
+                  Start ADAPTS
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+              <Link href="/demo/adapts" target='_blank'>
+                <Button className="text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 backdrop-blur-sm rounded-full hover:bg-primary-foreground/20 hover:text-primary-foreground">
+                  See Demo
+                  <ArrowUpRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
             <Link href="/coaching/find">
               <Button
                 variant="outline"

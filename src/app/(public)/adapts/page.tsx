@@ -1,29 +1,11 @@
-'use client';
+import AdaptsClient from '@/components/views/adapts/marketing/AdaptsClient';
+import { Metadata } from 'next';
 
-import React from 'react';
-import AdaptsHero from '@/components/views/adapts/marketing/AdaptsHero';
-import AdaptsWhat from '@/components/views/adapts/marketing/AdaptsWhat';
-import AdaptsWho from '@/components/views/adapts/marketing/AdaptsWho';
-import AdaptsHow from '@/components/views/adapts/marketing/AdaptsHow';
-import AdaptsReceive from '@/components/views/adapts/marketing/AdaptsReceive';
-import AdaptsPricing from '@/components/views/adapts/marketing/AdaptsPricing';
-import AdaptsNextSteps from '@/components/views/adapts/marketing/AdaptsNextSteps';
-import AdaptsBenefits from '@/components/views/adapts/marketing/AdaptsBenefits';
-
-const AdaptsPage = () => {
-  return (
-    <main>
-      <AdaptsHero />
-      <AdaptsWhat />
-      <AdaptsBenefits />
-      <AdaptsWho />
-      
-      <AdaptsHow />
-      <AdaptsPricing />
-      <AdaptsReceive />
-      <AdaptsNextSteps />
-    </main>
-  );
+export const metadata: Metadata = {
+  title: 'ADAPTS Assessment',
+  keywords: ['adapts', 'organization', 'coaching', 'assessment']
 };
 
-export default AdaptsPage;
+export default function AdaptsPage() {
+  return <AdaptsClient />;
+}

@@ -8,10 +8,9 @@ import { Question } from '@/types/adapts';
 
 const options = [
   { value: 0, label: 'NEVER' },        // 🚫
-  { value: 1, label: 'RARELY' },       // 🌱
-  { value: 2, label: 'SOMETIMES' },    // 🤔
-  { value: 3, label: 'OFTEN' },        // 🔄
-  { value: 4, label: 'ALL THE TIME' }, // ⏰
+  { value: 1, label: 'SOMETIMES' },    // 🤔
+  { value: 2, label: 'OFTEN' },        // 🔄
+  { value: 3, label: 'ALL THE TIME' }, // ⏰
 ];
 
 interface QuestionSlideProps {
@@ -45,7 +44,7 @@ const QuestionSlideComponent: React.FC<QuestionSlideProps> = ({
           <RadioGroup
             value={answer != null ? String(answer) : ''}
             onValueChange={(v) => onAnswerChange(question.id, v)}
-            className="grid grid-cols-1 md:grid-cols-5 gap-3"
+            className="grid grid-cols-1 md:grid-cols-4 gap-3"
           >
             {options.map((opt) => {
               const id = `q${question.id}-${opt.value}`;

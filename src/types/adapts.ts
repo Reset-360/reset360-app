@@ -1,81 +1,114 @@
 export enum EAssessmentType {
-  ADAPTS_S = "ADAPTS-S",
-  ADAPTS_P = "ADAPTS-P",
-  ADAPTS_T = "ADAPTS-T",
-  ADAPTS_C = "ADAPTS-C",
+  ADAPTS_S = 'ADAPTS-S',
+  ADAPTS_P = 'ADAPTS-P',
+  ADAPTS_T = 'ADAPTS-T',
+  ADAPTS_C = 'ADAPTS-C',
 }
 
 export enum ERiskBand {
-  low = "low",
-  moderate = "moderate",
-  high = "high",
+  low = 'low',
+  moderate = 'moderate',
+  high = 'high',
 }
 
 export enum ERiskLevel {
-  low = "Low Risk",
-  moderate = "Moderate Risk",
-  high = "High Risk",
+  low = 'Low Risk',
+  moderate = 'Moderate Risk',
+  high = 'High Risk',
 }
 
 // 🏷️ Define all possible factor values
-export type Factor =
-  | "MDD"   // 🌧️ Major Depressive Disorder
-  | "SoA"   // 🗣️ Social Anxiety
-  | "PD"    // 💓 Panic Disorder
-  | "SeA"   // 😰 Separation Anxiety
-  | "GAD"   // 🤯 Generalized Anxiety Disorder
-  | "OCD";  // 🔄 Obsessive-Compulsive Disorder
+export type RCADSFactor =
+  | 'MDD' // 🌧️ Major Depressive Disorder
+  | 'SoA' // 🗣️ Social Anxiety
+  | 'PD' // 💓 Panic Disorder
+  | 'SeA' // 😰 Separation Anxiety
+  | 'GAD' // 🤯 Generalized Anxiety Disorder
+  | 'OCD'; // 🔄 Obsessive-Compulsive Disorder
+  
+export const ALL_FACTORS: RCADSFactor[] = [
+  "MDD",
+  "SoA",
+  "PD",
+  "SeA",
+  "GAD",
+  "OCD",
+];
+
+export type FactorResult = {
+  rawScore: number; // 0–3 scale sum
+  tScore: number; // Normed T-score
+  maxRawScore: number; // Maximum possible raw score for this subscale
+  percentOfMax: number; // rawScore / maxRawScore as 0–100 (for display)
+  isBorderlineClinical: boolean; // T >= 65
+  isClinical: boolean; // T >= 70
+};
 
 // 📝 Define the Question type
 export interface Question {
-  id: number;        // 🔢 Unique identifier
-  question: string;  // 💬 The text of the question
-  factor: Factor;    // 🎯 Which subscale this question belongs to
+  id: number; // 🔢 Unique identifier
+  question: string; // 💬 The text of the question
+  factor: RCADSFactor; // 🎯 Which subscale this question belongs to
 }
 
 // 📊 Define SubScaleScores type (mapping factor → score)
-export type SubScaleScores = Record<Factor, number>;
+export type SubScaleScores = Record<RCADSFactor, FactorResult>;
 
 // 🧮 Type for quiz scores
 export interface Scores {
   totalAnxietyScore: number; // 😰 Sum of anxiety-related factors
-  totalMDDScore: number;     // 🌧️ Sum of depression-related factors
+  totalMDDScore: number; // 🌧️ Sum of depression-related factors
 }
 
 // 🎯 Interface for subscale scores
 export interface TotalSubScaleScore {
   SoA: number; // 🗣️ Social Anxiety
-  PD: number;  // 💓 Panic Disorder
+  PD: number; // 💓 Panic Disorder
   SeA: number; // 😰 Separation Anxiety
   GAD: number; // 🤯 Generalized Anxiety Disorder
   OCD: number; // 🔄 Obsessive-Compulsive Disorder
   MDD: number; // 🌧️ Major Depressive Disorder
 }
 
-export const defaultRiskProfile: tScoreResult = {
-  adjustedTScore: 0,
-  tScoreCategory: "T < 65", // 📊 Default T-score band
-  riskLevel: ERiskLevel.low,    // ✅ Overall risk level
-  riskBand: ERiskBand.low,          // 🟢 Risk band identifier
-  description:
-    "Your responses fall within typical emotional ranges. You appear to have a stable emotional baseline with manageable stress levels.",
+export type TScoreResult = {
+  /** Full per-subscale breakdown */
+  subscales: Record<RCADSFactor, FactorResult>;
 
-  recommendations: [
-    "Maintain your routine and continue using healthy coping habits.",
-    "Use **Reset360’s self-regulation tools** to stay grounded during stressful or emotionally triggering moments.",
-    "Consider a **Growth-Focused Coaching Session** to enhance resilience, self-awareness, and proactive emotional skills.",
-    "Re-take the ADAPTS assessment every 4–6 weeks to monitor changes in emotional well-being.",
-    "If you experience shifts or spikes, book a **quick-check coaching session** for guidance.",
-  ],
-};
+  /** Sum of all subscale raw scores */
+  totalRawScore: number;
 
-export type tScoreResult = {
-  adjustedTScore: number,
-  tScoreCategory: string;
+  /** T-score for the total */
+  totalTScore: number;
+
+  /** TotalAnxiety, TotalMDD Summary */
+  totalSubScalesScore: Scores
+
+  /**
+   * The single T-score driving risk classification.
+   * = max(worst subscale T, total T)
+   * Ensures a spike on one subscale is never masked by a low total.
+   */
+  effectiveTScore: number;
+
+  /** Subscales at or above borderline clinical threshold */
+  elevatedSubscales: RCADSFactor[];
+
+  /** Risk classification */
   riskLevel: ERiskLevel;
   riskBand: ERiskBand;
+  tScoreCategory: string;
   description: string;
   recommendations: string[];
+
+  /** True if self-harm item (Q32 in all forms) was endorsed at any level */
+  hasSelfHarmFlag: boolean;
+
+  /**
+   * True for Student and Young Adult (published norms exist).
+   * False for Parent and Teacher (approximate norms — replace when n >= 200).
+   */
+  isNormValidated: boolean;
+  normNote?: string;
 };
 
 export interface IAssessment {
@@ -85,31 +118,69 @@ export interface IAssessment {
   type: EAssessmentType; // type of assessment
   totalRating: number; // overall rating score
   tScore: number; // adjusted T-score
-  tScoreSummary: tScoreResult;
-  riskBand: ERiskBand; // risk band classification
-  riskLevel: ERiskLevel; // risk level classification
-  answers: Record<number, number>; // replace `any` with a more specific type if known
-  subScales: SubScaleScores; // replace `any` with a more specific type if known
-  totalSubScalesScore: Scores; // total score from subscales
+  tScoreSummary: tScoreResultSummary;
+  subscales: SubScaleScores; // replace `any` with a more specific type if known
   startedAt?: string; // depending on how you store dates
-  submittedAt?: string; // formatted date string
   lastActivityAt?: string; // formatted date string
+
+  effectiveTScore: number;
+  totalRawScore: number;
+  totalTScore: number;
+  elevatedSubscales: string[]; // or a more specific type if you know the subscale identifiers
+  riskBand: ERiskBand; // could be an enum if values are fixed
+  riskLevel: ERiskLevel; // likewise, consider an enum
+  tScoreCategory: string; // category label, could be enum
+  subScales: SubScaleScores; // adjust if you have a defined subscale type
+  normNote: string | null;
+  isNormValidated: boolean;
+  hasSelfHarmFlag: boolean;
+  totalSubScalesScore: Scores;
+  answers: Record<number, number>; // or more specific type if answers have a known shape
+  submittedAt: string; // formatted date string
 }
 
 export interface StartAssessmentData {
   userId: string;
-  type: EAssessmentType
+  type: EAssessmentType;
   assessmentId?: string;
 }
 
-export interface SubmitAssessmentData {  
-  totalRating: number; // overall rating score
-  tScore: number; // adjusted T-score
-  tScoreSummary: tScoreResult;
-  riskBand: ERiskBand; // risk band classification
-  riskLevel: ERiskLevel; // risk level classification
-  answers: Record<number, number>; // replace `any` with a more specific type if known
-  subScales: SubScaleScores; // replace `any` with a more specific type if known
-  totalSubScalesScore: Scores; // total score from subscales
-  submittedAt?: string; // formatted date string
+export type tScoreResultSummary = {
+  effectiveTScore: number;
+  totalRawScore: number;
+  totalTScore: number;
+  elevatedSubscales: string[]; // or a more specific type if you know the subscale identifiers
+  riskBand: ERiskBand; // could be an enum if values are fixed
+  riskLevel: ERiskLevel; // likewise, consider an enum
+  tScoreCategory: string; // category label, could be enum
+  subScales: SubScaleScores; // adjust if you have a defined subscale type
+  normNote: string | null;
+  isNormValidated: boolean;
+  hasSelfHarmFlag: boolean;
+  totalSubScalesScore: Scores;
+  answers: Record<number, number>; // or more specific type if answers have a known shape
+  submittedAt: string; // formatted date string
+};
+
+export interface IElevatedArea {
+  factor: RCADSFactor;
+  label: string;
+  description: string;
+  group: string;
+  rawScore: number;
+  maxScore: number;
+  percentage: number; // for display bar only — not used for elevation logic
+  tScore: number; // ← add
+  isClinical: boolean; // ← add
+  isBorderlineClinical: boolean; // ← add
+  riskBand: ERiskBand;
+  riskLevel: ERiskLevel;
+  summary: string;
+}
+
+export interface ITopElevatedAreasResult {
+  primary: IElevatedArea | null;
+  secondary: IElevatedArea | null;
+  all: IElevatedArea[];
+  headline: string;
 }

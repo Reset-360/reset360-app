@@ -6,8 +6,17 @@ import ScrollToHash from '@/components/layout/ScrollHash';
 import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
-  title: 'Reset 360',
-  description: 'Reset 360',
+  metadataBase: new URL('https://www.reset360.io'), // ← required for relative image URLs
+  title: {
+    default: 'Reset 360',
+    template: '%s | Reset 360', // e.g. "Dashboard | Reset 360"
+  },
+  description: 'Reset 360 helps individuals, families, and organizations improve well-being and mental health through personalized assessments, coaching, and resources.',
+  openGraph: {
+    siteName: 'Reset 360',
+    locale: 'en_US',
+    type: 'website',
+  },
   icons: {
     icon: '/icon.png',
     shortcut: '/icon.png',

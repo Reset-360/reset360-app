@@ -1,7 +1,7 @@
-import { Factor } from '@/types/adapts';
+import { RCADSFactor } from '@/types/adapts';
 
 export const FACTOR_META: Record<
-  Factor,
+  RCADSFactor,
   { label: string; description: string; group: 'anxiety' | 'mood' }
 > = {
   SoA: {

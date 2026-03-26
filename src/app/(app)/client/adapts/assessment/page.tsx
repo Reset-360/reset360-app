@@ -13,32 +13,27 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import {
-  calculateTotalScores,
-  estimateTscore,
   getAssessmentType,
   getQuestionsByType,
   renderAssessmentType,
 } from '@/utils/adaptsHelper';
 
 import {
-  IAssessment,
-  Factor,
-  Scores,
-  SubmitAssessmentData,
   EAssessmentType,
+  tScoreResultSummary,
 } from '@/types/adapts';
 import { QuestionSlide } from '@/components/client/adapts/QuestionSlide';
 import ResumeAssessment from '@/components/client/adapts/ResumeAssessment';
 import moment from 'moment';
 import { QuestionStepper } from '@/components/client/adapts/QuestionStepper';
 import {
-  saveAssessmentResult,
   submitAssessmentResult,
 } from '@/services/adaptsService';
 import { dbDateFormat } from '@/constants/common';
 import useEntitlementState from '@/store/EntitlementState';
 import AnswersSummary from '@/components/client/adapts/AnswersSummary';
 import Image from 'next/image';
+import { estimateTscore } from '@/utils/adaptsScoreHelper';
 
 const AssessmentPage: React.FC = () => {
   const router = useRouter();
@@ -131,27 +126,6 @@ const AssessmentPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasHydrated]); // ✅ Only run once when store finishes hydrating
 
-  // 🧮 Compute all subscale totals
-  const calculateSubscales = useCallback(() => {
-    const base: Record<Factor, number> = {
-      SoA: 0,
-      PD: 0,
-      SeA: 0,
-      GAD: 0,
-      OCD: 0,
-      MDD: 0,
-    };
-
-    questions.forEach((q) => {
-      const val = answers?.[q.id];
-      if (typeof val === 'number') {
-        base[q.factor] += val;
-      }
-    });
-
-    return base;
-  }, [answers, questions]);
-
   // 🔁 Resume handler
   const handleResume = useCallback(() => {
     if (!hasHydrated) return;
@@ -186,25 +160,24 @@ const AssessmentPage: React.FC = () => {
 
   // ✅ Submit (called from AnswersSummary)
   const handleSubmit = useCallback(async () => {
-    if (!user || !assessmentId || !isComplete || !clientProfile) return;
+    if (!user || !assessmentId || !isComplete || !clientProfile || !currentEntitlement) return;
 
-    const subScales = calculateSubscales();
-    const totalRating = Object.values(answers || {}).reduce(
-      (a, b) => a + b,
-      0
-    );
-    const totalScore: Scores = calculateTotalScores(subScales);
-    const tScore = estimateTscore(totalRating, clientProfile);
+    const result = estimateTscore(answers as any, currentEntitlement.type );
 
-    const assessmentResult: SubmitAssessmentData = {
-      totalRating,
-      tScore: tScore.adjustedTScore,
-      tScoreSummary: tScore,
-      riskBand: tScore.riskBand,
-      riskLevel: tScore.riskLevel,
+    const assessmentResult: tScoreResultSummary = {
+      effectiveTScore: result.effectiveTScore,
+      totalRawScore: result.totalRawScore,
+      totalTScore: result.totalTScore,
+      elevatedSubscales: result.elevatedSubscales,
+      riskBand: result.riskBand,
+      riskLevel: result.riskLevel,
+      tScoreCategory: result.tScoreCategory,
+      subScales: result.subscales,
+      normNote: result.normNote ?? null,
+      isNormValidated: result.isNormValidated, 
+      hasSelfHarmFlag: result.hasSelfHarmFlag,
+      totalSubScalesScore: result.totalSubScalesScore,
       answers: answers || {},
-      subScales,
-      totalSubScalesScore: totalScore,
       submittedAt: moment().format(dbDateFormat),
     };
 
@@ -220,7 +193,6 @@ const AssessmentPage: React.FC = () => {
     assessmentId,
     isComplete,
     answers,
-    calculateSubscales,
     clientProfile,
     router,
     hydrateFromAssessment,

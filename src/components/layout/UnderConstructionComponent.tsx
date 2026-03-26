@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Hammer, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -22,7 +22,7 @@ const UnderConstructionComponent = () => {
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-8"
           >
-            <Hammer className="w-10 h-10 text-primary-foreground" />
+            <Sparkles className="w-10 h-10 text-primary-foreground" />
           </motion.div>
 
           {/* Heading */}
@@ -32,7 +32,7 @@ const UnderConstructionComponent = () => {
             transition={{ delay: 0.3 }}
             className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4"
           >
-            Under <span className="text-primary">Development</span>
+            Something <span className="text-primary">Exciting</span> is Coming
           </motion.h1>
 
           {/* Subheading */}
@@ -42,7 +42,7 @@ const UnderConstructionComponent = () => {
             transition={{ delay: 0.4 }}
             className="text-lg md:text-xl text-muted-foreground mb-6"
           >
-            This page or feature is currently under development.
+            This feature is on its way to you soon.
           </motion.p>
 
           {/* Description */}
@@ -52,8 +52,8 @@ const UnderConstructionComponent = () => {
             transition={{ delay: 0.5 }}
             className="text-base md:text-lg text-muted-foreground mb-10 leading-relaxed"
           >
-            Our team is actively working to expand functionality and improve the
-            overall platform experience.
+            We&pos;re putting the finishing touches on something great. Our team is
+            working hard to bring you a richer, more powerful experience.
           </motion.p>
 
           {/* CTA Text */}
@@ -63,8 +63,7 @@ const UnderConstructionComponent = () => {
             transition={{ delay: 0.6 }}
             className="text-muted-foreground mb-8"
           >
-            Please check back soon as updates will be released in upcoming
-            versions.
+            Stay tuned — this will be available in an upcoming release.
           </motion.p>
 
           {/* Button */}

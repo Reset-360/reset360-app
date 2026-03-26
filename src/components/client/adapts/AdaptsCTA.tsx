@@ -117,8 +117,6 @@ export const AdaptsCTA = ({ latestAssessment }: { latestAssessment: any }) => {
       ? getAssessmentType(user, clientProfile)
       : undefined);
 
-  console.log('type', assessmentType);
-
   //  Assigned assessment callout
   const assessmentTypeInfo = (
     <div className="rounded-md bg-primary/[0.04] border border-primary/10 p-4">

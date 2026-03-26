@@ -11,11 +11,13 @@ import {
   EAssessmentType,
   ERiskBand,
   ERiskLevel,
-  Factor,
+  RCADSFactor,
+  IElevatedArea,
+  ITopElevatedAreasResult,
   Question,
-  SubScaleScores,
-  tScoreResult,
+  TScoreResult,
 } from '@/types/adapts';
+import { FACTOR_META } from '@/constants/adapts/FactorMeta';
 
 /**
  * 🎂 Compute age from birthdate using Moment.js
@@ -137,132 +139,6 @@ export function getAssessmentType(
 }
 
 /**
- * 📊 Estimate a T-score and provide a risk band with recommendations.
- *
- * @param totalRating - Raw total score from the assessment
- * @param clientProfile - User info for age/sex adjustments
- * @returns {tScoreResult} - { tScoreCategory,  riskBand, riskLevel, description, recommendations }
- */
-export function estimateTscore(
-  totalRating: number,
-  clientProfile: IClient
-): tScoreResult {
-  // 📊 Normative constants (replace with real data in production)
-  const mean = 100;
-  const standardDeviation = 15;
-
-  // 🧮 Base T-score formula: T = 50 + 10 * ((Raw - Mean) / SD)
-  const baseTScore = 50 + 10 * ((totalRating - mean) / standardDeviation);
-
-  // 👶 Age adjustment (binary cutoff at 18 for now)
-  const age = computeAge(clientProfile.birthDate);
-  const ageAdjustment = age >= 18 ? 10 : 5;
-
-  // 🚻 Sex adjustment (applies if Male/Female, else 0)
-  const sexAdjustment = ['Female', 'Male'].includes(clientProfile.gender)
-    ? 5
-    : 0;
-
-  // 🎯 Final adjusted T-score
-  const adjustedTScore = Math.round(baseTScore + ageAdjustment + sexAdjustment);
-
-  // 🎨 Categorize into T-score ranges
-  let tScoreCategory;
-  let riskLevel;
-  let riskBand;
-  let description;
-  let recommendations: string[] = [];
-
-  if (adjustedTScore >= 70) {
-    tScoreCategory = 'T > 70';
-    riskBand = ERiskBand.high;
-    riskLevel = ERiskLevel.high;
-    description =
-      'Your responses reflect significantly elevated emotional distress, which may impact daily functioning or relationships.';
-    recommendations = [
-      'Book a **1:1 Mental Health Coaching Session** for guided support and personalized strategies.',
-      'Schedule an **ADAPTS Debrief Session** with a certified coach to interpret your results and identify root causes.',
-      'Consider enrolling in a **4- or 8-week Coaching Package** to build long-term emotional regulation skills.',
-      'Start practicing the **Reset360 grounding and self-regulation tools** daily to stabilize your emotional baseline.',
-      'If you feel overwhelmed, reach out to trusted support people or seek urgent professional help if necessary.',
-    ];
-  } else if (adjustedTScore >= 65) {
-    tScoreCategory = 'T = 65–69';
-    riskLevel = ERiskLevel.moderate;
-    riskBand = ERiskBand.moderate;
-    description =
-      'Your emotional indicators are moderately elevated, suggesting recurring stress patterns or difficulty regulating certain emotional triggers.';
-
-    recommendations = [
-      'Book an **ADAPTS Debrief Session** to explore your emotional patterns and learn targeted coping tools.',
-      'Try a **1:1 Coaching Session** to work on stress management, grounding, and emotional regulation.',
-      'Use the **Reset360 micro-regulation tools** (breathing, grounding, reframing) when symptoms arise.',
-      'Track your emotional patterns to see what triggers spikes or dips.',
-      'Join a coaching package if your symptoms persist or begin affecting day-to-day functioning.',
-    ];
-  } else {
-    tScoreCategory = 'T < 65';
-    riskLevel = ERiskLevel.low;
-    riskBand = ERiskBand.low;
-    description =
-      'Your responses fall within typical emotional ranges. You appear to have a stable emotional baseline with manageable stress levels.';
-
-    recommendations = [
-      'Maintain your routine and continue using healthy coping habits.',
-      'Use **Reset360’s self-regulation tools** to stay grounded during stressful or emotionally triggering moments.',
-      'Consider a **Growth-Focused Coaching Session** to enhance resilience, self-awareness, and proactive emotional skills.',
-      'Re-take the ADAPTS assessment every 4–6 weeks to monitor changes in emotional well-being.',
-      'If you experience shifts or spikes, book a **quick-check coaching session** for guidance.',
-    ];
-  }
-
-  return {
-    tScoreCategory,
-    riskLevel,
-    riskBand,
-    adjustedTScore,
-    description,
-    recommendations,
-  };
-}
-
-/**
- * 🧮 Calculate total anxiety and depression scores from factor subscales.
- *
- * @param subScaleScores - 🧱 Object mapping each factor to its total score:
- *   - SoA: 🗣️ Social Anxiety
- *   - PD: 💓 Panic Disorder
- *   - SeA: 😰 Separation Anxiety
- *   - GAD: 🤯 Generalized Anxiety
- *   - OCD: 🔄 Obsessive-Compulsive
- *   - MDD: 🌧️ Major Depressive Disorder
- *
- * @returns {Object} - 🎯 Aggregated totals:
- *   - totalAnxietyScore: 😰 Combined anxiety-related score (SoA + PD + SeA + GAD + OCD)
- *   - totalMDDScore: 🌧️ Depression score (MDD only)
- */
-export function calculateTotalScores(subScaleScores: SubScaleScores) {
-  // 🔍 Safely extract each factor score, defaulting to 0 if missing
-  const {
-    SoA = 0, // 🗣️ Social Anxiety
-    PD = 0, // 💓 Panic Disorder
-    SeA = 0, // 😰 Separation Anxiety
-    GAD = 0, // 🤯 Generalized Anxiety
-    OCD = 0, // 🔄 Obsessive-Compulsive
-    MDD = 0, // 🌧️ Major Depressive Disorder
-  } = subScaleScores;
-
-  // 😰 Total anxiety score = sum of all anxiety-related factors
-  const totalAnxietyScore = SoA + PD + SeA + GAD + OCD;
-
-  // 🌧️ Total depression score = MDD factor only
-  const totalMDDScore = MDD;
-
-  // 📦 Return combined scores for downstream use (reports, UI, etc.)
-  return { totalAnxietyScore, totalMDDScore };
-}
-
-/**
  * 🎯 Identify the factor (e.g., MDD, GAD, OCD) for the given question ID
  *
  * @param {Array} questions - List of question objects with factors
@@ -287,8 +163,8 @@ export function getQuestionFactorById(
  */
 export function getFactorItemCounts(
   questions: Question[]
-): Record<Factor, number> {
-  const counts: Record<Factor, number> = {
+): Record<RCADSFactor, number> {
+  const counts: Record<RCADSFactor, number> = {
     SoA: 0,
     PD: 0,
     SeA: 0,
@@ -309,10 +185,10 @@ export function getFactorItemCounts(
  * compute the max possible score per factor.
  */
 export function getMaxScoresPerFactor(
-  factorCounts: Record<Factor, number>,
-  maxPerItem = 4
-): Record<Factor, number> {
-  const maxScores: Record<Factor, number> = {
+  factorCounts: Record<RCADSFactor, number>,
+  maxPerItem = 3
+): Record<RCADSFactor, number> {
+  const maxScores: Record<RCADSFactor, number> = {
     SoA: factorCounts.SoA * maxPerItem,
     PD: factorCounts.PD * maxPerItem,
     SeA: factorCounts.SeA * maxPerItem,
@@ -333,48 +209,151 @@ export function getMaxScoresPerFactor(
 export function renderAssessmentType(type: EAssessmentType): string {
   switch (type) {
     case EAssessmentType.ADAPTS_S:
-      return "Student Wellness Self-Assessment";
+      return 'Student Wellness Self-Assessment';
 
     case EAssessmentType.ADAPTS_P:
-      return "Parent Wellness Self-Assessment";
+      return 'Parent Wellness Self-Assessment';
 
     case EAssessmentType.ADAPTS_T:
-      return "Teacher Wellness Self-Assessment";
+      return 'Teacher Wellness Self-Assessment';
 
     case EAssessmentType.ADAPTS_C:
-      return "College & Young Adult Self-Assessment";
+      return 'College & Young Adult Self-Assessment';
 
     default:
-      return "General Wellness Assessment";
+      return 'General Wellness Assessment';
   }
 }
 
 export const getAssessmentLabel = (segment?: EClientSegment) => {
   switch (segment) {
     case EClientSegment.STUDENT:
-      return "You will take ADAPTS-S (Student Assessment).";
+      return 'You will take ADAPTS-S (Student Assessment).';
     case EClientSegment.PARENT:
-      return "You will take ADAPTS-P (Parent Assessment).";
+      return 'You will take ADAPTS-P (Parent Assessment).';
     case EClientSegment.TEACHER:
-      return "You will take ADAPTS-T (Teacher Assessment).";
+      return 'You will take ADAPTS-T (Teacher Assessment).';
     case EClientSegment.INDIVIDUAL:
-      return "You will take ADAPTS-C (College / Young Adult Assessment).";
+      return 'You will take ADAPTS-C (College / Young Adult Assessment).';
     default:
-      return "This helps us assign the correct ADAPTS assessment for you.";
+      return 'This helps us assign the correct ADAPTS assessment for you.';
   }
 };
 
 export const getSegmentLabel = (segment?: EClientSegment) => {
   switch (segment) {
     case EClientSegment.STUDENT:
-      return "Student";
+      return 'Student';
     case EClientSegment.PARENT:
-      return "Parent";
+      return 'Parent';
     case EClientSegment.TEACHER:
-      return "Teacher";
+      return 'Teacher';
     case EClientSegment.INDIVIDUAL:
-      return "College / Young Adult";
+      return 'College / Young Adult';
     default:
-      return "";
+      return '';
   }
 };
+
+function getRiskFromTScore(tScore: number): {
+  riskBand: ERiskBand;
+  riskLevel: ERiskLevel;
+} {
+  if (tScore >= 70)
+    return { riskBand: ERiskBand.high, riskLevel: ERiskLevel.high };
+  if (tScore >= 65)
+    return { riskBand: ERiskBand.moderate, riskLevel: ERiskLevel.moderate };
+  return { riskBand: ERiskBand.low, riskLevel: ERiskLevel.low };
+}
+
+export function buildFactorSummary(
+  label: string,
+  description: string,
+  riskBand: ERiskBand
+): string {
+  const base = description.toLowerCase();
+
+  if (riskBand === ERiskBand.high) {
+    return `Your responses indicate a higher level of ${base}`;
+  }
+
+  if (riskBand === ERiskBand.moderate) {
+    return `Your responses suggest a moderate level of ${base}`;
+  }
+
+  return `Your responses suggest a lower level of ${base}`;
+}
+
+/**
+ * getTopElevatedAreas
+ *
+ * Given assessment responses and a pre-computed T-score result,
+ * this function identifies and ranks the six RCADS factors (MDD, GAD, PD, SoA, SeA, OCD)
+ * by their T-scores. It builds metadata for each factor, including risk band,
+ * risk level, and a summary description.
+ *
+ * - Elevation is determined by T-score (not raw percentage).
+ * - Results are sorted by descending T-score, with raw score as a tiebreaker.
+ * - The function highlights the top one or two clinically elevated areas (T ≥ 65).
+ * - Returns a structured result containing:
+ *   • primary and secondary elevated factors (or null if none),
+ *   • all factors ranked by T-score,
+ *   • a headline string summarizing the findings.
+ *
+ * This ensures consistent identification of the most clinically relevant
+ * areas for display and reporting.
+ */
+export function getTopElevatedAreas(
+  tScoreResult: TScoreResult // pass the already-computed result in
+): ITopElevatedAreasResult {
+  const factors: RCADSFactor[] = ['MDD', 'GAD', 'PD', 'SoA', 'SeA', 'OCD'];
+
+  const all: IElevatedArea[] = factors.map((factor) => {
+    const subscale = tScoreResult.subscales[factor];
+    const meta = FACTOR_META[factor];
+
+    // Elevation is now driven by T-score, not raw percentage
+    const { riskBand, riskLevel } = getRiskFromTScore(subscale.tScore);
+
+    return {
+      factor,
+      label: meta.label,
+      description: meta.description,
+      group: meta.group,
+      rawScore: subscale.rawScore,
+      maxScore: subscale.maxRawScore,
+      percentage: subscale.percentOfMax, // kept for display bar only
+      tScore: subscale.tScore, // source of truth for elevation
+      isClinical: subscale.isClinical,
+      isBorderlineClinical: subscale.isBorderlineClinical,
+      riskBand,
+      riskLevel,
+      summary: buildFactorSummary(meta.label, meta.description, riskBand),
+    };
+  });
+
+  // Sort by T-score descending (not percentage) — consistent with estimateTscore
+  const sorted = [...all].sort((a, b) => {
+    if (b.tScore !== a.tScore) return b.tScore - a.tScore;
+    return b.rawScore - a.rawScore; // tiebreak on raw score
+  });
+
+  // Only flag as "elevated" if actually at or above borderline clinical (T ≥ 65)
+  const elevatedOnly = sorted.filter((a) => a.isBorderlineClinical);
+  const truePrimary = elevatedOnly[0] ?? null;
+  const trueSecondary = elevatedOnly[1] ?? null;
+
+  let headline = 'No elevated areas identified.';
+  if (truePrimary && trueSecondary) {
+    headline = `Top elevated areas: ${truePrimary.label} and ${trueSecondary.label}.`;
+  } else if (truePrimary) {
+    headline = `Top elevated area: ${truePrimary.label}.`;
+  }
+
+  return {
+    primary: truePrimary, // null if nothing clinically elevated
+    secondary: trueSecondary,
+    all: sorted, // all 6 subscales ranked by T-score
+    headline,
+  };
+}

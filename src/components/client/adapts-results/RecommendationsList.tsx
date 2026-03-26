@@ -1,97 +1,101 @@
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lightbulb, Calendar, ArrowRight } from 'lucide-react';
 import {
-  getRiskAccentClasses,
-  getRiskTextColor,
-} from '@/utils/adaptsResultHelper';
-import useQuizStore from '@/store/QuizState';
+  CalendarDays,
+  Heart,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { ERiskBand } from '@/types/adapts';
 
 interface RecommendationsListProps {
   recommendations: string[];
-  riskLevel: string;
+  riskBand: ERiskBand;
 }
 
 export function RecommendationsList({
   recommendations,
-  riskLevel,
+  riskBand,
 }: RecommendationsListProps) {
   const router = useRouter();
 
-  const riskTextColor = getRiskTextColor(riskLevel);
-  const riskAccent = getRiskAccentClasses(riskLevel);
+  const onBookSession = () => {
+    router.replace('/client/book');
+  };
 
-  const resetQuiz = useQuizStore((s) => s.resetQuiz);
-
-  const handleRetake = () => {
-    resetQuiz();
-    router.replace('/adapts');
+  const onTryPractice = () => {
+    router.replace('/client/calm-room');
   };
 
   return (
-    <Card className={`p-6 border-2 ${riskAccent}`}>
-      <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-full ${riskTextColor}`}>
-          <Lightbulb className={`w-6 h-6`} />
-        </div>
-        <div>
-          <h3 className="text-xl font-semibold">
-            Personalized Recommendations
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Next steps to support your emotional wellbeing
+    <Card className="flex flex-col">
+      <CardHeader className="pb-3">
+        <p className="text-sm font-semibold text-foreground">
+          Personalized Recommendations
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Next steps to support your emotional wellbeing
+        </p>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col justify-between gap-5">
+        <ol className="space-y-3">
+          {recommendations.map((rec, i) => (
+            <li key={i} className="flex gap-3 text-sm leading-relaxed">
+              <span
+                className={cn(
+                  'shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5',
+                  riskBand === 'high'
+                    ? 'bg-rose-100 text-rose-700'
+                    : riskBand === 'moderate'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-emerald-100 text-emerald-700'
+                )}
+              >
+                {i + 1}
+              </span>
+              {/* Render **bold** markdown in recommendations */}
+              <span
+                className="text-muted-foreground"
+                dangerouslySetInnerHTML={{
+                  __html: rec.replace(
+                    /\*\*(.*?)\*\*/g,
+                    '<strong class="text-foreground font-semibold">$1</strong>'
+                  ),
+                }}
+              />
+            </li>
+          ))}
+        </ol>
+
+        <div className="space-y-2.5 pt-5 border-t border-border">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            {onBookSession && (
+              <Button
+                onClick={onBookSession}
+                className="flex-1"
+                variant={riskBand === 'high' ? 'destructive' : 'default'}
+              >
+                <CalendarDays className="w-4 h-4 mr-2" />
+                Book a Session
+              </Button>
+            )}
+
+            <Button
+              onClick={onTryPractice}
+              className="flex-1"
+              variant={'accent'}
+            >
+              <Heart className="w-4 h-4 mr-2" />
+              Step Into The Calm Room
+            </Button>
+          </div>
+
+          <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+            This assessment is not a clinical diagnosis. Please consult a
+            qualified mental health professional for a full evaluation.
           </p>
         </div>
-      </div>
-
-      <div className="space-y-4">
-        {recommendations.map((recommendation, index) => {
-          // Parse bold text in recommendations (text wrapped in **)
-          const parts = recommendation.split(/(\*\*.*?\*\*)/g);
-
-          return (
-            <div key={index} className="flex gap-3 group">
-              <div
-                className={`flex-shrink-0 w-8 h-8 rounded-full ${riskTextColor} flex items-center justify-center font-semibold text-sm`}
-              >
-                {index + 1}
-              </div>
-              <div className="flex-1 pt-1">
-                <p className="text-sm leading-relaxed">
-                  {parts.map((part, i) => {
-                    if (part.startsWith('**') && part.endsWith('**')) {
-                      return (
-                        <strong
-                          key={i}
-                          className="font-semibold text-foreground"
-                        >
-                          {part.slice(2, -2)}
-                        </strong>
-                      );
-                    }
-                    return <span key={i}>{part}</span>;
-                  })}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="pt-4 flex flex-col sm:flex-row gap-3">
-        <Link href="/client/book">
-          <Button className="flex-1 gap-2">
-            <Calendar className="w-4 h-4" />
-            Book a Session
-          </Button>
-        </Link>
-        {/* <Button variant="outline" className="flex-1 gap-2" onClick={handleRetake}>
-          Retake ADAPTS
-          <ArrowRight className="w-4 h-4" />
-        </Button> */}
-      </div>
+      </CardContent>
     </Card>
   );
 }

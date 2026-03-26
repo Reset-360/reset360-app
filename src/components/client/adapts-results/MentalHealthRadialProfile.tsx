@@ -1,4 +1,4 @@
-import { Factor, Question, Scores, TotalSubScaleScore } from '@/types/adapts';
+import { Question, SubScaleScores, ALL_FACTORS } from '@/types/adapts';
 import React, { useMemo } from 'react';
 
 import { Card } from '@/components/ui/card';
@@ -20,7 +20,7 @@ import {
 } from 'recharts';
 
 type MentalHealthRadialProfileProps = {
-  totalSubScaleScore: TotalSubScaleScore;
+  totalSubScaleScore: SubScaleScores;
   questions: Question[];
 };
 
@@ -75,25 +75,26 @@ const MentalHealthRadialProfile: React.FC<MentalHealthRadialProfileProps> = ({
    * 📐 Transform factor scores into a format that the RadarChart understands.
    * Each factor becomes a "spoke" in the radar chart.
    */
-  const radarData: RadarDataPoint[] = useMemo(
-    () =>
-      (Object.keys(totalSubScaleScore) as Factor[]).map((factorKey) => ({
-        subject: FACTOR_META[factorKey].label,
-        value: totalSubScaleScore[factorKey],
-        fullMark: maxFactorScore[factorKey] ?? 0,
-      })),
-    [totalSubScaleScore, maxFactorScore]
-  );
+  const radarData: RadarDataPoint[] = useMemo(() => {
+    return ALL_FACTORS.map((factor) => {
+      const subscale = totalSubScaleScore[factor];
+      return {
+        subject: FACTOR_META[factor].label,
+        value: subscale.rawScore, // or subscale.tScore if you prefer
+        fullMark: subscale.maxRawScore, // no need to pull from a separate map
+      };
+    });
+  }, [totalSubScaleScore]);
 
   return (
     <Card className="p-6">
       {/* Header */}
-      <h3 className="text-lg font-semibold">Mental Health Profile</h3>
+      <p className="text-sm font-semibold text-foreground">Response Profile</p>
 
       {/* Radar chart container */}
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={radarData}>
+          <RadarChart data={radarData} startAngle={120} endAngle={-240}>
             {/* Grid lines in the radial layout */}
             <PolarGrid stroke="hsl(293 20% 90%)" />
 
@@ -105,9 +106,19 @@ const MentalHealthRadialProfile: React.FC<MentalHealthRadialProfileProps> = ({
 
             {/* Radial value axis, scaled based on the max possible score */}
             <PolarRadiusAxis
-              angle={90}
+              angle={30}
               domain={[0, maxScore]}
-              tick={{ fill: 'hsl(293 15% 45%)' }}
+              tick={({ x, y, payload }) => (
+                <text
+                  x={x + 5}
+                  y={y}
+                  fill="hsl(293 15% 45%)"
+                  fontSize={11}
+                  textAnchor="start"
+                >
+                  {payload.value}
+                </text>
+              )}
             />
 
             {/* The actual filled radar shape representing the client's scores */}

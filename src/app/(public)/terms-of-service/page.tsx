@@ -1,5 +1,10 @@
 import React from 'react'
 
+export const metadata = {
+  title: "Terms & Conditions",
+  description: "Read the Reset 360 Terms & Conditions to understand the rules and guidelines for using our services.",
+};
+
 const TermsPage = () => {
   return (
     <main className="container max-w-3xl mx-auto px-6 py-24">

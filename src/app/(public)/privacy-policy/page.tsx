@@ -1,5 +1,11 @@
 import React from 'react'
 
+export const metadata = {
+  title: "Privacy Policy",
+  description: "Reset 360 is committed to safeguarding your privacy and ensuring transparency in how your data is handled.",
+};
+
+
 const PrivacyPage = () => {
   return (
     <main className="container max-w-3xl mx-auto px-6 py-24 pt-24">

@@ -6,10 +6,9 @@ import { Question } from '@/types/adapts';
 
 const options = [
   { value: 0, label: 'NEVER' }, // 🚫
-  { value: 1, label: 'RARELY' }, // 🌱
-  { value: 2, label: 'SOMETIMES' }, // 🤔
-  { value: 3, label: 'OFTEN' }, // 🔄
-  { value: 4, label: 'ALL THE TIME' }, // ⏰
+  { value: 1, label: 'SOMETIMES' }, // 🤔
+  { value: 2, label: 'OFTEN' }, // 🔄
+  { value: 3, label: 'ALL THE TIME' }, // ⏰
 ];
 
 interface AnswerItemSummaryProps {

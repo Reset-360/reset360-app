@@ -2,10 +2,9 @@ import { motion } from "framer-motion";
 
 const frequencies = [
   { label: "Never", value: 0 },
-  { label: "Rarely", value: 1 },
-  { label: "Sometimes", value: 2 },
-  { label: "Often", value: 3 },
-  { label: "All the Time", value: 4 },
+  { label: "Sometimes", value: 1 },
+  { label: "Often", value: 2 },
+  { label: "All the Time", value: 3 },
 ];
 
 const AdaptsWhat = () => (

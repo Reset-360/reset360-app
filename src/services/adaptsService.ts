@@ -1,5 +1,5 @@
 import api from '@/lib/axios';
-import { IAssessment, StartAssessmentData, SubmitAssessmentData } from '@/types/adapts';
+import { IAssessment, StartAssessmentData, tScoreResultSummary } from '@/types/adapts';
 
 
 /**
@@ -61,10 +61,10 @@ export async function patchAssessmentProgress(
 /**
  * Submit ADAPTS assessment results
  *
- * @param {SubmitAssessmentData} request
+ * @param {tScoreResultSummary} request
  * @return {*} 
  */
-export const submitAssessmentResult = async (id: string, request: SubmitAssessmentData) => {
+export const submitAssessmentResult = async (id: string, request: tScoreResultSummary) => {
   try {
     const { data } = await api.post(`/assessments/${id}/submit`, request);
 
