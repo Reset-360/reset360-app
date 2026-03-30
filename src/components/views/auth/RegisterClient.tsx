@@ -453,7 +453,7 @@ const RegisterClient = () => {
                     <SelectItem value={EClientSegment.TEACHER}>
                       Teacher
                     </SelectItem>
-                    <SelectItem value={EClientSegment.INDIVIDUAL}>
+                    <SelectItem value={EClientSegment.YOUNG_ADULT}>
                       College / Young Adult
                     </SelectItem>
                   </SelectContent>

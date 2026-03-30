@@ -2,7 +2,7 @@ export enum EClientSegment {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
   PARENT = 'PARENT',
-  INDIVIDUAL = 'INDIVIDUAL', // Tagged as individual but for Young Adults and College
+  YOUNG_ADULT = 'YOUNG_ADULT', // Tagged as individual but for Young Adults and College
 }
 
 export enum EClientStatus {

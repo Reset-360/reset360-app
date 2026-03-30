@@ -111,32 +111,35 @@ export type TScoreResult = {
   normNote?: string;
 };
 
-export interface IAssessment {
+export type IAssessment = {
   _id: string;
-  userId?: string; // assuming MongoDB ObjectId stored as string
+  ref?: string;
+  userId: string;
   entitlementId?: string;
-  type: EAssessmentType; // type of assessment
-  totalRating: number; // overall rating score
-  tScore: number; // adjusted T-score
-  tScoreSummary: tScoreResultSummary;
-  subscales: SubScaleScores; // replace `any` with a more specific type if known
+  organizationId?: string;
+  cohortId?: string;
+  type: EAssessmentType;
+  subScales?: SubScaleScores;
+  totalSubScalesScore?: Scores;
+  elevatedSubscales?: string[];
+  effectiveTScore?: number;
+  totalRawScore?: number;
+  totalTScore?: number;
+  tScoreCategory?: string;
+  riskBand?: ERiskBand;
+  riskLevel?: ERiskLevel;
+  normNote?: string | null;
+  isNormValidated?: boolean;
+  hasSelfHarmFlag?: boolean;
+  answers?: Record<string, any>;
+  answersDraft?: Record<string, any>;
+  currentQuestionIndex: number;
+  timeSpentSec: number;
   startedAt?: string; // depending on how you store dates
   lastActivityAt?: string; // formatted date string
-
-  effectiveTScore: number;
-  totalRawScore: number;
-  totalTScore: number;
-  elevatedSubscales: string[]; // or a more specific type if you know the subscale identifiers
-  riskBand: ERiskBand; // could be an enum if values are fixed
-  riskLevel: ERiskLevel; // likewise, consider an enum
-  tScoreCategory: string; // category label, could be enum
-  subScales: SubScaleScores; // adjust if you have a defined subscale type
-  normNote: string | null;
-  isNormValidated: boolean;
-  hasSelfHarmFlag: boolean;
-  totalSubScalesScore: Scores;
-  answers: Record<number, number>; // or more specific type if answers have a known shape
-  submittedAt: string; // formatted date string
+  submittedAt?: string; // formatted date string
+  createdAt?: string; // formatted date string
+  updatedAt?: string; // formatted date string
 }
 
 export interface StartAssessmentData {

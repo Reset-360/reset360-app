@@ -71,7 +71,7 @@ const ResultsPage = () => {
   }, [mounted, user, hasCompleted, assessment, router]);
 
   useEffect(() => {
-    if (mounted && clientProfile && assessment) {
+    if (mounted && clientProfile && assessment && assessment?.answers) {
       const tScore = estimateTscore(
         assessment?.answers[0] as any,
         assessment?.type

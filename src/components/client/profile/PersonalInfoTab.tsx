@@ -35,7 +35,7 @@ export const SEGMENT_OPTIONS = [
   { label: 'Student', value: EClientSegment.STUDENT },
   { label: 'Teacher', value: EClientSegment.TEACHER },
   { label: 'Parent', value: EClientSegment.PARENT },
-  { label: 'College / Young Adult', value: EClientSegment.INDIVIDUAL },
+  { label: 'College / Young Adult', value: EClientSegment.YOUNG_ADULT },
 ];
 
 export const MARITAL_STATUS_OPTIONS = [

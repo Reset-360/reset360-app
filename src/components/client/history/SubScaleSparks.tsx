@@ -2,7 +2,7 @@ import { FACTOR_META } from '@/constants/adapts/FactorMeta';
 import { IAssessment, RCADSFactor } from '@/types/adapts';
 import clsx from 'clsx';
 
-function SubScaleSparks({ subscales }: { subscales?: IAssessment['subscales'] }) {
+function SubScaleSparks({ subscales }: { subscales?: IAssessment['subScales'] }) {
   if (!subscales) return null;
 
   const factors: RCADSFactor[] = ['MDD', 'GAD', 'PD', 'SoA', 'SeA', 'OCD'];

@@ -308,7 +308,7 @@ const HistoryPage = () => {
 
                     {/* Mini subscale spark chart */}
                     <TableCell className="hidden lg:table-cell">
-                      <SubScaleSparks subscales={assessment.subscales} />
+                      <SubScaleSparks subscales={assessment.subScales} />
                     </TableCell>
 
                     {/* Trend vs previous */}

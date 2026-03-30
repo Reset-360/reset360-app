@@ -45,7 +45,7 @@ const ResultDetailsDialog: React.FC<ResultDetailsDialogProps> = ({
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (mounted && clientProfile && assessment) {
+    if (mounted && clientProfile && assessment.answers) {
       const tScore = estimateTscore(
         assessment.answers[0] as any,
         assessment.type
