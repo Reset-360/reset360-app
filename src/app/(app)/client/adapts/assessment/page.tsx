@@ -18,17 +18,12 @@ import {
   renderAssessmentType,
 } from '@/utils/adaptsHelper';
 
-import {
-  EAssessmentType,
-  tScoreResultSummary,
-} from '@/types/adapts';
+import { EAssessmentType, tScoreResultSummary } from '@/types/adapts';
 import { QuestionSlide } from '@/components/client/adapts/QuestionSlide';
 import ResumeAssessment from '@/components/client/adapts/ResumeAssessment';
 import moment from 'moment';
 import { QuestionStepper } from '@/components/client/adapts/QuestionStepper';
-import {
-  submitAssessmentResult,
-} from '@/services/adaptsService';
+import { submitAssessmentResult } from '@/services/adaptsService';
 import { dbDateFormat } from '@/constants/common';
 import useEntitlementState from '@/store/EntitlementState';
 import AnswersSummary from '@/components/client/adapts/AnswersSummary';
@@ -122,7 +117,7 @@ const AssessmentPage: React.FC = () => {
     } else {
       setIsResumed(true);
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasHydrated]); // ✅ Only run once when store finishes hydrating
 
@@ -156,27 +151,62 @@ const AssessmentPage: React.FC = () => {
       setDirection(1);
       setCurrentQuestion(Math.min(currentQuestion + 1, questions.length - 1));
     }
-  }, [user, assessmentId, isLast, isComplete, currentQuestion, questions.length, setCurrentQuestion]);
+  }, [
+    user,
+    assessmentId,
+    isLast,
+    isComplete,
+    currentQuestion,
+    questions.length,
+    setCurrentQuestion,
+  ]);
 
   // ✅ Submit (called from AnswersSummary)
   const handleSubmit = useCallback(async () => {
-    if (!user || !assessmentId || !isComplete || !clientProfile || !currentEntitlement) return;
+    if (
+      !user ||
+      !assessmentId ||
+      !isComplete ||
+      !clientProfile ||
+      !currentEntitlement
+    )
+      return;
 
-    const result = estimateTscore(answers as any, currentEntitlement.type );
+    const result = estimateTscore(answers as any, currentEntitlement.type);
 
     const assessmentResult: tScoreResultSummary = {
+      // T-scores
+      // effectiveTScore = Math.max(worstSubscaleTScore, totalTScore)
+      // This is the primary clinical value used for risk banding.
       effectiveTScore: result.effectiveTScore,
-      totalRawScore: result.totalRawScore,
+
+      // totalTScore = T-score derived solely from totalRawScore (before subscale max comparison).
+      // Stored for audit/transparency purposes.
       totalTScore: result.totalTScore,
-      elevatedSubscales: result.elevatedSubscales,
+
+      // Sum of all clamped raw item responses across all subscales.
+      totalRawScore: result.totalRawScore,
+
+      // Category label derived from effectiveTScore (or T_CLINICAL if hasSelfHarmFlag).
+      tScoreCategory: result.tScoreCategory,
+
+      // Risk
       riskBand: result.riskBand,
       riskLevel: result.riskLevel,
-      tScoreCategory: result.tScoreCategory,
-      subScales: result.subscales,
+
+      // Subscale details
+      subScales: result.subscales, // per-factor FactorResult objects
+      elevatedSubscales: result.elevatedSubscales, // factors where isBorderlineClinical === true
+      totalSubScalesScore: result.totalSubScalesScore, // { totalAnxietyScore, totalMDDScore }
+
+      // Norm/validation metadata
       normNote: result.normNote ?? null,
-      isNormValidated: result.isNormValidated, 
+      isNormValidated: result.isNormValidated,
+
+      // Clinical flags
       hasSelfHarmFlag: result.hasSelfHarmFlag,
-      totalSubScalesScore: result.totalSubScalesScore,
+
+      // Raw answers and timestamp
       answers: answers || {},
       submittedAt: moment().format(dbDateFormat),
     };
@@ -221,7 +251,14 @@ const AssessmentPage: React.FC = () => {
         setCurrentQuestion(Math.min(currentQuestion + 1, totalQuestions - 1));
       }
     },
-    [setAnswer, answers, totalQuestions, isLast, currentQuestion, setCurrentQuestion]
+    [
+      setAnswer,
+      answers,
+      totalQuestions,
+      isLast,
+      currentQuestion,
+      setCurrentQuestion,
+    ]
   );
 
   // ⏳ Loading / redirecting state
@@ -330,29 +367,29 @@ const AssessmentPage: React.FC = () => {
       {/* Navigation */}
       <div className="w-full px-4 pb-8">
         <div className="max-w-4xl mx-auto flex justify-center items-center gap-4">
-           <Button
-              onClick={handlePrev}
-              size="lg"
-              variant={'outline'}
-              className="lg:w-100 flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden lg:inline-block">Previous</span>
-            </Button>
+          <Button
+            onClick={handlePrev}
+            size="lg"
+            variant={'outline'}
+            className="lg:w-100 flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden lg:inline-block">Previous</span>
+          </Button>
 
           <Button
-              onClick={handleNext}
-              // FIX: Button is disabled if current question is unanswered,
-              // UNLESS we're on the last question where isComplete already gates
-              // the summary transition. Prevents clicking through unanswered questions.
-              disabled={!isCurrentAnswered}
-              size="lg"
-              variant={isComplete ? 'accent' : 'default'}
-              className="flex-1 flex items-center gap-2"
-            >
-              {isLast && isComplete ? 'Review Answers' : 'Next'}
-              <ArrowRight className="w-4 h-4" />
-            </Button>
+            onClick={handleNext}
+            // FIX: Button is disabled if current question is unanswered,
+            // UNLESS we're on the last question where isComplete already gates
+            // the summary transition. Prevents clicking through unanswered questions.
+            disabled={!isCurrentAnswered}
+            size="lg"
+            variant={isComplete ? 'accent' : 'default'}
+            className="flex-1 flex items-center gap-2"
+          >
+            {isLast && isComplete ? 'Review Answers' : 'Next'}
+            <ArrowRight className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>

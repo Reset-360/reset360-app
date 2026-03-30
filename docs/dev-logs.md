@@ -138,3 +138,11 @@
 # ✅ Completed Tasks — 2026-03-23
 
 - Add page title on marketing pages for SEO
+
+# ✅ Completed Tasks — 2026-03-27
+
+- The Calm Room Feature
+
+# ✅ Completed Tasks — 2026-03-30
+
+- Change client segment from INDIVIDUALS to YOUNG_ADULT

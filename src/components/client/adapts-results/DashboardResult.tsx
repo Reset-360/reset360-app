@@ -35,7 +35,7 @@ const DashboardResult = ({ assessment }: { assessment: IAssessment }) => {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (mounted && clientProfile) {
+    if (mounted && clientProfile && assessment?.answers) {
       // Compute Score
       // const tScore = estimateTscore(totalRating, clientProfile!, assessment.answers[0] as any);
       const tScore = estimateTscore(

@@ -104,7 +104,7 @@ export default function CalmRoomClient({
 
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight mb-3">
             {clientName ? (
-              <>Hi <span className="text-pink-500">{clientName}</span>,</>
+              <>Hi <span className="text-pink-500 capitalize">{clientName.toLocaleLowerCase()}</span>,</>
             ) : 'Hello,'} {userContent.greeting}
           </h1>
           <p className="text-sm text-white/50 leading-relaxed max-w-2xl">
@@ -134,7 +134,7 @@ export default function CalmRoomClient({
                   Students
                 </SelectItem>
                 <SelectItem
-                  value={EClientSegment.INDIVIDUAL}
+                  value={EClientSegment.YOUNG_ADULT}
                   className="text-xs focus:bg-white/10 focus:text-white"
                 >
                   College / Young Adults
@@ -164,7 +164,10 @@ export default function CalmRoomClient({
               technique={technique}
               userType={userType}
               index={i}
-              onClick={() => setActiveTechniqueId(technique.id)}
+              onClick={() => {
+                setActiveTechniqueId(technique.id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           ))}
         </div>
@@ -183,8 +186,8 @@ export default function CalmRoomClient({
 
         {/* Footer note */}
         <p className="mt-10 text-[11px] text-white/50 text-center leading-relaxed">
-          Reset360 grounding tools are here to support your emotional self‑regulation. 
-          They’re meant to be gentle guides, not a replacement for professional mental health care. 
+          Reset360 grounding tools are here to support your emotional self‑regulation.
+          They’re meant to be gentle guides, not a replacement for professional mental health care.
           If you ever find yourself in crisis, please reach out right away to a trusted professional or emergency service. You don’t have to go through it alone.
         </p>
       </div>

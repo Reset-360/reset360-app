@@ -61,7 +61,7 @@ export function getQuestionsForProfile(user: IUser, clientProfile: IClient) {
       case EClientSegment.TEACHER:
         questions = TeacherQuestions; // 📚 Teacher-specific questions
         break;
-      case EClientSegment.INDIVIDUAL:
+      case EClientSegment.YOUNG_ADULT:
         questions = YoungAdultQuestions; // 🧑 Young adult-specific questions
         break;
       default:
@@ -126,7 +126,7 @@ export function getAssessmentType(
       case EClientSegment.TEACHER:
         assessmentType = EAssessmentType.ADAPTS_T; // 📚 Teacher-specific assessment
         break;
-      case EClientSegment.INDIVIDUAL:
+      case EClientSegment.YOUNG_ADULT:
         assessmentType = EAssessmentType.ADAPTS_C; // 🧑 College/young adult-specific assessment
         break;
       default:
@@ -233,7 +233,7 @@ export const getAssessmentLabel = (segment?: EClientSegment) => {
       return 'You will take ADAPTS-P (Parent Assessment).';
     case EClientSegment.TEACHER:
       return 'You will take ADAPTS-T (Teacher Assessment).';
-    case EClientSegment.INDIVIDUAL:
+    case EClientSegment.YOUNG_ADULT:
       return 'You will take ADAPTS-C (College / Young Adult Assessment).';
     default:
       return 'This helps us assign the correct ADAPTS assessment for you.';
@@ -248,7 +248,7 @@ export const getSegmentLabel = (segment?: EClientSegment) => {
       return 'Parent';
     case EClientSegment.TEACHER:
       return 'Teacher';
-    case EClientSegment.INDIVIDUAL:
+    case EClientSegment.YOUNG_ADULT:
       return 'College / Young Adult';
     default:
       return '';

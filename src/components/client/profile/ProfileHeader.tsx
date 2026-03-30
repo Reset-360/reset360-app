@@ -11,7 +11,7 @@ const ProfileHeader = ({ onSave, isSaving  }: ProfileHeaderProps) => {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">My Profile</h1>
+        <h1 className="text-3xl font-bold text-foreground">My <span className="text-primary">Profile</span></h1>
         <p className="text-muted-foreground mt-1">
           Manage your personal information and preferences
         </p>

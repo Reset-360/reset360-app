@@ -184,7 +184,7 @@ export const USER_TYPE_CONTENT: Record<EClientSegment, UserTypeContent> = {
     },
   },
 
-  [EClientSegment.INDIVIDUAL]: {
+  [EClientSegment.YOUNG_ADULT]: {
     label: "College Students & Young Adults",
     greeting: "this space is for the part of you that feels like it has been going too fast.",
     pageIntro:

@@ -68,7 +68,7 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
               mobile ? 'flex' : 'hidden md:flex '
             )}
           >
-            <span className="text-sm font-medium">{displayName}</span>
+            <span className="text-sm font-medium capitalize">{displayName.toLowerCase()}</span>
           </div>
 
           <ChevronDown className="ml-1 hidden lg:inline-block" size={16} />
@@ -87,8 +87,8 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold truncate">
-                {displayName}
+              <span className="text-sm font-semibold truncate capitalize">
+                {displayName.toLowerCase()}
               </span>
               {displayEmail && (
                 <span className="text-xs text-muted-foreground truncate">
@@ -100,13 +100,6 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
         </div>
 
         <DropdownMenuSeparator />
-
-        <DropdownMenuLabel className="px-3 text-xs">
-          <Link href="/client/profile" className="flex items-center gap-2">
-            <User size={16} />
-            Account Settings
-          </Link>
-        </DropdownMenuLabel>
 
         {/* role-specific items */}
         {role === EUserRole.CLIENT && (
@@ -150,11 +143,21 @@ export default function AvatarMenu({ mobile }: { mobile?: boolean }) {
           </>
         )}
 
+        <DropdownMenuItem asChild>
+          <Link
+            href="/client/profile"
+            className="flex items-center gap-2"
+          >
+            <Settings size={16} />
+            Account Settings
+          </Link>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
           onClick={() => logout('/')}
-          className="flex items-center gap-2 text-accent"
+          className="flex items-center gap-2 text-foreground"
         >
           <LogOut size={16} />
           Logout
